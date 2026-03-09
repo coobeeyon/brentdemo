@@ -5,11 +5,10 @@
       "title": "Ingredient purchasing shop in prepare phase",
       "description": "Shop UI during prepare phase to buy ingredients from suppliers. Price fluctuations, quantity selection.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 1,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:09:39.618264218Z",
-      "updated_at": "2026-03-09T18:09:40.375017613Z"
+      "updated_at": "2026-03-09T18:11:05.551043638Z"
     },
     "lb-ak2s": {
       "id": "lb-ak2s",
