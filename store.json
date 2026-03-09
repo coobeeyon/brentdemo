@@ -147,8 +147,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 3,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T19:14:08.534306144Z",
-      "updated_at": "2026-03-09T19:14:08.534306144Z"
+      "updated_at": "2026-03-09T19:23:30.742150798Z"
     },
     "lb-g435": {
       "id": "lb-g435",
