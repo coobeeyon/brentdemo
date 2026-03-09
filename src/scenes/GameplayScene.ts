@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult } from '../config/constants';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent } from '../systems/EventManager';
@@ -52,6 +52,17 @@ export class GameplayScene extends Phaser.Scene {
 
     // Roll for today's event
     this.rollDailyEvent();
+
+    // Check for health inspection
+    if (this.gameState.shouldTriggerInspection()) {
+      const result = this.gameState.runHealthInspection();
+      this.showInspectionNotification(result);
+    }
+
+    // If store is closed due to failed inspection, show closure notice
+    if (this.gameState.closureDaysRemaining > 0) {
+      this.showClosureNotice();
+    }
 
     // Keyboard shortcuts
     this.input.keyboard!.on('keydown-ESC', () => {
@@ -268,20 +279,41 @@ export class GameplayScene extends Phaser.Scene {
       });
       prepContainer.add(shopBtn);
 
-      const openBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, '🔔 Open Store', {
-        fontFamily: 'Arial',
-        fontSize: '24px',
-        color: '#FFF',
-        backgroundColor: '#27AE60',
-        padding: { x: 24, y: 10 },
-      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      const isClosed = this.gameState.closureDaysRemaining > 0;
 
-      openBtn.on('pointerdown', () => {
-        this.gameState.phase = DayPhase.SERVE;
-        this.serveButton.setVisible(true);
-        prepContainer.destroy();
-      });
-      prepContainer.add(openBtn);
+      if (isClosed) {
+        // Store is closed — show skip day button instead
+        const skipBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, '⏭ Skip Day (Store Closed)', {
+          fontFamily: 'Arial',
+          fontSize: '22px',
+          color: '#FFF',
+          backgroundColor: '#7F8C8D',
+          padding: { x: 24, y: 10 },
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+        skipBtn.on('pointerdown', () => {
+          prepContainer.destroy();
+          // Skip directly to end of day with no customers
+          this.gameState.phase = DayPhase.CLOSE;
+          this.onDayEnd();
+        });
+        prepContainer.add(skipBtn);
+      } else {
+        const openBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, '🔔 Open Store', {
+          fontFamily: 'Arial',
+          fontSize: '24px',
+          color: '#FFF',
+          backgroundColor: '#27AE60',
+          padding: { x: 24, y: 10 },
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+        openBtn.on('pointerdown', () => {
+          this.gameState.phase = DayPhase.SERVE;
+          this.serveButton.setVisible(true);
+          prepContainer.destroy();
+        });
+        prepContainer.add(openBtn);
+      }
 
       // Show inventory summary during prepare
       const invSummary = this.gameState.ingredients
@@ -335,6 +367,16 @@ export class GameplayScene extends Phaser.Scene {
           const def = CAMPAIGN_CATALOG.find(c => c.id === campaign.id);
           costLines.push(`  ${def?.icon ?? ''} ${def?.name ?? campaign.id} (${campaign.daysRemaining}d)`);
         }
+      }
+
+      // Health inspection status
+      if (this.gameState.closureDaysRemaining > 0) {
+        costLines.push('');
+        costLines.push(`⛔ CLOSED: ${this.gameState.closureDaysRemaining} day(s) left`);
+      } else if (this.gameState.inspectionHistory.length > 0) {
+        const last = this.gameState.inspectionHistory[this.gameState.inspectionHistory.length - 1];
+        costLines.push('');
+        costLines.push(`Last Inspection: ${last.passed ? '✅' : '❌'} ${last.score}/100`);
       }
 
       // Add broken equipment warnings
@@ -533,6 +575,75 @@ export class GameplayScene extends Phaser.Scene {
         });
       },
     });
+  }
+
+  private showInspectionNotification(result: HealthInspectionResult): void {
+    const passed = result.passed;
+    const color = passed ? '#2ECC71' : '#E74C3C';
+    const icon = passed ? '✅' : '❌';
+    const title = passed ? 'Health Inspection Passed!' : 'Health Inspection FAILED!';
+
+    const notif = this.add.container(GAME_WIDTH / 2, 140);
+
+    const panelH = 80 + result.violations.length * 16;
+    const bg = this.add.graphics();
+    bg.fillStyle(passed ? 0x1A5276 : 0x4A1A1A, 0.95);
+    bg.fillRoundedRect(-200, -30, 400, panelH, 10);
+    bg.lineStyle(2, passed ? 0x2ECC71 : 0xE74C3C);
+    bg.strokeRoundedRect(-200, -30, 400, panelH, 10);
+    notif.add(bg);
+
+    const titleText = this.add.text(0, -18, `${icon} ${title} (Score: ${result.score}/100)`, {
+      fontFamily: 'Arial', fontSize: '15px', color, fontStyle: 'bold',
+    }).setOrigin(0.5, 0);
+    notif.add(titleText);
+
+    let yOff = 6;
+    for (const v of result.violations.slice(0, 5)) {
+      const vText = this.add.text(0, yOff, `• ${v}`, {
+        fontFamily: 'Arial', fontSize: '11px', color: '#BDC3C7',
+        wordWrap: { width: 370 },
+      }).setOrigin(0.5, 0);
+      notif.add(vText);
+      yOff += 16;
+    }
+
+    if (!passed && result.closureDays > 0) {
+      const closureText = this.add.text(0, yOff + 4, `⛔ Store closed for ${result.closureDays} day(s)!`, {
+        fontFamily: 'Arial', fontSize: '13px', color: '#E74C3C', fontStyle: 'bold',
+      }).setOrigin(0.5, 0);
+      notif.add(closureText);
+    }
+
+    notif.setAlpha(0);
+    this.tweens.add({
+      targets: notif,
+      alpha: 1,
+      y: 160,
+      duration: 500,
+      ease: 'Power2',
+      onComplete: () => {
+        this.time.delayedCall(6000, () => {
+          this.tweens.add({
+            targets: notif,
+            alpha: 0,
+            y: 140,
+            duration: 500,
+            onComplete: () => notif.destroy(),
+          });
+        });
+      },
+    });
+  }
+
+  private showClosureNotice(): void {
+    // During prepare phase, show a notice that the store is closed
+    const days = this.gameState.closureDaysRemaining;
+    const notif = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, `⛔ STORE CLOSED\nHealth inspection failure\n${days} day(s) remaining`, {
+      fontFamily: 'Arial', fontSize: '24px', color: '#E74C3C',
+      backgroundColor: '#00000088', padding: { x: 20, y: 16 },
+      align: 'center', lineSpacing: 6,
+    }).setOrigin(0.5).setName('closureNotice');
   }
 
   private onDayEnd(): void {

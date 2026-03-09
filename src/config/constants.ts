@@ -224,6 +224,23 @@ export const CAMPAIGN_CATALOG: CampaignDef[] = [
   },
 ];
 
+// Health Inspections
+export interface HealthInspectionResult {
+  day: number;
+  score: number;         // 0-100
+  passed: boolean;       // score >= 60
+  violations: string[];  // list of violations found
+  closureDays: number;   // 0 if passed, 1-3 if failed badly
+  reputationChange: number;
+}
+
+/** Inspection chance per day (10%) */
+export const INSPECTION_CHANCE = 0.10;
+/** Minimum days between inspections */
+export const INSPECTION_COOLDOWN_DAYS = 5;
+/** Score threshold to pass */
+export const INSPECTION_PASS_THRESHOLD = 60;
+
 export const EQUIPMENT_CATALOG: EquipmentDef[] = [
   {
     id: EquipmentId.ICE_CREAM_MAKER,

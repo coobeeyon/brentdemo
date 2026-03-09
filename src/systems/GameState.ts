@@ -16,6 +16,10 @@ import {
   WEATHER_TABLE,
   SEASON_CATALOG,
   SeasonDef,
+  HealthInspectionResult,
+  INSPECTION_CHANCE,
+  INSPECTION_COOLDOWN_DAYS,
+  INSPECTION_PASS_THRESHOLD,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -120,6 +124,16 @@ export class GameState {
 
   // Weather
   weather: WeatherType = WeatherType.SUNNY;
+
+  // Loans
+  loanAmount: number = 0;           // current outstanding loan principal
+  loanInterestRate: number = 0;     // daily interest rate (e.g., 0.02 = 2%)
+  loanDaysRemaining: number = 0;    // days until loan is due
+
+  // Health inspections
+  lastInspectionDay: number = 0;      // day of last inspection
+  closureDaysRemaining: number = 0;   // days store must stay closed
+  inspectionHistory: HealthInspectionResult[] = [];
 
   // Story mode
   seasonDay: number = 1;              // day within current season
@@ -503,6 +517,104 @@ export class GameState {
     }
   }
 
+  /** Run a health inspection and return the result */
+  runHealthInspection(): HealthInspectionResult {
+    let score = 100;
+    const violations: string[] = [];
+
+    // Equipment condition: each broken piece is -15, low condition is -5
+    for (const owned of this.equipment) {
+      if (owned.tier === 0) continue;
+      const def = EQUIPMENT_CATALOG.find(e => e.id === owned.id);
+      const name = def?.name ?? owned.id;
+      if (owned.broken) {
+        score -= 15;
+        violations.push(`${name} is broken and unsanitary`);
+      } else if (owned.condition < 30) {
+        score -= 5;
+        violations.push(`${name} in poor condition (${Math.round(owned.condition)}%)`);
+      }
+    }
+
+    // Expired or near-expired ingredients: -10 each
+    const expiredCount = this.ingredients.filter(i => i.expiresInDays <= 1 && i.quantity > 0).length;
+    if (expiredCount > 0) {
+      score -= expiredCount * 10;
+      violations.push(`${expiredCount} ingredient(s) expired or expiring today`);
+    }
+
+    // No staff assigned: -15 (food handling without proper staffing)
+    const assignedStaff = this.staff.filter(s => s.assigned).length;
+    if (this.staff.length > 0 && assignedStaff === 0) {
+      score -= 15;
+      violations.push('No staff assigned — understaffed');
+    }
+
+    // Low staff morale: -5 per staff with morale < 25 (indicates poor conditions)
+    const unhappyStaff = this.staff.filter(s => s.morale < 25).length;
+    if (unhappyStaff > 0) {
+      score -= unhappyStaff * 5;
+      violations.push(`${unhappyStaff} staff member(s) with critically low morale`);
+    }
+
+    // Low reputation is a signal of past issues: -5 if below 2
+    if (this.reputation < 2) {
+      score -= 5;
+      violations.push('Prior complaints on record');
+    }
+
+    // Clamp score
+    score = Math.max(0, Math.min(100, score));
+
+    const passed = score >= INSPECTION_PASS_THRESHOLD;
+
+    // Determine closure days: 0 if passed, 1 if barely failed, 2-3 if very bad
+    let closureDays = 0;
+    if (!passed) {
+      if (score >= 40) {
+        closureDays = 1;
+      } else if (score >= 20) {
+        closureDays = 2;
+      } else {
+        closureDays = 3;
+      }
+    }
+
+    // Reputation impact: +0.1 to +0.2 for passing, -0.2 to -0.5 for failing
+    let reputationChange: number;
+    if (passed) {
+      reputationChange = 0.1 + (score - INSPECTION_PASS_THRESHOLD) / 400; // +0.1 to +0.2
+    } else {
+      reputationChange = -0.2 - (INSPECTION_PASS_THRESHOLD - score) / 200; // -0.2 to -0.5
+    }
+
+    this.reputation = Math.max(0.5, Math.min(5, this.reputation + reputationChange));
+
+    const result: HealthInspectionResult = {
+      day: this.day,
+      score,
+      passed,
+      violations,
+      closureDays,
+      reputationChange,
+    };
+
+    this.lastInspectionDay = this.day;
+    this.closureDaysRemaining = closureDays;
+    this.inspectionHistory.push(result);
+
+    return result;
+  }
+
+  /** Check if a health inspection should trigger today */
+  shouldTriggerInspection(): boolean {
+    // Respect cooldown
+    if (this.day - this.lastInspectionDay < INSPECTION_COOLDOWN_DAYS) return false;
+    // Don't inspect on day 1
+    if (this.day <= 1) return false;
+    return Math.random() < INSPECTION_CHANCE;
+  }
+
   /** Roll random weather for the day (weighted: sunny/cloudy more likely) */
   private rollWeather(): void {
     const weights = [3, 3, 2, 1.5, 0.5]; // sunny, cloudy, rainy, hot, stormy
@@ -577,6 +689,11 @@ export class GameState {
 
     // Tick down campaign durations
     this.updateCampaigns();
+
+    // Tick down closure days from failed inspections
+    if (this.closureDaysRemaining > 0) {
+      this.closureDaysRemaining--;
+    }
 
     // Roll weather for the day
     this.rollWeather();

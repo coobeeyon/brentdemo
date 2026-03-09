@@ -1,5 +1,5 @@
 import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign } from './GameState';
-import { WeatherType } from '../config/constants';
+import { WeatherType, HealthInspectionResult } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
 const AUTO_SAVE_KEY = SAVE_KEY_PREFIX + 'auto';
@@ -32,9 +32,15 @@ interface SerializedGameState {
   weather: WeatherType;
   seasonDay: number;
   seasonRevenue: number;
+  lastInspectionDay: number;
+  closureDaysRemaining: number;
+  inspectionHistory: HealthInspectionResult[];
+  loanAmount: number;
+  loanInterestRate: number;
+  loanDaysRemaining: number;
 }
 
-const SAVE_VERSION = 4;
+const SAVE_VERSION = 5;
 
 export class SaveManager {
   static save(gameState: GameState, slot: string = 'auto', gameMode: string = 'story'): boolean {
@@ -63,6 +69,12 @@ export class SaveManager {
           weather: gameState.weather,
           seasonDay: gameState.seasonDay,
           seasonRevenue: gameState.seasonRevenue,
+          lastInspectionDay: gameState.lastInspectionDay,
+          closureDaysRemaining: gameState.closureDaysRemaining,
+          inspectionHistory: gameState.inspectionHistory,
+          loanAmount: gameState.loanAmount,
+          loanInterestRate: gameState.loanInterestRate,
+          loanDaysRemaining: gameState.loanDaysRemaining,
         },
       };
 
@@ -83,6 +95,7 @@ export class SaveManager {
 
       const data: SaveData = JSON.parse(raw);
       if (data.version < 3 || data.version > SAVE_VERSION) return false;
+      // Accept older save versions with defaults for missing fields
 
       const s = data.state;
       gameState.day = s.day;
@@ -104,6 +117,12 @@ export class SaveManager {
       gameState.weather = s.weather ?? 'sunny';
       gameState.seasonDay = s.seasonDay ?? 1;
       gameState.seasonRevenue = s.seasonRevenue ?? 0;
+      gameState.lastInspectionDay = s.lastInspectionDay ?? 0;
+      gameState.closureDaysRemaining = s.closureDaysRemaining ?? 0;
+      gameState.inspectionHistory = s.inspectionHistory ?? [];
+      gameState.loanAmount = s.loanAmount ?? 0;
+      gameState.loanInterestRate = s.loanInterestRate ?? 0;
+      gameState.loanDaysRemaining = s.loanDaysRemaining ?? 0;
 
       return true;
     } catch {
