@@ -78,6 +78,17 @@ export interface CriticReview {
   qualityBonus: number;
 }
 
+export interface Recipe {
+  id: string;
+  name: string;
+  flavorId: string;
+  toppings: string[];      // topping ingredient ids
+  style: string;           // serving style id
+  price: number;           // custom price
+  timesSold: number;
+  totalRating: number;     // cumulative satisfaction (for avg rating calc)
+}
+
 export interface LoyalCustomer {
   id: string;
   name: string;
@@ -177,6 +188,9 @@ export class GameState {
   lastInspectionDay: number = 0;      // day of last inspection
   closureDaysRemaining: number = 0;   // days store must stay closed
   inspectionHistory: HealthInspectionResult[] = [];
+
+  // Recipes
+  recipes: Recipe[] = [];
 
   // Loyalty
   loyalCustomers: LoyalCustomer[] = [];
@@ -616,6 +630,51 @@ export class GameState {
       });
     }
     return true;
+  }
+
+  /** Create a new recipe */
+  createRecipe(name: string, flavorId: string, toppings: string[], style: string, price: number): Recipe | null {
+    if (!name.trim() || this.recipes.length >= 10) return null;
+    if (this.recipes.some(r => r.name.toLowerCase() === name.toLowerCase())) return null;
+
+    const recipe: Recipe = {
+      id: `recipe_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      name: name.trim(),
+      flavorId,
+      toppings,
+      style,
+      price,
+      timesSold: 0,
+      totalRating: 0,
+    };
+    this.recipes.push(recipe);
+    return recipe;
+  }
+
+  /** Delete a recipe by id */
+  deleteRecipe(recipeId: string): boolean {
+    const idx = this.recipes.findIndex(r => r.id === recipeId);
+    if (idx === -1) return false;
+    this.recipes.splice(idx, 1);
+    return true;
+  }
+
+  /** Record a sale of a recipe with satisfaction score */
+  recordRecipeSale(recipeId: string, satisfaction: number): void {
+    const recipe = this.recipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+    recipe.timesSold++;
+    recipe.totalRating += satisfaction;
+  }
+
+  /** Get average rating for a recipe (0-1) */
+  getRecipeRating(recipe: Recipe): number {
+    return recipe.timesSold > 0 ? recipe.totalRating / recipe.timesSold : 0;
+  }
+
+  /** Get popular recipes (sold 3+ times with good ratings), used for customer ordering */
+  getPopularRecipes(): Recipe[] {
+    return this.recipes.filter(r => r.timesSold >= 3 && this.getRecipeRating(r) > 0.5);
   }
 
   /** Register or update a loyal customer after being served */

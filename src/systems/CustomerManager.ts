@@ -97,13 +97,22 @@ export class CustomerManager {
 
     if (availableFlavors.length === 0) return;
 
+    // Boost popular recipe flavors in the flavor pool (add duplicates so they're picked more often)
+    const popularRecipes = this.gameState.getPopularRecipes();
+    const weightedFlavors = [...availableFlavors];
+    for (const recipe of popularRecipes) {
+      if (availableFlavors.includes(recipe.flavorId)) {
+        weightedFlavors.push(recipe.flavorId); // double chance
+      }
+    }
+
     const slotIndex = this.queue.length;
     const x = QUEUE_START_X + slotIndex * QUEUE_SPACING;
     const y = QUEUE_START_Y;
 
     const availableToppings = this.gameState.getAvailableToppings();
     const availableStyles = this.gameState.getAvailableStyles();
-    const customer = new Customer(this.scene, x, y, availableFlavors, this.gameState.menuPrices, availableToppings, availableStyles);
+    const customer = new Customer(this.scene, x, y, weightedFlavors, this.gameState.menuPrices, availableToppings, availableStyles);
 
     // Apply weather patience modifier
     const weatherPatienceMult = this.gameState.getWeatherDef().patienceMult;
@@ -198,6 +207,21 @@ export class CustomerManager {
     if (loyaltyFx.tipBonus > 0) {
       revenue *= (1 + loyaltyFx.tipBonus);
     }
+    // Check if order matches a recipe — record sale and apply recipe premium
+    const matchedRecipe = this.gameState.recipes.find(r => {
+      const firstItem = customer.order.items[0];
+      if (!firstItem) return false;
+      return r.flavorId === firstItem.flavorId && r.style === firstItem.style;
+    });
+    if (matchedRecipe) {
+      this.gameState.recordRecipeSale(matchedRecipe.id, patienceRatio);
+      // Popular recipes get a small revenue bonus (up to 10% for highly rated recipes)
+      const rating = this.gameState.getRecipeRating(matchedRecipe);
+      if (matchedRecipe.timesSold >= 3 && rating > 0.5) {
+        revenue *= (1 + rating * 0.1);
+      }
+    }
+
     this.queue.shift();
     this.customersServed++;
     this.satisfactionSum += patienceRatio;

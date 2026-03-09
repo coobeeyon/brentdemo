@@ -12,6 +12,7 @@ import { LoanScene } from './scenes/LoanScene';
 import { DecorScene } from './scenes/DecorScene';
 import { SeatingScene } from './scenes/SeatingScene';
 import { ResearchScene } from './scenes/ResearchScene';
+import { RecipeScene } from './scenes/RecipeScene';
 import { GAME_WIDTH, GAME_HEIGHT } from './config/constants';
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -20,7 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: GAME_HEIGHT,
   parent: 'game-container',
   backgroundColor: '#87CEEB',
-  scene: [BootScene, MainMenuScene, GameplayScene, PauseScene, ShopScene, EquipmentScene, StaffScene, MenuEditorScene, MarketingScene, LoanScene, DecorScene, SeatingScene, ResearchScene],
+  scene: [BootScene, MainMenuScene, GameplayScene, PauseScene, ShopScene, EquipmentScene, StaffScene, MenuEditorScene, MarketingScene, LoanScene, DecorScene, SeatingScene, ResearchScene, RecipeScene],
   physics: {
     default: 'arcade',
     arcade: {
