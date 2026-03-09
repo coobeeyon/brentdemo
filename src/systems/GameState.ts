@@ -35,6 +35,11 @@ import {
   SERVING_STYLE_CATALOG,
   ServingStyleDef,
   FLAVOR_CATALOG,
+  RESEARCH_CATALOG,
+  ResearchNodeDef,
+  ResearchEffects,
+  MILESTONE_CATALOG,
+  MilestoneStats,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -129,8 +134,12 @@ export class GameState {
   // History
   dayReports: DayReport[] = [];
 
-  // Unlocks
+  // Unlocks & Research
   researchPoints: number = 0;
+  unlockedResearch: Set<string> = new Set();
+  completedMilestones: Set<string> = new Set();
+  totalCustomersServed: number = 0;
+  totalRevenue: number = 0;
   unlockedFlavors: Set<string> = new Set(['vanilla', 'chocolate', 'strawberry']);
 
   // Equipment
@@ -338,6 +347,12 @@ export class GameState {
         moraleChange += 1;
       }
 
+      // Research morale bonus
+      const researchFx = this.getResearchEffects();
+      if (researchFx.staffMoraleBonus) {
+        moraleChange += researchFx.staffMoraleBonus;
+      }
+
       member.morale = Math.max(0, Math.min(100, member.morale + moraleChange));
     }
   }
@@ -349,7 +364,11 @@ export class GameState {
 
     // Training cost scales with current skill level
     const avgStat = (member.speed + member.accuracy + member.friendliness) / 3;
-    const cost = Math.round(20 + avgStat * 10);
+    let cost = Math.round(20 + avgStat * 10);
+    const researchFx = this.getResearchEffects();
+    if (researchFx.staffTrainingDiscount) {
+      cost = Math.round(cost * (1 - researchFx.staffTrainingDiscount));
+    }
 
     if (this.money < cost) return { success: false, cost };
 
@@ -470,11 +489,15 @@ export class GameState {
     // Can't run the same campaign twice simultaneously
     if (this.activeCampaigns.some(c => c.id === campaignId)) return false;
 
-    if (this.money < def.cost) return false;
+    // Apply research discounts
+    const rFx = this.getResearchEffects();
+    const discountedCost = Math.round(def.cost * (1 - (rFx.campaignDiscount ?? 0)));
+    if (this.money < discountedCost) return false;
 
-    this.money -= def.cost;
-    this.dailyExpenses += def.cost;
-    this.activeCampaigns.push({ id: campaignId, daysRemaining: def.durationDays });
+    this.money -= discountedCost;
+    this.dailyExpenses += discountedCost;
+    const bonusDays = rFx.campaignDurationBonus ?? 0;
+    this.activeCampaigns.push({ id: campaignId, daysRemaining: def.durationDays + bonusDays });
     return true;
   }
 
@@ -581,6 +604,78 @@ export class GameState {
       });
     }
     return true;
+  }
+
+  /** Check if a research node's prerequisites are met */
+  canResearch(nodeId: string): boolean {
+    if (this.unlockedResearch.has(nodeId)) return false;
+    const node = RESEARCH_CATALOG.find(n => n.id === nodeId);
+    if (!node) return false;
+    if (this.researchPoints < node.cost) return false;
+    return node.prerequisites.every(p => this.unlockedResearch.has(p));
+  }
+
+  /** Unlock a research node, spending research points and applying effects */
+  purchaseResearch(nodeId: string): boolean {
+    if (!this.canResearch(nodeId)) return false;
+    const node = RESEARCH_CATALOG.find(n => n.id === nodeId)!;
+    this.researchPoints -= node.cost;
+    this.unlockedResearch.add(nodeId);
+
+    // Apply flavor unlocks
+    if (node.effects.unlockFlavors) {
+      for (const fid of node.effects.unlockFlavors) {
+        this.unlockFlavor(fid);
+      }
+    }
+    return true;
+  }
+
+  /** Get combined research effects from all unlocked nodes */
+  getResearchEffects(): ResearchEffects {
+    const combined: ResearchEffects = {};
+    for (const nodeId of this.unlockedResearch) {
+      const node = RESEARCH_CATALOG.find(n => n.id === nodeId);
+      if (!node) continue;
+      const fx = node.effects;
+      if (fx.equipmentDiscount) combined.equipmentDiscount = (combined.equipmentDiscount ?? 0) + fx.equipmentDiscount;
+      if (fx.staffTrainingDiscount) combined.staffTrainingDiscount = Math.max(combined.staffTrainingDiscount ?? 0, fx.staffTrainingDiscount);
+      if (fx.staffMoraleBonus) combined.staffMoraleBonus = Math.max(combined.staffMoraleBonus ?? 0, fx.staffMoraleBonus);
+      if (fx.campaignDiscount) combined.campaignDiscount = (combined.campaignDiscount ?? 0) + fx.campaignDiscount;
+      if (fx.campaignDurationBonus) combined.campaignDurationBonus = (combined.campaignDurationBonus ?? 0) + fx.campaignDurationBonus;
+      if (fx.patienceBonus) combined.patienceBonus = (combined.patienceBonus ?? 0) + fx.patienceBonus;
+      if (fx.reputationGainMult) combined.reputationGainMult = (combined.reputationGainMult ?? 1) * fx.reputationGainMult;
+      if (fx.qualityBonus) combined.qualityBonus = (combined.qualityBonus ?? 0) + fx.qualityBonus;
+    }
+    return combined;
+  }
+
+  /** Get current milestone stats for checking milestone conditions */
+  getMilestoneStats(): MilestoneStats {
+    return {
+      totalDays: this.day,
+      totalCustomersServed: this.totalCustomersServed,
+      totalRevenue: this.totalRevenue,
+      reputation: this.reputation,
+      equipmentOwned: this.equipment.filter(e => e.tier > 0).length,
+      staffCount: this.staff.length,
+      flavorsUnlocked: this.unlockedFlavors.size,
+    };
+  }
+
+  /** Check and award milestones, returns newly completed milestone names */
+  checkMilestones(): string[] {
+    const stats = this.getMilestoneStats();
+    const newlyCompleted: string[] = [];
+    for (const milestone of MILESTONE_CATALOG) {
+      if (this.completedMilestones.has(milestone.id)) continue;
+      if (milestone.condition(stats)) {
+        this.completedMilestones.add(milestone.id);
+        this.researchPoints += milestone.points;
+        newlyCompleted.push(milestone.name);
+      }
+    }
+    return newlyCompleted;
   }
 
   /** Get current decor definition */
@@ -841,8 +936,9 @@ export class GameState {
   }
 
   startNewDay(): void {
-    // Track season revenue from previous day before resetting
+    // Track cumulative stats from previous day before resetting
     this.seasonRevenue += this.dailyRevenue;
+    this.totalRevenue += this.dailyRevenue;
 
     this.day++;
     this.seasonDay++;

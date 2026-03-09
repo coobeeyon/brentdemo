@@ -42,9 +42,13 @@ interface SerializedGameState {
   unlockedDecor: DecorThemeId[];
   currentSeating: SeatingId;
   unlockedSeating: SeatingId[];
+  unlockedResearch: string[];
+  completedMilestones: string[];
+  totalCustomersServed: number;
+  totalRevenue: number;
 }
 
-const SAVE_VERSION = 6;
+const SAVE_VERSION = 7;
 
 export class SaveManager {
   static save(gameState: GameState, slot: string = 'auto', gameMode: string = 'story'): boolean {
@@ -83,6 +87,10 @@ export class SaveManager {
           unlockedDecor: gameState.unlockedDecor,
           currentSeating: gameState.currentSeating,
           unlockedSeating: gameState.unlockedSeating,
+          unlockedResearch: Array.from(gameState.unlockedResearch),
+          completedMilestones: Array.from(gameState.completedMilestones),
+          totalCustomersServed: gameState.totalCustomersServed,
+          totalRevenue: gameState.totalRevenue,
         },
       };
 
@@ -139,6 +147,10 @@ export class SaveManager {
       gameState.unlockedDecor = s.unlockedDecor ?? ['basic'];
       gameState.currentSeating = s.currentSeating ?? 'none';
       gameState.unlockedSeating = s.unlockedSeating ?? ['none'];
+      gameState.unlockedResearch = new Set(s.unlockedResearch ?? []);
+      gameState.completedMilestones = new Set(s.completedMilestones ?? []);
+      gameState.totalCustomersServed = s.totalCustomersServed ?? 0;
+      gameState.totalRevenue = s.totalRevenue ?? 0;
 
       return true;
     } catch {

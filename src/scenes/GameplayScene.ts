@@ -537,6 +537,46 @@ export class GameplayScene extends Phaser.Scene {
     });
   }
 
+  private showMilestoneNotification(milestones: string[]): void {
+    const notif = this.add.container(GAME_WIDTH / 2, 130);
+    const bg = this.add.graphics();
+    bg.fillStyle(0x2C3E50, 0.95);
+    bg.fillRoundedRect(-180, -25, 360, 50, 10);
+    bg.lineStyle(2, 0xF1C40F);
+    bg.strokeRoundedRect(-180, -25, 360, 50, 10);
+    notif.add(bg);
+
+    const title = this.add.text(0, -14, `Milestone${milestones.length > 1 ? 's' : ''} Complete!`, {
+      fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F', fontStyle: 'bold',
+    }).setOrigin(0.5, 0);
+    notif.add(title);
+
+    const names = this.add.text(0, 4, milestones.join(', ') + ' (+RP)', {
+      fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7',
+    }).setOrigin(0.5, 0);
+    notif.add(names);
+
+    notif.setAlpha(0);
+    this.tweens.add({
+      targets: notif,
+      alpha: 1,
+      y: 150,
+      duration: 400,
+      ease: 'Power2',
+      onComplete: () => {
+        this.time.delayedCall(4000, () => {
+          this.tweens.add({
+            targets: notif,
+            alpha: 0,
+            y: 130,
+            duration: 400,
+            onComplete: () => notif.destroy(),
+          });
+        });
+      },
+    });
+  }
+
   private showCriticReviewNotification(review: CriticReview): void {
     const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
     const color = review.rating >= 4 ? '#2ECC40' : review.rating >= 3 ? '#F39C12' : '#E74C3C';
@@ -677,11 +717,28 @@ export class GameplayScene extends Phaser.Scene {
       served, lost, avgSatisfaction, criticReview,
     );
 
+    // Apply research reputation gain multiplier
+    const researchEffects = this.gameState.getResearchEffects();
+    if (repChange > 0 && researchEffects.reputationGainMult) {
+      const bonus = repChange * (researchEffects.reputationGainMult - 1);
+      repChange += bonus;
+      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + bonus));
+    }
+
     // Apply campaign reputation bonus
     const campaignEffects = this.gameState.getCampaignEffects();
     if (campaignEffects.reputationBonus) {
       repChange += campaignEffects.reputationBonus;
       this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + campaignEffects.reputationBonus));
+    }
+
+    // Track cumulative stats for milestones
+    this.gameState.totalCustomersServed += served;
+
+    // Check milestones and award research points
+    const newMilestones = this.gameState.checkMilestones();
+    if (newMilestones.length > 0) {
+      this.showMilestoneNotification(newMilestones);
     }
 
     // Record day report with full stats

@@ -584,6 +584,232 @@ export interface ServingStyleDef {
   requiredEquipment?: EquipmentId;  // equipment needed (undefined = always available)
 }
 
+// Research Tree
+export enum ResearchCategory {
+  FLAVORS = 'flavors',
+  EQUIPMENT = 'equipment',
+  STAFF = 'staff',
+  MARKETING = 'marketing',
+  STORE = 'store',
+}
+
+export interface ResearchNodeDef {
+  id: string;
+  name: string;
+  description: string;
+  category: ResearchCategory;
+  cost: number;                    // research points to unlock
+  prerequisites: string[];         // ids of required research nodes
+  effects: ResearchEffects;
+}
+
+export interface ResearchEffects {
+  unlockFlavors?: string[];        // flavor ids to unlock
+  equipmentDiscount?: number;      // fractional discount on equipment purchases (0.1 = 10%)
+  staffTrainingDiscount?: number;  // fractional discount on training costs
+  staffMoraleBonus?: number;       // flat daily morale bonus for all staff
+  campaignDiscount?: number;       // fractional discount on campaign costs
+  campaignDurationBonus?: number;  // extra days added to campaigns
+  patienceBonus?: number;          // flat bonus seconds to customer patience
+  reputationGainMult?: number;     // multiplier on positive reputation changes (e.g. 1.1 = 10% more)
+  qualityBonus?: number;           // bonus to customer satisfaction
+}
+
+export const RESEARCH_CATALOG: ResearchNodeDef[] = [
+  // Flavors branch
+  {
+    id: 'flavor_basics',
+    name: 'Flavor Experimentation',
+    description: 'Learn to develop new flavors. Unlocks Mint Chip and Cookies & Cream.',
+    category: ResearchCategory.FLAVORS,
+    cost: 3,
+    prerequisites: [],
+    effects: { unlockFlavors: ['mint_chip', 'cookies_cream'] },
+  },
+  {
+    id: 'flavor_fruity',
+    name: 'Fruity Flavors',
+    description: 'Master fruit-based flavors. Unlocks Mango, Raspberry, and Blueberry.',
+    category: ResearchCategory.FLAVORS,
+    cost: 5,
+    prerequisites: ['flavor_basics'],
+    effects: { unlockFlavors: ['mango', 'raspberry', 'blueberry'] },
+  },
+  {
+    id: 'flavor_nutty',
+    name: 'Nutty Creations',
+    description: 'Explore nut-based flavors. Unlocks Pistachio, Butter Pecan, and Peanut Butter.',
+    category: ResearchCategory.FLAVORS,
+    cost: 5,
+    prerequisites: ['flavor_basics'],
+    effects: { unlockFlavors: ['pistachio', 'butter_pecan', 'peanut_butter'] },
+  },
+  {
+    id: 'flavor_premium',
+    name: 'Premium Flavors',
+    description: 'Craft luxury flavors. Unlocks Salted Caramel, Lavender, and Matcha.',
+    category: ResearchCategory.FLAVORS,
+    cost: 8,
+    prerequisites: ['flavor_fruity', 'flavor_nutty'],
+    effects: { unlockFlavors: ['salted_caramel', 'lavender', 'matcha'] },
+  },
+  {
+    id: 'flavor_specialty',
+    name: 'Specialty Flavors',
+    description: 'Create unique specialties. Unlocks Cookie Dough, Birthday Cake, and Coffee.',
+    category: ResearchCategory.FLAVORS,
+    cost: 6,
+    prerequisites: ['flavor_basics'],
+    effects: { unlockFlavors: ['cookie_dough', 'birthday_cake', 'coffee'] },
+  },
+  {
+    id: 'flavor_exotic',
+    name: 'Exotic Collection',
+    description: 'The rarest flavors. Unlocks Rocky Road, Coconut, Lemon Sorbet, and Caramel Swirl.',
+    category: ResearchCategory.FLAVORS,
+    cost: 10,
+    prerequisites: ['flavor_premium'],
+    effects: { unlockFlavors: ['rocky_road', 'coconut', 'lemon_sorbet', 'caramel_swirl'] },
+  },
+
+  // Equipment branch
+  {
+    id: 'equip_maintenance',
+    name: 'Preventive Maintenance',
+    description: 'Better equipment care. 10% discount on equipment purchases.',
+    category: ResearchCategory.EQUIPMENT,
+    cost: 4,
+    prerequisites: [],
+    effects: { equipmentDiscount: 0.1 },
+  },
+  {
+    id: 'equip_efficiency',
+    name: 'Equipment Mastery',
+    description: 'Advanced techniques. 20% equipment discount and quality bonus.',
+    category: ResearchCategory.EQUIPMENT,
+    cost: 7,
+    prerequisites: ['equip_maintenance'],
+    effects: { equipmentDiscount: 0.2, qualityBonus: 0.05 },
+  },
+
+  // Staff branch
+  {
+    id: 'staff_training',
+    name: 'Training Program',
+    description: 'Structured training reduces costs by 20%.',
+    category: ResearchCategory.STAFF,
+    cost: 4,
+    prerequisites: [],
+    effects: { staffTrainingDiscount: 0.2 },
+  },
+  {
+    id: 'staff_morale',
+    name: 'Employee Wellness',
+    description: 'Wellness programs boost daily morale by +3.',
+    category: ResearchCategory.STAFF,
+    cost: 6,
+    prerequisites: ['staff_training'],
+    effects: { staffMoraleBonus: 3 },
+  },
+  {
+    id: 'staff_mastery',
+    name: 'Staff Mastery',
+    description: 'Elite training: 40% training discount and +5 daily morale.',
+    category: ResearchCategory.STAFF,
+    cost: 9,
+    prerequisites: ['staff_morale'],
+    effects: { staffTrainingDiscount: 0.4, staffMoraleBonus: 5 },
+  },
+
+  // Marketing branch
+  {
+    id: 'marketing_savvy',
+    name: 'Marketing Savvy',
+    description: 'Smarter spending. 15% discount on campaigns.',
+    category: ResearchCategory.MARKETING,
+    cost: 3,
+    prerequisites: [],
+    effects: { campaignDiscount: 0.15 },
+  },
+  {
+    id: 'marketing_reach',
+    name: 'Extended Reach',
+    description: 'Campaigns last 2 extra days.',
+    category: ResearchCategory.MARKETING,
+    cost: 5,
+    prerequisites: ['marketing_savvy'],
+    effects: { campaignDurationBonus: 2 },
+  },
+  {
+    id: 'marketing_brand',
+    name: 'Brand Building',
+    description: 'Strong brand. 10% more reputation from positive days.',
+    category: ResearchCategory.MARKETING,
+    cost: 8,
+    prerequisites: ['marketing_reach'],
+    effects: { reputationGainMult: 1.1 },
+  },
+
+  // Store branch
+  {
+    id: 'store_comfort',
+    name: 'Customer Comfort',
+    description: 'Improve the waiting experience. +3s customer patience.',
+    category: ResearchCategory.STORE,
+    cost: 3,
+    prerequisites: [],
+    effects: { patienceBonus: 3000 },
+  },
+  {
+    id: 'store_ambiance',
+    name: 'Ambiance Expertise',
+    description: 'Master the atmosphere. +5s patience and quality bonus.',
+    category: ResearchCategory.STORE,
+    cost: 7,
+    prerequisites: ['store_comfort'],
+    effects: { patienceBonus: 5000, qualityBonus: 0.05 },
+  },
+];
+
+// Milestones that award research points
+export interface MilestoneDef {
+  id: string;
+  name: string;
+  description: string;
+  points: number;
+  condition: (stats: MilestoneStats) => boolean;
+}
+
+export interface MilestoneStats {
+  totalDays: number;
+  totalCustomersServed: number;
+  totalRevenue: number;
+  reputation: number;
+  equipmentOwned: number;
+  staffCount: number;
+  flavorsUnlocked: number;
+}
+
+export const MILESTONE_CATALOG: MilestoneDef[] = [
+  { id: 'day_3', name: 'Getting Started', description: 'Survive 3 days', points: 1, condition: s => s.totalDays >= 3 },
+  { id: 'day_7', name: 'First Week', description: 'Survive 7 days', points: 2, condition: s => s.totalDays >= 7 },
+  { id: 'day_14', name: 'Two Weeks In', description: 'Survive 14 days', points: 3, condition: s => s.totalDays >= 14 },
+  { id: 'day_30', name: 'Veteran', description: 'Survive 30 days', points: 4, condition: s => s.totalDays >= 30 },
+  { id: 'serve_25', name: 'First Customers', description: 'Serve 25 customers total', points: 1, condition: s => s.totalCustomersServed >= 25 },
+  { id: 'serve_100', name: 'Popular Spot', description: 'Serve 100 customers total', points: 2, condition: s => s.totalCustomersServed >= 100 },
+  { id: 'serve_500', name: 'Customer Magnet', description: 'Serve 500 customers total', points: 4, condition: s => s.totalCustomersServed >= 500 },
+  { id: 'revenue_500', name: 'First Profits', description: 'Earn $500 total revenue', points: 1, condition: s => s.totalRevenue >= 500 },
+  { id: 'revenue_2000', name: 'Growing Business', description: 'Earn $2,000 total revenue', points: 3, condition: s => s.totalRevenue >= 2000 },
+  { id: 'revenue_10000', name: 'Ice Cream Empire', description: 'Earn $10,000 total revenue', points: 5, condition: s => s.totalRevenue >= 10000 },
+  { id: 'rep_3', name: 'Good Reviews', description: 'Reach 3-star reputation', points: 2, condition: s => s.reputation >= 3 },
+  { id: 'rep_4', name: 'Acclaimed', description: 'Reach 4-star reputation', points: 3, condition: s => s.reputation >= 4 },
+  { id: 'rep_5', name: 'Legendary', description: 'Reach 5-star reputation', points: 5, condition: s => s.reputation >= 5 },
+  { id: 'staff_3', name: 'Team Builder', description: 'Hire 3 staff', points: 1, condition: s => s.staffCount >= 3 },
+  { id: 'equip_4', name: 'Well Equipped', description: 'Own 4 pieces of equipment', points: 2, condition: s => s.equipmentOwned >= 4 },
+  { id: 'flavors_8', name: 'Flavor Explorer', description: 'Unlock 8 flavors', points: 2, condition: s => s.flavorsUnlocked >= 8 },
+  { id: 'flavors_15', name: 'Flavor Master', description: 'Unlock 15 flavors', points: 4, condition: s => s.flavorsUnlocked >= 15 },
+];
+
 export const SERVING_STYLE_CATALOG: ServingStyleDef[] = [
   { id: 'cone', name: 'Cone', priceMult: 1.0, ingredientMult: 1.0, maxScoops: 3 },
   { id: 'cup', name: 'Cup', priceMult: 1.0, ingredientMult: 1.0, maxScoops: 3 },

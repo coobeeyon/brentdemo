@@ -157,15 +157,17 @@ export class EquipmentScene extends Phaser.Scene {
 
     // Upgrade/Buy button
     if (nextTier) {
-      const btnLabel = currentTier === 0 ? `Buy $${nextTier.cost}` : `Upgrade $${nextTier.cost}`;
+      const researchFx = this.gameState.getResearchEffects();
+      const discountedCost = Math.round(nextTier.cost * (1 - (researchFx.equipmentDiscount ?? 0)));
+      const btnLabel = currentTier === 0 ? `Buy $${discountedCost}` : `Upgrade $${discountedCost}`;
       const upgradeBtn = this.add.text(panelX + rowW - 20, y + 15, btnLabel, {
         fontFamily: 'Arial', fontSize: '15px', color: '#FFF',
         backgroundColor: '#27AE60', padding: { x: 12, y: 5 },
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       upgradeBtn.on('pointerdown', () => {
-        if (this.gameState.money >= nextTier.cost) {
-          this.purchaseUpgrade(def.id, nextTier.tier, nextTier.cost);
+        if (this.gameState.money >= discountedCost) {
+          this.purchaseUpgrade(def.id, nextTier.tier, discountedCost);
           this.refreshUI();
         } else {
           this.flashRed(upgradeBtn);

@@ -114,6 +114,12 @@ export class CustomerManager {
     const seatingDef = this.gameState.getSeatingDef();
     customer.maxPatience *= seatingDef.patienceMult;
 
+    // Apply research patience bonus
+    const researchFx = this.gameState.getResearchEffects();
+    if (researchFx.patienceBonus) {
+      customer.maxPatience += researchFx.patienceBonus;
+    }
+
     customer.patience = customer.maxPatience;
 
     // Entrance animation
@@ -160,7 +166,8 @@ export class CustomerManager {
       ? { serveSpeedMult: 1.0, capacityBonus: 0, qualityBonus: 0 }
       : this.gameState.getEquipmentEffects();
     const staffEffects = this.gameState.getStaffEffects();
-    const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus;
+    const researchFx = this.gameState.getResearchEffects();
+    const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus + (researchFx.qualityBonus ?? 0);
     const patienceRatio = customer.patience / customer.maxPatience;
     let revenue = customer.serve(totalQualityBonus);
     // Apply event revenue multiplier
