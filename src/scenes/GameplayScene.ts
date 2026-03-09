@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
+import { SaveManager } from '../systems/SaveManager';
 
 export class GameplayScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -22,7 +23,11 @@ export class GameplayScene extends Phaser.Scene {
   create(): void {
     this.gameState = getGameState(this);
     this.customerManager = new CustomerManager(this, this.gameState);
-    this.gameState.startNewDay();
+
+    const isLoadingSave = this.registry.get('loadSave') as boolean;
+    if (!isLoadingSave) {
+      this.gameState.startNewDay();
+    }
 
     this.createStoreView();
     this.createHUD();
@@ -317,6 +322,9 @@ export class GameplayScene extends Phaser.Scene {
 
     nextBtn.on('pointerdown', () => {
       report.destroy();
+      // Auto-save at end of day
+      const gameMode = this.registry.get('gameMode') as string ?? 'story';
+      SaveManager.save(this.gameState, 'auto', gameMode);
       this.gameState.startNewDay();
       this.updatePhaseUI();
     });
