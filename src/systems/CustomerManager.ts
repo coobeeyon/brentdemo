@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Customer, CustomerType } from '../entities/Customer';
 import { GameState, CriticReview } from './GameState';
+import { GameEventEffects } from './EventManager';
 import { GAME_WIDTH, MAX_QUEUE_LENGTH, DayPhase } from '../config/constants';
 
 const QUEUE_START_X = 240;
@@ -20,6 +21,7 @@ export class CustomerManager {
   private satisfactionSum: number = 0; // sum of patience ratios for served customers
   private lastCriticReview: CriticReview | null = null;
   onCriticReview?: (review: CriticReview) => void; // callback for UI notification
+  eventEffects: GameEventEffects = {}; // active event modifiers
 
   constructor(scene: Phaser.Scene, gameState: GameState) {
     this.scene = scene;
@@ -35,8 +37,9 @@ export class CustomerManager {
     // Spawn new customers
     this.spawnTimer += delta * speed;
     const spawnInterval = this.getSpawnInterval();
-    const effects = this.gameState.getEquipmentEffects();
-    const maxQueue = MAX_QUEUE_LENGTH + (effects.capacityBonus ?? 0);
+    const eqOffline = this.eventEffects.equipmentOffline ?? false;
+    const eqEffects = eqOffline ? { capacityBonus: 0 } : this.gameState.getEquipmentEffects();
+    const maxQueue = MAX_QUEUE_LENGTH + (eqEffects.capacityBonus ?? 0);
     if (this.spawnTimer >= spawnInterval && this.queue.length < maxQueue) {
       this.spawnTimer = 0;
       this.spawnCustomer();
@@ -65,12 +68,17 @@ export class CustomerManager {
       peakMult = 0.6; // shorter interval = more customers
     }
     // Equipment serve speed multiplier reduces effective spawn interval
-    const effects = this.gameState.getEquipmentEffects();
+    const equipmentOffline = this.eventEffects.equipmentOffline ?? false;
+    const effects = equipmentOffline
+      ? { serveSpeedMult: 1.0 }
+      : this.gameState.getEquipmentEffects();
     const speedMult = effects.serveSpeedMult ?? 1.0;
     // Staff speed bonus reduces interval further
     const staffEffects = this.gameState.getStaffEffects();
     const staffSpeedMult = Math.max(0.5, 1.0 - staffEffects.speedBonus);
-    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult / Math.max(wordOfMouth, 0.3);
+    // Event modifier on customer spawn rate
+    const eventSpawnMult = this.eventEffects.customerSpawnMult ?? 1.0;
+    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult / Math.max(wordOfMouth, 0.3);
   }
 
   private spawnCustomer(): void {
@@ -124,11 +132,19 @@ export class CustomerManager {
     this.deductIngredients(customer);
 
     // Serve and get revenue (equipment quality + staff friendliness boost tips)
-    const effects = this.gameState.getEquipmentEffects();
+    // Power outage: equipment effects don't apply
+    const equipmentOffline = this.eventEffects.equipmentOffline ?? false;
+    const effects = equipmentOffline
+      ? { serveSpeedMult: 1.0, capacityBonus: 0, qualityBonus: 0 }
+      : this.gameState.getEquipmentEffects();
     const staffEffects = this.gameState.getStaffEffects();
     const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus;
     const patienceRatio = customer.patience / customer.maxPatience;
-    const revenue = customer.serve(totalQualityBonus);
+    let revenue = customer.serve(totalQualityBonus);
+    // Apply event revenue multiplier
+    if (this.eventEffects.revenueMult) {
+      revenue *= this.eventEffects.revenueMult;
+    }
     this.queue.shift();
     this.customersServed++;
     this.satisfactionSum += patienceRatio;

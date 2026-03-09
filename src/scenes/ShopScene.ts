@@ -224,7 +224,10 @@ export class ShopScene extends Phaser.Scene {
     const day = this.gameState.day;
     const seed = this.hashCode(ingredientId + day.toString());
     // Range: 0.75 to 1.35
-    return 0.75 + (Math.abs(seed) % 60) / 100;
+    const baseMult = 0.75 + (Math.abs(seed) % 60) / 100;
+    // Apply event price modifier (supply shortage / bulk discount)
+    const eventMult = (this.registry.get('eventIngredientPriceMult') as number) ?? 1.0;
+    return baseMult * eventMult;
   }
 
   private hashCode(str: string): number {

@@ -2,11 +2,13 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG } from '../config/constants';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
+import { EventManager, ActiveEvent } from '../systems/EventManager';
 import { SaveManager } from '../systems/SaveManager';
 
 export class GameplayScene extends Phaser.Scene {
   private gameState!: GameState;
   private customerManager!: CustomerManager;
+  private eventManager!: EventManager;
   private timeText!: Phaser.GameObjects.Text;
   private dayText!: Phaser.GameObjects.Text;
   private moneyText!: Phaser.GameObjects.Text;
@@ -17,6 +19,7 @@ export class GameplayScene extends Phaser.Scene {
   private stockWarningText!: Phaser.GameObjects.Text;
   private equipWarningText!: Phaser.GameObjects.Text;
   private serveButton!: Phaser.GameObjects.Text;
+  private eventText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'GameplayScene' });
@@ -25,6 +28,7 @@ export class GameplayScene extends Phaser.Scene {
   create(): void {
     this.gameState = getGameState(this);
     this.customerManager = new CustomerManager(this, this.gameState);
+    this.eventManager = new EventManager();
 
     const isLoadingSave = this.registry.get('loadSave') as boolean;
     if (!isLoadingSave) {
@@ -39,6 +43,14 @@ export class GameplayScene extends Phaser.Scene {
     this.customerManager.onCriticReview = (review: CriticReview) => {
       this.showCriticReviewNotification(review);
     };
+
+    // Show notification when a daily event triggers
+    this.eventManager.onEventTriggered = (event: ActiveEvent) => {
+      this.showEventNotification(event);
+    };
+
+    // Roll for today's event
+    this.rollDailyEvent();
 
     // Keyboard shortcuts
     this.input.keyboard!.on('keydown-ESC', () => {
@@ -185,6 +197,11 @@ export class GameplayScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '16px', color: '#FFDC00',
     }).setOrigin(1, 0);
 
+    // Active event indicator (below top bar, center)
+    this.eventText = this.add.text(GAME_WIDTH / 2, 38, '', {
+      fontFamily: 'Arial', fontSize: '12px', color: '#F1C40F',
+    }).setOrigin(0.5, 0).setVisible(false);
+
     // Equipment warnings (bottom-right)
     this.equipWarningText = this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, '', {
       fontFamily: 'Arial', fontSize: '13px', color: '#F39C12',
@@ -324,6 +341,15 @@ export class GameplayScene extends Phaser.Scene {
     const speedLabels: Record<number, string> = { 0: '⏸ PAUSED', 1: '▶ 1x', 2: '▶▶ 2x' };
     this.speedText.setText(speedLabels[s.gameSpeed] ?? `${s.gameSpeed}x`);
 
+    // Active event indicator
+    const activeEvent = this.eventManager.getActiveEvent();
+    if (activeEvent) {
+      this.eventText.setText(`${activeEvent.def.icon} ${activeEvent.def.name}`);
+      this.eventText.setVisible(true);
+    } else {
+      this.eventText.setVisible(false);
+    }
+
     // Stock warnings during serve phase
     if (s.phase === DayPhase.SERVE) {
       const LOW_THRESHOLD = 5;
@@ -365,6 +391,60 @@ export class GameplayScene extends Phaser.Scene {
     const speeds = [1, 2, 0];
     const idx = speeds.indexOf(this.gameState.gameSpeed);
     this.gameState.gameSpeed = speeds[(idx + 1) % speeds.length];
+  }
+
+  private rollDailyEvent(): void {
+    this.eventManager.rollForEvent(this.gameState);
+    // Pass event effects to customer manager
+    this.customerManager.eventEffects = this.eventManager.getEffects();
+    // Store ingredient price multiplier in registry for ShopScene access
+    const effects = this.eventManager.getEffects();
+    this.registry.set('eventIngredientPriceMult', effects.ingredientPriceMult ?? 1.0);
+  }
+
+  private showEventNotification(event: ActiveEvent): void {
+    const notif = this.add.container(GAME_WIDTH / 2, 140);
+    const text = event.trendingFlavorId
+      ? `${event.def.description.replace('A flavor', `"${event.trendingFlavorId}"`)}`
+      : event.def.description;
+
+    const bg = this.add.graphics();
+    bg.fillStyle(0x34495E, 0.95);
+    bg.fillRoundedRect(-180, -30, 360, 60, 10);
+    bg.lineStyle(2, 0x3498DB);
+    bg.strokeRoundedRect(-180, -30, 360, 60, 10);
+    notif.add(bg);
+
+    const title = this.add.text(0, -18, `${event.def.icon} ${event.def.name}`, {
+      fontFamily: 'Arial', fontSize: '15px', color: '#F1C40F', fontStyle: 'bold',
+    }).setOrigin(0.5, 0);
+    notif.add(title);
+
+    const desc = this.add.text(0, 2, text, {
+      fontFamily: 'Arial', fontSize: '11px', color: '#BDC3C7',
+      wordWrap: { width: 340 },
+    }).setOrigin(0.5, 0);
+    notif.add(desc);
+
+    notif.setAlpha(0);
+    this.tweens.add({
+      targets: notif,
+      alpha: 1,
+      y: 160,
+      duration: 500,
+      ease: 'Power2',
+      onComplete: () => {
+        this.time.delayedCall(4000, () => {
+          this.tweens.add({
+            targets: notif,
+            alpha: 0,
+            y: 140,
+            duration: 500,
+            onComplete: () => notif.destroy(),
+          });
+        });
+      },
+    });
   }
 
   private showCriticReviewNotification(review: CriticReview): void {
@@ -420,6 +500,12 @@ export class GameplayScene extends Phaser.Scene {
   private onDayEnd(): void {
     this.serveButton.setVisible(false);
     this.customerManager.clearQueue();
+
+    // Capture active event before clearing (for report display)
+    const activeEvent = this.eventManager.getActiveEvent();
+
+    // Apply event end-of-day effects (spoilage, reputation bonus, etc.)
+    this.eventManager.applyEndOfDayEffects(this.gameState);
 
     // Calculate enhanced reputation change
     const served = this.customerManager.customersServed;
@@ -503,6 +589,15 @@ export class GameplayScene extends Phaser.Scene {
       y += 25;
     }
 
+    // Show active event in report
+    if (activeEvent) {
+      const eventLabel = this.add.text(leftX, y, `${activeEvent.def.icon} EVENT: ${activeEvent.def.name}`, {
+        fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F', fontStyle: 'bold',
+      });
+      report.add(eventLabel);
+      y += 25;
+    }
+
     // Separator
     const sep = this.add.graphics();
     sep.lineStyle(1, 0x7F8C8D, 0.5);
@@ -576,6 +671,8 @@ export class GameplayScene extends Phaser.Scene {
       const gameMode = this.registry.get('gameMode') as string ?? 'story';
       SaveManager.save(this.gameState, 'auto', gameMode);
       this.gameState.startNewDay();
+      // Roll for next day's event
+      this.rollDailyEvent();
       this.updatePhaseUI();
     });
   }
