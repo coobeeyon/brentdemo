@@ -14,6 +14,7 @@ export class GameplayScene extends Phaser.Scene {
   private reputationText!: Phaser.GameObjects.Text;
   private queueText!: Phaser.GameObjects.Text;
   private speedText!: Phaser.GameObjects.Text;
+  private stockWarningText!: Phaser.GameObjects.Text;
   private serveButton!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -177,6 +178,14 @@ export class GameplayScene extends Phaser.Scene {
     this.reputationText = this.add.text(GAME_WIDTH - 20, 30, '', {
       fontFamily: 'Arial', fontSize: '16px', color: '#FFDC00',
     }).setOrigin(1, 0);
+
+    // Low stock warnings (bottom-left during serve phase)
+    this.stockWarningText = this.add.text(10, GAME_HEIGHT - 10, '', {
+      fontFamily: 'Arial', fontSize: '13px', color: '#E74C3C',
+      backgroundColor: '#00000088',
+      padding: { x: 6, y: 4 },
+      lineSpacing: 2,
+    }).setOrigin(0, 1).setVisible(false);
   }
 
   private createPhaseUI(): void {
@@ -252,6 +261,23 @@ export class GameplayScene extends Phaser.Scene {
 
     const speedLabels: Record<number, string> = { 0: '⏸ PAUSED', 1: '▶ 1x', 2: '▶▶ 2x' };
     this.speedText.setText(speedLabels[s.gameSpeed] ?? `${s.gameSpeed}x`);
+
+    // Stock warnings during serve phase
+    if (s.phase === DayPhase.SERVE) {
+      const LOW_THRESHOLD = 5;
+      const warnings = s.ingredients
+        .filter(i => i.quantity <= LOW_THRESHOLD)
+        .map(i => i.quantity === 0 ? `⛔ ${i.name}: OUT` : `⚠ ${i.name}: ${i.quantity}`);
+
+      if (warnings.length > 0) {
+        this.stockWarningText.setText(warnings.join('\n'));
+        this.stockWarningText.setVisible(true);
+      } else {
+        this.stockWarningText.setVisible(false);
+      }
+    } else {
+      this.stockWarningText.setVisible(false);
+    }
   }
 
   private toggleSpeed(): void {
