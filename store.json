@@ -35,11 +35,10 @@
       "title": "Customer spawning, ordering, patience, and serving flow",
       "description": "Customers spawn during serve phase, queue up, place orders, patience timer ticks down, player fills orders. Core serve-phase gameplay loop.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 1,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:07:24.079615013Z",
-      "updated_at": "2026-03-09T18:07:28.789156642Z"
+      "updated_at": "2026-03-09T18:09:30.752305174Z"
     },
     "lb-hu03": {
       "id": "lb-hu03",
