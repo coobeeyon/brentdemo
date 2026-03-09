@@ -110,6 +110,16 @@
       "created_at": "2026-03-09T18:07:24.079615013Z",
       "updated_at": "2026-03-09T18:09:30.752305174Z"
     },
+    "lb-ggv0": {
+      "id": "lb-ggv0",
+      "title": "Reputation tracking with word-of-mouth and critic reviews",
+      "description": "Expand reputation beyond simple served/lost ratio. Add critic review events, word-of-mouth customer spawn multiplier, satisfaction-weighted rep changes",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:34:16.515118444Z",
+      "updated_at": "2026-03-09T18:34:16.515118444Z"
+    },
     "lb-gm7w": {
       "id": "lb-gm7w",
       "title": "Reputation and marketing system",
@@ -265,6 +275,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-ggv0",
+      "to_id": "lb-gm7w",
       "dep_type": "parent"
     }
   ]
