@@ -84,7 +84,10 @@ export class CustomerManager {
     const campaignSpawnMult = campaignEffects.customerSpawnMult ?? 1.0;
     // Weather modifier
     const weatherMult = this.gameState.getWeatherDef().customerMult;
-    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult * weatherMult / Math.max(wordOfMouth, 0.3);
+    // Loyalty: regulars bring friends
+    const loyaltyFx = this.gameState.getLoyaltyEffects();
+    const loyaltyMult = 1 - loyaltyFx.spawnBonus; // lower = more customers
+    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult * weatherMult * loyaltyMult / Math.max(wordOfMouth, 0.3);
   }
 
   private spawnCustomer(): void {
@@ -118,6 +121,12 @@ export class CustomerManager {
     const researchFx = this.gameState.getResearchEffects();
     if (researchFx.patienceBonus) {
       customer.maxPatience += researchFx.patienceBonus;
+    }
+
+    // Apply loyalty patience bonus
+    const loyaltyFx = this.gameState.getLoyaltyEffects();
+    if (loyaltyFx.patienceBonus) {
+      customer.maxPatience += loyaltyFx.patienceBonus;
     }
 
     customer.patience = customer.maxPatience;
@@ -184,10 +193,21 @@ export class CustomerManager {
     if (decorPriceTolerance > 0) {
       revenue *= (1 + decorPriceTolerance);
     }
+    // Apply loyalty tip bonus
+    const loyaltyFx = this.gameState.getLoyaltyEffects();
+    if (loyaltyFx.tipBonus > 0) {
+      revenue *= (1 + loyaltyFx.tipBonus);
+    }
     this.queue.shift();
     this.customersServed++;
     this.satisfactionSum += patienceRatio;
     this.repositionQueue();
+
+    // Register loyalty (regular customers only, with good patience)
+    if (customer.type === CustomerType.REGULAR && patienceRatio > 0.3) {
+      const favFlavor = customer.order.items[0]?.flavorId ?? 'vanilla';
+      this.gameState.registerLoyalCustomer(favFlavor);
+    }
 
     // Handle critic review
     if (customer.type === CustomerType.CRITIC) {

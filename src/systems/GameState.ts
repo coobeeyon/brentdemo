@@ -78,6 +78,15 @@ export interface CriticReview {
   qualityBonus: number;
 }
 
+export interface LoyalCustomer {
+  id: string;
+  name: string;
+  visits: number;
+  points: number;
+  favoriteFlavor: string;
+  lastVisitDay: number;
+}
+
 export interface DayReport {
   day: number;
   revenue: number;
@@ -168,6 +177,9 @@ export class GameState {
   lastInspectionDay: number = 0;      // day of last inspection
   closureDaysRemaining: number = 0;   // days store must stay closed
   inspectionHistory: HealthInspectionResult[] = [];
+
+  // Loyalty
+  loyalCustomers: LoyalCustomer[] = [];
 
   // Story mode
   seasonDay: number = 1;              // day within current season
@@ -604,6 +616,65 @@ export class GameState {
       });
     }
     return true;
+  }
+
+  /** Register or update a loyal customer after being served */
+  registerLoyalCustomer(favoriteFlavor: string): LoyalCustomer | null {
+    // Chance to register: 15% base, doubled if loyalty card campaign active
+    const loyaltyCampaignActive = this.activeCampaigns.some(c => c.id === CampaignId.LOYALTY_CARDS);
+    const chance = loyaltyCampaignActive ? 0.30 : 0.15;
+    if (Math.random() > chance) return null;
+
+    // Check if an existing loyal customer is "returning"
+    // Pick a random existing loyal customer who hasn't visited today
+    const returningPool = this.loyalCustomers.filter(lc => lc.lastVisitDay < this.day);
+    if (returningPool.length > 0 && Math.random() < 0.5) {
+      const returning = returningPool[Math.floor(Math.random() * returningPool.length)];
+      returning.visits++;
+      returning.points += loyaltyCampaignActive ? 2 : 1;
+      returning.lastVisitDay = this.day;
+      returning.favoriteFlavor = favoriteFlavor;
+      return returning;
+    }
+
+    // Create new loyal customer (max 20 tracked)
+    if (this.loyalCustomers.length >= 20) {
+      // Remove least active
+      this.loyalCustomers.sort((a, b) => b.visits - a.visits);
+      this.loyalCustomers.pop();
+    }
+
+    const names = ['Alex', 'Sam', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Quinn', 'Avery', 'Dakota',
+      'Jamie', 'Drew', 'Reese', 'Skyler', 'Peyton', 'Hayden', 'Finley', 'Emery', 'Sage', 'Rowan'];
+    const usedNames = new Set(this.loyalCustomers.map(lc => lc.name));
+    const available = names.filter(n => !usedNames.has(n));
+    const name = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : `Customer #${this.loyalCustomers.length + 1}`;
+
+    const newCustomer: LoyalCustomer = {
+      id: `loyal_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      name,
+      visits: 1,
+      points: loyaltyCampaignActive ? 2 : 1,
+      favoriteFlavor,
+      lastVisitDay: this.day,
+    };
+    this.loyalCustomers.push(newCustomer);
+    return newCustomer;
+  }
+
+  /** Get top loyal customers sorted by visits */
+  getTopCustomers(count: number = 10): LoyalCustomer[] {
+    return [...this.loyalCustomers].sort((a, b) => b.visits - a.visits).slice(0, count);
+  }
+
+  /** Get loyalty bonus: more loyal customers = slight patience/tip boost */
+  getLoyaltyEffects(): { patienceBonus: number; tipBonus: number; spawnBonus: number } {
+    const activeLoyal = this.loyalCustomers.filter(lc => lc.visits >= 3).length;
+    return {
+      patienceBonus: Math.min(activeLoyal * 500, 3000),  // up to +3s
+      tipBonus: Math.min(activeLoyal * 0.01, 0.10),       // up to +10%
+      spawnBonus: Math.min(activeLoyal * 0.02, 0.15),     // up to 15% more customers
+    };
   }
 
   /** Check if a research node's prerequisites are met */

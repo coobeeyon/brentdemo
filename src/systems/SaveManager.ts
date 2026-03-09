@@ -1,4 +1,4 @@
-import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign } from './GameState';
+import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign, LoyalCustomer } from './GameState';
 import { WeatherType, HealthInspectionResult, DecorThemeId, SeatingId } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
@@ -46,6 +46,7 @@ interface SerializedGameState {
   completedMilestones: string[];
   totalCustomersServed: number;
   totalRevenue: number;
+  loyalCustomers: LoyalCustomer[];
 }
 
 const SAVE_VERSION = 7;
@@ -91,6 +92,7 @@ export class SaveManager {
           completedMilestones: Array.from(gameState.completedMilestones),
           totalCustomersServed: gameState.totalCustomersServed,
           totalRevenue: gameState.totalRevenue,
+          loyalCustomers: gameState.loyalCustomers,
         },
       };
 
@@ -151,6 +153,7 @@ export class SaveManager {
       gameState.completedMilestones = new Set(s.completedMilestones ?? []);
       gameState.totalCustomersServed = s.totalCustomersServed ?? 0;
       gameState.totalRevenue = s.totalRevenue ?? 0;
+      gameState.loyalCustomers = s.loyalCustomers ?? [];
 
       return true;
     } catch {

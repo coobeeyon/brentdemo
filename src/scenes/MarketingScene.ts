@@ -19,7 +19,7 @@ export class MarketingScene extends Phaser.Scene {
 
     // Panel
     const panelW = 600;
-    const panelH = 500;
+    const panelH = 620;
     const panelX = GAME_WIDTH / 2 - panelW / 2;
     const panelY = GAME_HEIGHT / 2 - panelH / 2;
 
@@ -44,6 +44,9 @@ export class MarketingScene extends Phaser.Scene {
       y += 110;
     }
 
+    // Loyalty section
+    this.renderLoyaltySection(panelX + 30, y, panelW - 60);
+
     // Back button
     const backBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 40, '← Back', {
       fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
@@ -62,10 +65,50 @@ export class MarketingScene extends Phaser.Scene {
     });
   }
 
+  private renderLoyaltySection(x: number, y: number, width: number): void {
+    // Section header
+    this.add.text(x, y, 'Loyal Customers', {
+      fontFamily: 'Arial', fontSize: '18px', color: '#F1C40F', fontStyle: 'bold',
+    });
+
+    const topCustomers = this.gameState.getTopCustomers(5);
+    const loyaltyFx = this.gameState.getLoyaltyEffects();
+
+    if (topCustomers.length === 0) {
+      this.add.text(x, y + 25, 'No loyal customers yet. Serve customers well to build loyalty!', {
+        fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+      });
+    } else {
+      // Show effects summary
+      const effectParts: string[] = [];
+      if (loyaltyFx.patienceBonus > 0) effectParts.push(`+${(loyaltyFx.patienceBonus / 1000).toFixed(1)}s patience`);
+      if (loyaltyFx.tipBonus > 0) effectParts.push(`+${Math.round(loyaltyFx.tipBonus * 100)}% tips`);
+      if (loyaltyFx.spawnBonus > 0) effectParts.push(`+${Math.round(loyaltyFx.spawnBonus * 100)}% customers`);
+
+      if (effectParts.length > 0) {
+        this.add.text(x, y + 24, `Loyalty bonuses: ${effectParts.join(' | ')}`, {
+          fontFamily: 'Arial', fontSize: '11px', color: '#7FDBFF',
+        });
+      }
+
+      // Top customers list
+      let cy = y + 44;
+      for (const lc of topCustomers) {
+        const flavorName = this.gameState.flavors.find(f => f.id === lc.favoriteFlavor)?.name ?? lc.favoriteFlavor;
+        this.add.text(x, cy, `${lc.name} — ${lc.visits} visits, ${lc.points} pts, loves ${flavorName}`, {
+          fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7',
+        });
+        cy += 18;
+      }
+    }
+  }
+
   private createCampaignCard(x: number, y: number, width: number, campaignId: CampaignId): void {
     const def = CAMPAIGN_CATALOG.find(c => c.id === campaignId)!;
     const active = this.gameState.activeCampaigns.find(c => c.id === campaignId);
-    const canAfford = this.gameState.money >= def.cost;
+    const researchFx = this.gameState.getResearchEffects();
+    const discountedCost = Math.round(def.cost * (1 - (researchFx.campaignDiscount ?? 0)));
+    const canAfford = this.gameState.money >= discountedCost;
     const isActive = !!active;
 
     // Card background
@@ -123,7 +166,7 @@ export class MarketingScene extends Phaser.Scene {
       }).setOrigin(1, 0);
     } else {
       const btnColor = canAfford ? '#27AE60' : '#7F8C8D';
-      const btn = this.add.text(x + width - 15, y + 20, `$${def.cost}`, {
+      const btn = this.add.text(x + width - 15, y + 20, `$${discountedCost}`, {
         fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
         backgroundColor: btnColor, padding: { x: 12, y: 6 },
       }).setOrigin(1, 0);
