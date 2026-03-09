@@ -422,8 +422,9 @@ export class GameplayScene extends Phaser.Scene {
     this.phaseText.setText(s.phase.toUpperCase());
     this.moneyText.setText(`$${s.money.toFixed(2)}`);
     this.reputationText.setText('★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation)));
-    const assignedStaff = s.staff.filter(st => st.assigned).length;
-    const staffLabel = assignedStaff > 0 ? ` | Staff: ${assignedStaff}` : '';
+    const activeStaff = s.getActiveStaff().length;
+    const totalAssigned = s.staff.filter(st => st.assigned).length;
+    const staffLabel = totalAssigned > 0 ? ` | Staff: ${activeStaff}/${totalAssigned}` : '';
     this.queueText.setText(`Queue: ${this.customerManager.getQueueLength()} | Served: ${this.customerManager.customersServed} | Lost: ${this.customerManager.customersLost}${staffLabel}`);
 
     const speedLabels: Record<number, string> = { 0: '⏸ PAUSED', 1: '▶ 1x', 2: '▶▶ 2x' };

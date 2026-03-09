@@ -22,6 +22,8 @@ import {
   INSPECTION_PASS_THRESHOLD,
   LoanDef,
   LOAN_CATALOG,
+  ShiftType,
+  SHIFT_HOURS,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -49,6 +51,8 @@ export interface StaffMember {
   morale: number;     // 0-100
   wage: number;       // per day
   assigned: boolean;
+  shift: ShiftType;           // scheduled shift
+  consecutiveDaysWorked: number; // for fairness tracking
 }
 
 export interface CriticReview {
@@ -236,21 +240,31 @@ export class GameState {
     return stat * moraleMultiplier;
   }
 
-  /** Get staff bonuses from assigned (working) staff */
-  getStaffEffects(): { speedBonus: number; tipBonus: number } {
-    const assigned = this.staff.filter(s => s.assigned);
-    if (assigned.length === 0) return { speedBonus: 0, tipBonus: 0 };
+  /** Get staff currently on shift at the given hour */
+  getActiveStaff(hour?: number): StaffMember[] {
+    const h = hour ?? this.currentHour;
+    return this.staff.filter(s => {
+      if (!s.assigned || s.shift === ShiftType.OFF) return false;
+      const shiftDef = SHIFT_HOURS[s.shift];
+      return h >= shiftDef.start && h < shiftDef.end;
+    });
+  }
 
-    // Average effective speed of assigned staff: each point above 5 gives 3% speed bonus
-    const avgSpeed = assigned.reduce((sum, s) => sum + this.getEffectiveStat(s, s.speed), 0) / assigned.length;
+  /** Get staff bonuses from staff currently on shift */
+  getStaffEffects(): { speedBonus: number; tipBonus: number } {
+    const active = this.getActiveStaff();
+    if (active.length === 0) return { speedBonus: 0, tipBonus: 0 };
+
+    // Average effective speed of active staff: each point above 5 gives 3% speed bonus
+    const avgSpeed = active.reduce((sum, s) => sum + this.getEffectiveStat(s, s.speed), 0) / active.length;
     const speedBonus = (avgSpeed - 5) * 0.03; // can be negative if staff is slow
 
     // Average effective friendliness: each point above 5 gives 2% tip bonus
-    const avgFriendliness = assigned.reduce((sum, s) => sum + this.getEffectiveStat(s, s.friendliness), 0) / assigned.length;
+    const avgFriendliness = active.reduce((sum, s) => sum + this.getEffectiveStat(s, s.friendliness), 0) / active.length;
     const tipBonus = (avgFriendliness - 5) * 0.02;
 
     // More staff = faster service (diminishing returns)
-    const staffCountBonus = Math.min(assigned.length * 0.05, 0.2); // up to 20%
+    const staffCountBonus = Math.min(active.length * 0.05, 0.2); // up to 20%
 
     return {
       speedBonus: speedBonus + staffCountBonus,
@@ -264,26 +278,36 @@ export class GameState {
 
     for (const member of this.staff) {
       let moraleChange = 0;
+      const isWorking = member.assigned && member.shift !== ShiftType.OFF;
 
       // Working staff get tired (-3 to -8 based on workload)
-      if (member.assigned) {
-        moraleChange -= 3 + Math.random() * 5;
+      // Full-day shifts are more tiring
+      if (isWorking) {
+        const fatigue = member.shift === ShiftType.FULL_DAY ? 5 + Math.random() * 5 : 3 + Math.random() * 5;
+        moraleChange -= fatigue;
+        member.consecutiveDaysWorked = (member.consecutiveDaysWorked ?? 0) + 1;
       } else {
-        // Idle staff recover morale slowly (+2 to +5)
+        // Off-duty staff recover morale (+2 to +5)
         moraleChange += 2 + Math.random() * 3;
+        member.consecutiveDaysWorked = 0;
+      }
+
+      // Schedule fairness: working 5+ consecutive days without a day off causes fatigue
+      if (member.consecutiveDaysWorked >= 5) {
+        const overworkPenalty = (member.consecutiveDaysWorked - 4) * 2;
+        moraleChange -= overworkPenalty;
       }
 
       // Fair wages boost morale, underpaying hurts
-      // Wage fairness: compare wage to what stats deserve (15 + avgStat * 3)
       const fairWage = 15 + ((member.speed + member.accuracy + member.friendliness) / 3) * 3;
       if (member.wage >= fairWage) {
-        moraleChange += 1; // slight boost for fair pay
+        moraleChange += 1;
       } else {
-        moraleChange -= 2; // penalty for underpaying
+        moraleChange -= 2;
       }
 
       // Broken equipment = bad working conditions
-      if (member.assigned && brokenCount > 0) {
+      if (isWorking && brokenCount > 0) {
         moraleChange -= brokenCount * 1.5;
       }
 

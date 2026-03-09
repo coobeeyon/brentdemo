@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, ShiftType } from '../config/constants';
 import { GameState, getGameState, StaffMember } from '../systems/GameState';
 
 // Random name pools
@@ -34,6 +34,8 @@ function generateStaffMember(): StaffMember {
     morale: 70 + Math.floor(Math.random() * 30), // 70-100
     wage,
     assigned: false,
+    shift: ShiftType.OFF,
+    consecutiveDaysWorked: 0,
   };
 }
 
@@ -127,7 +129,7 @@ export class StaffScene extends Phaser.Scene {
     this.contentContainer.add(this.add.text(cols.fri, headerY, 'FRI', hStyle));
     this.contentContainer.add(this.add.text(cols.morale, headerY, 'MORALE', hStyle));
     this.contentContainer.add(this.add.text(cols.wage, headerY, 'WAGE', hStyle));
-    this.contentContainer.add(this.add.text(cols.status, headerY, 'STATUS', hStyle));
+    this.contentContainer.add(this.add.text(cols.status, headerY, 'SHIFT', hStyle));
 
     if (this.gameState.staff.length === 0) {
       this.contentContainer.add(
@@ -217,20 +219,40 @@ export class StaffScene extends Phaser.Scene {
 
     this.contentContainer.add(this.add.text(cols.wage, y + 8, `$${member.wage}/d`, vStyle));
 
-    // Assign/unassign toggle
-    const statusLabel = member.assigned ? 'Working' : 'Idle';
-    const statusColor = member.assigned ? '#2ECC71' : '#95A5A6';
-    this.contentContainer.add(this.add.text(cols.status, y + 8, statusLabel, { ...vStyle, color: statusColor }));
+    // Shift display
+    const shiftLabels: Record<ShiftType, string> = {
+      [ShiftType.OFF]: 'Off',
+      [ShiftType.MORNING]: 'AM',
+      [ShiftType.AFTERNOON]: 'PM',
+      [ShiftType.FULL_DAY]: 'Full',
+    };
+    const shiftColors: Record<ShiftType, string> = {
+      [ShiftType.OFF]: '#95A5A6',
+      [ShiftType.MORNING]: '#F1C40F',
+      [ShiftType.AFTERNOON]: '#E67E22',
+      [ShiftType.FULL_DAY]: '#2ECC71',
+    };
+    const currentShift = member.shift ?? ShiftType.OFF;
+    this.contentContainer.add(this.add.text(cols.status, y + 8, shiftLabels[currentShift], { ...vStyle, color: shiftColors[currentShift] }));
 
-    // Toggle assign button
-    const toggleBtn = this.add.text(cols.action, y + 5, member.assigned ? 'Bench' : 'Assign', {
+    // Consecutive days indicator
+    const daysWorked = member.consecutiveDaysWorked ?? 0;
+    if (daysWorked >= 5) {
+      this.contentContainer.add(this.add.text(cols.status + 40, y + 8, '😩', { fontSize: '12px' }));
+    }
+
+    // Shift cycle button
+    const shifts: ShiftType[] = [ShiftType.OFF, ShiftType.MORNING, ShiftType.AFTERNOON, ShiftType.FULL_DAY];
+    const nextShift = shifts[(shifts.indexOf(currentShift) + 1) % shifts.length];
+    const toggleBtn = this.add.text(cols.action, y + 5, `→ ${shiftLabels[nextShift]}`, {
       fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
-      backgroundColor: member.assigned ? '#95A5A6' : '#3498DB',
+      backgroundColor: '#3498DB',
       padding: { x: 8, y: 4 },
     }).setInteractive({ useHandCursor: true });
 
     toggleBtn.on('pointerdown', () => {
-      member.assigned = !member.assigned;
+      member.shift = nextShift;
+      member.assigned = nextShift !== ShiftType.OFF;
       this.refreshUI();
     });
     this.contentContainer.add(toggleBtn);

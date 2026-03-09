@@ -108,7 +108,11 @@ export class SaveManager {
       gameState.researchPoints = s.researchPoints;
       gameState.ingredients = s.ingredients;
       gameState.flavors = s.flavors;
-      gameState.staff = s.staff;
+      gameState.staff = s.staff.map(member => ({
+        ...member,
+        shift: member.shift ?? (member.assigned ? 'full_day' : 'off'),
+        consecutiveDaysWorked: member.consecutiveDaysWorked ?? 0,
+      }));
       gameState.menuPrices = new Map(s.menuPrices);
       gameState.dayReports = s.dayReports;
       gameState.unlockedFlavors = new Set(s.unlockedFlavors);

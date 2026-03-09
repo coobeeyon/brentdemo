@@ -224,6 +224,21 @@ export const CAMPAIGN_CATALOG: CampaignDef[] = [
   },
 ];
 
+// Staff Scheduling
+export enum ShiftType {
+  OFF = 'off',
+  MORNING = 'morning',     // 8am-1pm
+  AFTERNOON = 'afternoon', // 1pm-6pm
+  FULL_DAY = 'full_day',   // 8am-10pm
+}
+
+export const SHIFT_HOURS: Record<ShiftType, { start: number; end: number }> = {
+  [ShiftType.OFF]: { start: 0, end: 0 },
+  [ShiftType.MORNING]: { start: 8, end: 13 },
+  [ShiftType.AFTERNOON]: { start: 13, end: 22 },
+  [ShiftType.FULL_DAY]: { start: 8, end: 22 },
+};
+
 // Health Inspections
 export interface HealthInspectionResult {
   day: number;
