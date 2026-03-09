@@ -205,11 +205,10 @@
       "title": "Core event system with random daily events",
       "description": "Event system that triggers random events at day start. Events modify gameplay for that day. Include event notification UI and per-event effect application/removal.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:34:20.185338356Z",
-      "updated_at": "2026-03-09T18:37:23.703626569Z"
+      "updated_at": "2026-03-09T18:40:51.311542911Z"
     },
     "lb-nk2g": {
       "id": "lb-nk2g",
