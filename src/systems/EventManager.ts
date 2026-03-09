@@ -9,6 +9,7 @@ export enum GameEventId {
   SUPPLY_SHORTAGE = 'supply_shortage',
   BULK_DISCOUNT = 'bulk_discount',
   CHARITY_DRIVE = 'charity_drive',
+  LOCAL_FAIR = 'local_fair',
 }
 
 export interface GameEventDef {
@@ -121,6 +122,15 @@ const EVENT_CATALOG: GameEventDef[] = [
     minDay: 5,
     chance: 0.07,
     effects: { revenueMult: 0.9, reputationBonus: 0.3 },
+  },
+  {
+    id: GameEventId.LOCAL_FAIR,
+    name: 'Local Fair',
+    description: 'A local fair is in town! Set up a pop-up booth for bonus revenue!',
+    icon: '🎪',
+    minDay: 5,
+    chance: 0.08,
+    effects: { reputationBonus: 0.15 }, // small rep boost just for the fair being in town
   },
 ];
 

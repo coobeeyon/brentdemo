@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult } from '../config/constants';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
-import { EventManager, ActiveEvent } from '../systems/EventManager';
+import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager';
 import { SaveManager } from '../systems/SaveManager';
 
 export class GameplayScene extends Phaser.Scene {
@@ -314,6 +314,26 @@ export class GameplayScene extends Phaser.Scene {
           prepContainer.destroy();
         });
         prepContainer.add(openBtn);
+
+        // Pop-up booth button when Local Fair event is active
+        const activeEvt = this.eventManager.getActiveEvent();
+        if (activeEvt && activeEvt.def.id === GameEventId.LOCAL_FAIR) {
+          const boothBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 240, '🎪 Set Up Pop-Up Booth', {
+            fontFamily: 'Arial',
+            fontSize: '20px',
+            color: '#FFF',
+            backgroundColor: '#D35400',
+            padding: { x: 18, y: 8 },
+          }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+          boothBtn.on('pointerdown', () => {
+            this.scene.launch('PopUpBoothScene');
+            this.scene.pause();
+          });
+          boothBtn.on('pointerover', () => boothBtn.setStyle({ backgroundColor: '#E67E22' }));
+          boothBtn.on('pointerout', () => boothBtn.setStyle({ backgroundColor: '#D35400' }));
+          prepContainer.add(boothBtn);
+        }
       }
 
       // Show inventory summary during prepare
