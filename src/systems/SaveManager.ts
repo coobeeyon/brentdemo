@@ -1,4 +1,5 @@
 import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign } from './GameState';
+import { WeatherType } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
 const AUTO_SAVE_KEY = SAVE_KEY_PREFIX + 'auto';
@@ -28,6 +29,7 @@ interface SerializedGameState {
   unlockedFlavors: string[];
   equipment: OwnedEquipment[];
   activeCampaigns: ActiveCampaign[];
+  weather: WeatherType;
 }
 
 const SAVE_VERSION = 4;
@@ -56,6 +58,7 @@ export class SaveManager {
           unlockedFlavors: Array.from(gameState.unlockedFlavors),
           equipment: gameState.equipment,
           activeCampaigns: gameState.activeCampaigns,
+          weather: gameState.weather,
         },
       };
 
@@ -94,6 +97,7 @@ export class SaveManager {
       gameState.unlockedFlavors = new Set(s.unlockedFlavors);
       gameState.equipment = s.equipment ?? [];
       gameState.activeCampaigns = s.activeCampaigns ?? [];
+      gameState.weather = s.weather ?? 'sunny';
 
       return true;
     } catch {

@@ -81,7 +81,9 @@ export class CustomerManager {
     // Campaign modifier on customer spawn rate
     const campaignEffects = this.gameState.getCampaignEffects();
     const campaignSpawnMult = campaignEffects.customerSpawnMult ?? 1.0;
-    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult / Math.max(wordOfMouth, 0.3);
+    // Weather modifier
+    const weatherMult = this.gameState.getWeatherDef().customerMult;
+    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult * weatherMult / Math.max(wordOfMouth, 0.3);
   }
 
   private spawnCustomer(): void {
@@ -96,6 +98,11 @@ export class CustomerManager {
     const y = QUEUE_START_Y;
 
     const customer = new Customer(this.scene, x, y, availableFlavors, this.gameState.menuPrices);
+
+    // Apply weather patience modifier
+    const weatherPatienceMult = this.gameState.getWeatherDef().patienceMult;
+    customer.maxPatience *= weatherPatienceMult;
+    customer.patience = customer.maxPatience;
 
     // Entrance animation
     customer.sprite.setAlpha(0);

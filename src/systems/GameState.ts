@@ -12,6 +12,8 @@ import {
   CampaignId,
   CAMPAIGN_CATALOG,
   CampaignEffects,
+  WeatherType,
+  WEATHER_TABLE,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -113,6 +115,9 @@ export class GameState {
 
   // Marketing campaigns
   activeCampaigns: ActiveCampaign[] = [];
+
+  // Weather
+  weather: WeatherType = WeatherType.SUNNY;
 
   constructor() {
     this.initializeStartingInventory();
@@ -438,6 +443,26 @@ export class GameState {
       .filter(c => c.daysRemaining > 0);
   }
 
+  /** Roll random weather for the day (weighted: sunny/cloudy more likely) */
+  private rollWeather(): void {
+    const weights = [3, 3, 2, 1.5, 0.5]; // sunny, cloudy, rainy, hot, stormy
+    const total = weights.reduce((a, b) => a + b, 0);
+    let roll = Math.random() * total;
+    for (let i = 0; i < WEATHER_TABLE.length; i++) {
+      roll -= weights[i];
+      if (roll <= 0) {
+        this.weather = WEATHER_TABLE[i].type;
+        return;
+      }
+    }
+    this.weather = WeatherType.SUNNY;
+  }
+
+  /** Get the current weather definition */
+  getWeatherDef() {
+    return WEATHER_TABLE.find(w => w.type === this.weather) ?? WEATHER_TABLE[0];
+  }
+
   get profit(): number {
     return this.dailyRevenue - this.dailyExpenses;
   }
@@ -488,6 +513,9 @@ export class GameState {
 
     // Tick down campaign durations
     this.updateCampaigns();
+
+    // Roll weather for the day
+    this.rollWeather();
   }
 }
 

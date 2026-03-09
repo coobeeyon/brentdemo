@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, WEATHER_TABLE } from '../config/constants';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent } from '../systems/EventManager';
@@ -20,6 +20,7 @@ export class GameplayScene extends Phaser.Scene {
   private equipWarningText!: Phaser.GameObjects.Text;
   private serveButton!: Phaser.GameObjects.Text;
   private eventText!: Phaser.GameObjects.Text;
+  private weatherText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'GameplayScene' });
@@ -177,11 +178,15 @@ export class GameplayScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '16px', color: '#FFD700',
     });
 
-    this.phaseText = this.add.text(200, 8, '', {
+    this.weatherText = this.add.text(140, 8, '', {
+      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+    });
+
+    this.phaseText = this.add.text(240, 8, '', {
       fontFamily: 'Arial', fontSize: '16px', color: '#7FDBFF',
     });
 
-    this.speedText = this.add.text(200, 30, '', {
+    this.speedText = this.add.text(240, 30, '', {
       fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6',
     });
 
@@ -341,6 +346,8 @@ export class GameplayScene extends Phaser.Scene {
     const s = this.gameState;
     this.dayText.setText(`Day ${s.day} | Season ${s.season}`);
     this.timeText.setText(s.currentTimeString);
+    const weatherDef = s.getWeatherDef();
+    this.weatherText.setText(`${weatherDef.icon} ${weatherDef.name}`);
     this.phaseText.setText(s.phase.toUpperCase());
     this.moneyText.setText(`$${s.money.toFixed(2)}`);
     this.reputationText.setText('★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation)));
@@ -605,6 +612,14 @@ export class GameplayScene extends Phaser.Scene {
       report.add(criticLabel);
       y += 25;
     }
+
+    // Show weather in report
+    const weather = this.gameState.getWeatherDef();
+    const weatherLabel = this.add.text(leftX, y, `${weather.icon} WEATHER: ${weather.name}`, {
+      fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7',
+    });
+    report.add(weatherLabel);
+    y += 25;
 
     // Show active event in report
     if (activeEvent) {

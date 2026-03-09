@@ -65,6 +65,42 @@ export interface EquipmentDef {
   tiers: EquipmentTier[];
 }
 
+// Accessibility
+export interface AccessibilitySettings {
+  textScale: number;         // 1.0 = normal, 1.25 = large, 1.5 = extra large
+  highContrast: boolean;     // high contrast mode
+}
+
+export const DEFAULT_ACCESSIBILITY: AccessibilitySettings = {
+  textScale: 1.0,
+  highContrast: false,
+};
+
+// Weather
+export enum WeatherType {
+  SUNNY = 'sunny',
+  CLOUDY = 'cloudy',
+  RAINY = 'rainy',
+  HOT = 'hot',
+  STORMY = 'stormy',
+}
+
+export interface WeatherDef {
+  type: WeatherType;
+  name: string;
+  icon: string;
+  customerMult: number;     // multiplier on customer spawn (lower = more)
+  patienceMult: number;     // multiplier on patience (higher = more patient)
+}
+
+export const WEATHER_TABLE: WeatherDef[] = [
+  { type: WeatherType.SUNNY, name: 'Sunny', icon: '☀️', customerMult: 0.85, patienceMult: 1.1 },
+  { type: WeatherType.CLOUDY, name: 'Cloudy', icon: '⛅', customerMult: 1.0, patienceMult: 1.0 },
+  { type: WeatherType.RAINY, name: 'Rainy', icon: '🌧️', customerMult: 1.3, patienceMult: 0.9 },
+  { type: WeatherType.HOT, name: 'Hot', icon: '🔥', customerMult: 0.7, patienceMult: 0.85 },
+  { type: WeatherType.STORMY, name: 'Stormy', icon: '⛈️', customerMult: 1.5, patienceMult: 0.8 },
+];
+
 // Marketing Campaigns
 export enum CampaignId {
   LOCAL_ADS = 'local_ads',
