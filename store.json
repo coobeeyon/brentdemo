@@ -185,11 +185,10 @@
       "title": "Equipment system and upgrades",
       "description": "Ice cream maker, freezer, soft-serve machine, blender, toppings bar, POS. Each has upgrade tiers affecting speed/capacity/quality. Breakdown/maintenance mechanic.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:11:40.258997798Z",
-      "updated_at": "2026-03-09T18:18:29.814153234Z"
+      "updated_at": "2026-03-09T18:23:45.841072142Z"
     }
   },
   "deps": [
