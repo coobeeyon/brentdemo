@@ -1,0 +1,28 @@
+{
+  "name": "ice-cream-store-simulator",
+  "version": "0.1.0",
+  "description": "Ice Cream Store Simulator - a store management game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coobeeyon/brentdemo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/coobeeyon/brentdemo/issues"
+  },
+  "homepage": "https://github.com/coobeeyon/brentdemo#readme",
+  "dependencies": {
+    "phaser": "^3.90.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}
