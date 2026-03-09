@@ -218,6 +218,11 @@
       "dep_type": "parent"
     },
     {
+      "from_id": "lb-4arw",
+      "to_id": "lb-u8ep",
+      "dep_type": "parent"
+    },
+    {
       "from_id": "lb-ak2s",
       "to_id": "lb-s4kc",
       "dep_type": "parent"
@@ -260,11 +265,6 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-4arw",
-      "to_id": "lb-u8ep",
       "dep_type": "parent"
     }
   ]
