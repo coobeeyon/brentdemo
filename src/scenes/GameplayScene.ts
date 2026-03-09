@@ -188,19 +188,51 @@ export class GameplayScene extends Phaser.Scene {
       this.customerManager.resetDayStats();
       this.customerManager.clearQueue();
 
+      const prepContainer = this.add.container(0, 0).setName('phaseUI');
+
+      const shopBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 120, '🛒 Buy Ingredients', {
+        fontFamily: 'Arial',
+        fontSize: '22px',
+        color: '#FFF',
+        backgroundColor: '#8E44AD',
+        padding: { x: 20, y: 8 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+      shopBtn.on('pointerdown', () => {
+        this.scene.launch('ShopScene');
+        this.scene.pause();
+      });
+      prepContainer.add(shopBtn);
+
       const openBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, '🔔 Open Store', {
         fontFamily: 'Arial',
         fontSize: '24px',
         color: '#FFF',
         backgroundColor: '#27AE60',
         padding: { x: 24, y: 10 },
-      }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setName('phaseUI');
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
       openBtn.on('pointerdown', () => {
         this.gameState.phase = DayPhase.SERVE;
         this.serveButton.setVisible(true);
-        openBtn.destroy();
+        prepContainer.destroy();
       });
+      prepContainer.add(openBtn);
+
+      // Show inventory summary during prepare
+      const invSummary = this.gameState.ingredients
+        .map(i => `${i.name}: ${i.quantity} (${i.expiresInDays}d)`)
+        .join('\n');
+
+      const invText = this.add.text(GAME_WIDTH - 20, 70, 'Inventory:\n' + invSummary, {
+        fontFamily: 'Arial',
+        fontSize: '13px',
+        color: '#333',
+        backgroundColor: '#FFFFFFCC',
+        padding: { x: 10, y: 8 },
+        lineSpacing: 3,
+      }).setOrigin(1, 0);
+      prepContainer.add(invText);
     }
   }
 
