@@ -1,5 +1,15 @@
 {
   "items": {
+    "lb-1q4b": {
+      "id": "lb-1q4b",
+      "title": "Save/load game system",
+      "description": "Auto-save at end of day to localStorage, manual save slots, load from main menu",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:11:40.287255086Z",
+      "updated_at": "2026-03-09T18:11:40.287255086Z"
+    },
     "lb-3pxv": {
       "id": "lb-3pxv",
       "title": "Ingredient purchasing shop in prepare phase",
