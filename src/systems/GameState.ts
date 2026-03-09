@@ -191,17 +191,24 @@ export class GameState {
     }
   }
 
+  /** Get effective stat for a staff member, modified by morale */
+  getEffectiveStat(member: StaffMember, stat: number): number {
+    // Morale below 50 reduces effectiveness: at 0 morale, stats are halved
+    const moraleMultiplier = member.morale >= 50 ? 1.0 : 0.5 + (member.morale / 100);
+    return stat * moraleMultiplier;
+  }
+
   /** Get staff bonuses from assigned (working) staff */
   getStaffEffects(): { speedBonus: number; tipBonus: number } {
     const assigned = this.staff.filter(s => s.assigned);
     if (assigned.length === 0) return { speedBonus: 0, tipBonus: 0 };
 
-    // Average speed of assigned staff: each point above 5 gives 3% speed bonus
-    const avgSpeed = assigned.reduce((sum, s) => sum + s.speed, 0) / assigned.length;
+    // Average effective speed of assigned staff: each point above 5 gives 3% speed bonus
+    const avgSpeed = assigned.reduce((sum, s) => sum + this.getEffectiveStat(s, s.speed), 0) / assigned.length;
     const speedBonus = (avgSpeed - 5) * 0.03; // can be negative if staff is slow
 
-    // Average friendliness: each point above 5 gives 2% tip bonus
-    const avgFriendliness = assigned.reduce((sum, s) => sum + s.friendliness, 0) / assigned.length;
+    // Average effective friendliness: each point above 5 gives 2% tip bonus
+    const avgFriendliness = assigned.reduce((sum, s) => sum + this.getEffectiveStat(s, s.friendliness), 0) / assigned.length;
     const tipBonus = (avgFriendliness - 5) * 0.02;
 
     // More staff = faster service (diminishing returns)
@@ -211,6 +218,94 @@ export class GameState {
       speedBonus: speedBonus + staffCountBonus,
       tipBonus: Math.max(0, tipBonus),
     };
+  }
+
+  /** Update staff morale at end of day */
+  updateStaffMorale(): void {
+    const brokenCount = this.equipment.filter(e => e.broken).length;
+
+    for (const member of this.staff) {
+      let moraleChange = 0;
+
+      // Working staff get tired (-3 to -8 based on workload)
+      if (member.assigned) {
+        moraleChange -= 3 + Math.random() * 5;
+      } else {
+        // Idle staff recover morale slowly (+2 to +5)
+        moraleChange += 2 + Math.random() * 3;
+      }
+
+      // Fair wages boost morale, underpaying hurts
+      // Wage fairness: compare wage to what stats deserve (15 + avgStat * 3)
+      const fairWage = 15 + ((member.speed + member.accuracy + member.friendliness) / 3) * 3;
+      if (member.wage >= fairWage) {
+        moraleChange += 1; // slight boost for fair pay
+      } else {
+        moraleChange -= 2; // penalty for underpaying
+      }
+
+      // Broken equipment = bad working conditions
+      if (member.assigned && brokenCount > 0) {
+        moraleChange -= brokenCount * 1.5;
+      }
+
+      // High reputation = pride in workplace
+      if (this.reputation >= 4) {
+        moraleChange += 1;
+      }
+
+      member.morale = Math.max(0, Math.min(100, member.morale + moraleChange));
+    }
+  }
+
+  /** Train a staff member: improve one random stat by 1 (costs money) */
+  trainStaff(memberId: string): { success: boolean; stat?: string; cost: number } {
+    const member = this.staff.find(s => s.id === memberId);
+    if (!member) return { success: false, cost: 0 };
+
+    // Training cost scales with current skill level
+    const avgStat = (member.speed + member.accuracy + member.friendliness) / 3;
+    const cost = Math.round(20 + avgStat * 10);
+
+    if (this.money < cost) return { success: false, cost };
+
+    // Pick a random stat to improve (weighted toward lowest stat)
+    const stats: { key: 'speed' | 'accuracy' | 'friendliness'; value: number }[] = [
+      { key: 'speed', value: member.speed },
+      { key: 'accuracy', value: member.accuracy },
+      { key: 'friendliness', value: member.friendliness },
+    ];
+
+    // Weight toward lower stats (inverse weighting)
+    const maxStat = 10;
+    const weights = stats.map(s => maxStat - s.value + 1);
+    const totalWeight = weights.reduce((a, b) => a + b, 0);
+    let roll = Math.random() * totalWeight;
+
+    let chosen = stats[0];
+    for (let i = 0; i < stats.length; i++) {
+      roll -= weights[i];
+      if (roll <= 0) {
+        chosen = stats[i];
+        break;
+      }
+    }
+
+    // Can't exceed 10
+    if (member[chosen.key] >= 10) {
+      // Try another stat
+      const other = stats.find(s => s.key !== chosen.key && member[s.key] < 10);
+      if (!other) return { success: false, cost }; // all stats maxed
+      chosen = other;
+    }
+
+    this.money -= cost;
+    this.dailyExpenses += cost;
+    member[chosen.key] += 1;
+    // Training also gives a small morale boost
+    member.morale = Math.min(100, member.morale + 5);
+
+    return { success: true, stat: chosen.key, cost };
   }
 
   /** Get total daily maintenance cost for all equipment */
@@ -327,6 +422,9 @@ export class GameState {
 
     // Degrade equipment
     this.degradeEquipment();
+
+    // Update staff morale
+    this.updateStaffMorale();
   }
 }
 

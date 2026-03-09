@@ -210,6 +210,11 @@ export class StaffScene extends Phaser.Scene {
     moraleFill.fillRoundedRect(cols.morale, y + 10, moraleW * moraleRatio, 10, 3);
     this.contentContainer.add(moraleFill);
 
+    // Morale warning for low morale
+    if (member.morale < 30) {
+      this.contentContainer.add(this.add.text(cols.morale + moraleW + 4, y + 6, '😞', { fontSize: '12px' }));
+    }
+
     this.contentContainer.add(this.add.text(cols.wage, y + 8, `$${member.wage}/d`, vStyle));
 
     // Assign/unassign toggle
@@ -230,8 +235,41 @@ export class StaffScene extends Phaser.Scene {
     });
     this.contentContainer.add(toggleBtn);
 
-    // Fire button
-    const fireBtn = this.add.text(cols.action + 65, y + 5, 'Fire', {
+    // Train button
+    const avgStat = (member.speed + member.accuracy + member.friendliness) / 3;
+    const trainCost = Math.round(20 + avgStat * 10);
+    const allMaxed = member.speed >= 10 && member.accuracy >= 10 && member.friendliness >= 10;
+    const trainBtn = this.add.text(cols.action + 65, y + 5, allMaxed ? 'Maxed' : `Train $${trainCost}`, {
+      fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+      backgroundColor: allMaxed ? '#7F8C8D' : '#8E44AD', padding: { x: 6, y: 4 },
+    }).setInteractive({ useHandCursor: true });
+
+    if (!allMaxed) {
+      trainBtn.on('pointerdown', () => {
+        const result = this.gameState.trainStaff(member.id);
+        if (result.success) {
+          // Show feedback
+          const feedback = this.add.text(cols.action + 80, y - 10, `+1 ${result.stat!}!`, {
+            fontFamily: 'Arial', fontSize: '12px', color: '#2ECC71', fontStyle: 'bold',
+          }).setOrigin(0.5, 0);
+          this.tweens.add({
+            targets: feedback,
+            y: y - 25,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => feedback.destroy(),
+          });
+          this.time.delayedCall(400, () => this.refreshUI());
+        } else {
+          trainBtn.setStyle({ backgroundColor: '#C0392B' });
+          this.time.delayedCall(300, () => trainBtn.setStyle({ backgroundColor: '#8E44AD' }));
+        }
+      });
+    }
+    this.contentContainer.add(trainBtn);
+
+    // Fire button (moved further right to fit train button)
+    const fireBtn = this.add.text(cols.action + 155, y + 5, 'Fire', {
       fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
       backgroundColor: '#E74C3C', padding: { x: 8, y: 4 },
     }).setInteractive({ useHandCursor: true });
