@@ -93,12 +93,12 @@
     "lb-fbl1": {
       "id": "lb-fbl1",
       "title": "Events and random encounters",
-      "description": "Summer rush, heat wave, power outage, competitor, food critic visits",
-      "item_type": "task",
+      "description": "Random events that add variety: summer rush, heat wave, power outage, competitor, trends, supply chain events",
+      "item_type": "epic",
       "status": "open",
       "priority": 3,
       "created_at": "2026-03-09T18:11:40.278084803Z",
-      "updated_at": "2026-03-09T18:11:40.278084803Z"
+      "updated_at": "2026-03-09T18:34:12.941881613Z"
     },
     "lb-g435": {
       "id": "lb-g435",
