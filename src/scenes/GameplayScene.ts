@@ -274,6 +274,18 @@ export class GameplayScene extends Phaser.Scene {
       this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + repChange));
     }
 
+    // Record day report with full stats
+    const s = this.gameState;
+    const satisfaction = total > 0 ? Math.round((served / total) * 100) : 0;
+    s.dayReports.push({
+      day: s.day,
+      revenue: s.dailyRevenue,
+      expenses: s.dailyExpenses,
+      customersServed: served,
+      customersLost: lost,
+      satisfactionScore: satisfaction,
+    });
+
     // Show end-of-day report
     const report = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
@@ -282,36 +294,101 @@ export class GameplayScene extends Phaser.Scene {
     bg.fillRect(-GAME_WIDTH / 2, -GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT);
     report.add(bg);
 
+    // Wider panel to fit chart
+    const panelW = 520;
+    const panelH = 480;
     const panel = this.add.graphics();
     panel.fillStyle(0x2C3E50, 1);
-    panel.fillRoundedRect(-200, -180, 400, 360, 15);
+    panel.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
     report.add(panel);
 
-    const s = this.gameState;
-    const lines = [
-      `— Day ${s.day} Report —`,
-      '',
-      `Customers Served: ${served}`,
-      `Customers Lost: ${lost}`,
-      '',
-      `Revenue: $${s.dailyRevenue.toFixed(2)}`,
-      `Expenses: $${s.dailyExpenses.toFixed(2)}`,
-      `Profit: $${s.profit.toFixed(2)}`,
-      '',
-      `Balance: $${s.money.toFixed(2)}`,
-      `Reputation: ${'★'.repeat(Math.round(s.reputation))}${'☆'.repeat(5 - Math.round(s.reputation))}`,
-    ];
-
-    const reportText = this.add.text(0, -150, lines.join('\n'), {
-      fontFamily: 'Arial',
-      fontSize: '17px',
-      color: '#FFF',
-      align: 'center',
-      lineSpacing: 5,
+    // Title
+    const titleText = this.add.text(0, -panelH / 2 + 20, `— Day ${s.day} Report —`, {
+      fontFamily: 'Arial', fontSize: '22px', color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
-    report.add(reportText);
+    report.add(titleText);
 
-    const nextBtn = this.add.text(0, 130, 'Next Day →', {
+    // Stats in two columns
+    const leftX = -panelW / 2 + 30;
+    const rightX = 20;
+    let y = -panelH / 2 + 60;
+    const labelStyle = { fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6' };
+    const valueStyle = { fontFamily: 'Arial', fontSize: '16px', color: '#FFF' };
+    const profitColor = s.profit >= 0 ? '#2ECC40' : '#E74C3C';
+
+    const addStat = (x: number, yPos: number, label: string, value: string, color?: string) => {
+      const l = this.add.text(x, yPos, label, labelStyle);
+      const v = this.add.text(x, yPos + 16, value, { ...valueStyle, color: color ?? '#FFF' });
+      report.add(l);
+      report.add(v);
+    };
+
+    addStat(leftX, y, 'CUSTOMERS SERVED', `${served}`, '#2ECC40');
+    addStat(rightX, y, 'CUSTOMERS LOST', `${lost}`, lost > 0 ? '#E74C3C' : '#FFF');
+    y += 45;
+    addStat(leftX, y, 'SATISFACTION', `${satisfaction}%`, satisfaction >= 70 ? '#2ECC40' : '#F39C12');
+    addStat(rightX, y, 'REPUTATION', '★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation)), '#FFDC00');
+    y += 45;
+
+    // Separator
+    const sep = this.add.graphics();
+    sep.lineStyle(1, 0x7F8C8D, 0.5);
+    sep.lineBetween(-panelW / 2 + 20, y, panelW / 2 - 20, y);
+    report.add(sep);
+    y += 10;
+
+    addStat(leftX, y, 'REVENUE', `$${s.dailyRevenue.toFixed(2)}`, '#2ECC40');
+    addStat(rightX, y, 'EXPENSES', `$${s.dailyExpenses.toFixed(2)}`, '#E74C3C');
+    y += 45;
+    addStat(leftX, y, 'PROFIT', `$${s.profit.toFixed(2)}`, profitColor);
+    addStat(rightX, y, 'BALANCE', `$${s.money.toFixed(2)}`);
+    y += 50;
+
+    // Mini revenue chart (last 7 days)
+    const recentReports = s.dayReports.slice(-7);
+    if (recentReports.length > 1) {
+      const chartX = -panelW / 2 + 30;
+      const chartW = panelW - 60;
+      const chartH = 80;
+
+      const chartLabel = this.add.text(0, y, 'Revenue Trend (Last 7 Days)', {
+        fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+      }).setOrigin(0.5, 0);
+      report.add(chartLabel);
+      y += 20;
+
+      const chartGfx = this.add.graphics();
+
+      // Chart background
+      chartGfx.fillStyle(0x1A252F, 1);
+      chartGfx.fillRoundedRect(chartX, y, chartW, chartH, 5);
+
+      // Find max value for scaling
+      const maxRev = Math.max(...recentReports.map(r => r.revenue), 1);
+      const barWidth = (chartW - 20) / recentReports.length;
+
+      recentReports.forEach((r, i) => {
+        const barH = (r.revenue / maxRev) * (chartH - 20);
+        const bx = chartX + 10 + i * barWidth;
+        const by = y + chartH - 10 - barH;
+
+        // Bar
+        const profit = r.revenue - r.expenses;
+        chartGfx.fillStyle(profit >= 0 ? 0x2ECC71 : 0xE74C3C, 0.8);
+        chartGfx.fillRoundedRect(bx + 2, by, barWidth - 4, barH, 2);
+
+        // Day label
+        const dayLabel = this.add.text(bx + barWidth / 2, y + chartH - 6, `D${r.day}`, {
+          fontFamily: 'Arial', fontSize: '9px', color: '#7F8C8D',
+        }).setOrigin(0.5, 0);
+        report.add(dayLabel);
+      });
+
+      report.add(chartGfx);
+    }
+
+    // Next day button
+    const nextBtn = this.add.text(0, panelH / 2 - 40, 'Next Day →', {
       fontFamily: 'Arial',
       fontSize: '22px',
       color: '#FFF',

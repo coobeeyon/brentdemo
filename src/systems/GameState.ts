@@ -122,18 +122,6 @@ export class GameState {
   }
 
   startNewDay(): void {
-    // Save report for previous day
-    if (this.day > 0) {
-      this.dayReports.push({
-        day: this.day,
-        revenue: this.dailyRevenue,
-        expenses: this.dailyExpenses,
-        customersServed: 0, // TODO: track during serve phase
-        customersLost: 0,
-        satisfactionScore: this.reputation,
-      });
-    }
-
     this.day++;
     this.currentHour = STORE_OPEN_HOUR;
     this.phase = DayPhase.PREPARE;
