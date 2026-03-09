@@ -20,6 +20,16 @@
       "created_at": "2026-03-09T18:04:26.568831046Z",
       "updated_at": "2026-03-09T18:04:26.568831046Z"
     },
+    "lb-hu03": {
+      "id": "lb-hu03",
+      "title": "Store Management & Menu System",
+      "description": "Ingredients, recipes, menu editor, pricing, inventory management",
+      "item_type": "epic",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:04:26.573083979Z",
+      "updated_at": "2026-03-09T18:04:26.573083979Z"
+    },
     "lb-if57": {
       "id": "lb-if57",
       "title": "Initialize project with TypeScript, Phaser 3, Vite, and basic folder structure",
