@@ -7,6 +7,7 @@ import { ShopScene } from './scenes/ShopScene';
 import { EquipmentScene } from './scenes/EquipmentScene';
 import { StaffScene } from './scenes/StaffScene';
 import { MenuEditorScene } from './scenes/MenuEditorScene';
+import { MarketingScene } from './scenes/MarketingScene';
 import { GAME_WIDTH, GAME_HEIGHT } from './config/constants';
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -15,7 +16,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: GAME_HEIGHT,
   parent: 'game-container',
   backgroundColor: '#87CEEB',
-  scene: [BootScene, MainMenuScene, GameplayScene, PauseScene, ShopScene, EquipmentScene, StaffScene, MenuEditorScene],
+  scene: [BootScene, MainMenuScene, GameplayScene, PauseScene, ShopScene, EquipmentScene, StaffScene, MenuEditorScene, MarketingScene],
   physics: {
     default: 'arcade',
     arcade: {

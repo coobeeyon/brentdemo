@@ -78,7 +78,10 @@ export class CustomerManager {
     const staffSpeedMult = Math.max(0.5, 1.0 - staffEffects.speedBonus);
     // Event modifier on customer spawn rate
     const eventSpawnMult = this.eventEffects.customerSpawnMult ?? 1.0;
-    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult / Math.max(wordOfMouth, 0.3);
+    // Campaign modifier on customer spawn rate
+    const campaignEffects = this.gameState.getCampaignEffects();
+    const campaignSpawnMult = campaignEffects.customerSpawnMult ?? 1.0;
+    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult / Math.max(wordOfMouth, 0.3);
   }
 
   private spawnCustomer(): void {
@@ -144,6 +147,11 @@ export class CustomerManager {
     // Apply event revenue multiplier
     if (this.eventEffects.revenueMult) {
       revenue *= this.eventEffects.revenueMult;
+    }
+    // Apply campaign tip bonus
+    const campaignEffects = this.gameState.getCampaignEffects();
+    if (campaignEffects.tipBonus) {
+      revenue *= (1 + campaignEffects.tipBonus);
     }
     this.queue.shift();
     this.customersServed++;

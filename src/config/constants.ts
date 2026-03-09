@@ -65,6 +65,59 @@ export interface EquipmentDef {
   tiers: EquipmentTier[];
 }
 
+// Marketing Campaigns
+export enum CampaignId {
+  LOCAL_ADS = 'local_ads',
+  SOCIAL_MEDIA = 'social_media',
+  LOYALTY_CARDS = 'loyalty_cards',
+}
+
+export interface CampaignDef {
+  id: CampaignId;
+  name: string;
+  description: string;
+  icon: string;
+  cost: number;           // upfront cost to launch
+  durationDays: number;   // how many days it lasts
+  effects: CampaignEffects;
+}
+
+export interface CampaignEffects {
+  customerSpawnMult?: number;   // multiplier on customer spawn rate (lower = more customers)
+  reputationBonus?: number;     // daily reputation bonus while active
+  tipBonus?: number;            // bonus to tips/revenue
+}
+
+export const CAMPAIGN_CATALOG: CampaignDef[] = [
+  {
+    id: CampaignId.LOCAL_ADS,
+    name: 'Local Ads',
+    description: 'Place ads in local newspapers and flyers. Attracts more customers.',
+    icon: '📰',
+    cost: 150,
+    durationDays: 5,
+    effects: { customerSpawnMult: 0.75 },
+  },
+  {
+    id: CampaignId.SOCIAL_MEDIA,
+    name: 'Social Media Promo',
+    description: 'Run a social media campaign. Boosts reputation and attracts some customers.',
+    icon: '📱',
+    cost: 100,
+    durationDays: 3,
+    effects: { customerSpawnMult: 0.9, reputationBonus: 0.05 },
+  },
+  {
+    id: CampaignId.LOYALTY_CARDS,
+    name: 'Loyalty Card Program',
+    description: 'Launch loyalty cards. Increases tips and builds long-term reputation.',
+    icon: '💳',
+    cost: 200,
+    durationDays: 7,
+    effects: { tipBonus: 0.1, reputationBonus: 0.03 },
+  },
+];
+
 export const EQUIPMENT_CATALOG: EquipmentDef[] = [
   {
     id: EquipmentId.ICE_CREAM_MAKER,

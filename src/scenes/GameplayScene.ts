@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG } from '../config/constants';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent } from '../systems/EventManager';
@@ -304,6 +304,16 @@ export class GameplayScene extends Phaser.Scene {
         `  Total: $${totalWages + maintenance}/day`,
       ];
 
+      // Add active campaigns
+      if (this.gameState.activeCampaigns.length > 0) {
+        costLines.push('');
+        costLines.push('Active Campaigns:');
+        for (const campaign of this.gameState.activeCampaigns) {
+          const def = CAMPAIGN_CATALOG.find(c => c.id === campaign.id);
+          costLines.push(`  ${def?.icon ?? ''} ${def?.name ?? campaign.id} (${campaign.daysRemaining}d)`);
+        }
+      }
+
       // Add broken equipment warnings
       const brokenEquip = this.gameState.equipment.filter(e => e.broken);
       if (brokenEquip.length > 0) {
@@ -514,9 +524,16 @@ export class GameplayScene extends Phaser.Scene {
     const avgSatisfaction = this.customerManager.getAverageSatisfaction();
     const criticReview = this.customerManager.getLastCriticReview() ?? undefined;
 
-    const repChange = this.gameState.calculateReputationChange(
+    let repChange = this.gameState.calculateReputationChange(
       served, lost, avgSatisfaction, criticReview,
     );
+
+    // Apply campaign reputation bonus
+    const campaignEffects = this.gameState.getCampaignEffects();
+    if (campaignEffects.reputationBonus) {
+      repChange += campaignEffects.reputationBonus;
+      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + campaignEffects.reputationBonus));
+    }
 
     // Record day report with full stats
     const s = this.gameState;

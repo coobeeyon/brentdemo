@@ -9,6 +9,9 @@ import {
   EquipmentId,
   EQUIPMENT_CATALOG,
   EquipmentEffects,
+  CampaignId,
+  CAMPAIGN_CATALOG,
+  CampaignEffects,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -54,6 +57,11 @@ export interface DayReport {
   satisfactionScore: number;
   criticReview?: CriticReview;
   reputationChange: number;
+}
+
+export interface ActiveCampaign {
+  id: CampaignId;
+  daysRemaining: number;
 }
 
 export interface OwnedEquipment {
@@ -102,6 +110,9 @@ export class GameState {
 
   // Equipment
   equipment: OwnedEquipment[] = [];
+
+  // Marketing campaigns
+  activeCampaigns: ActiveCampaign[] = [];
 
   constructor() {
     this.initializeStartingInventory();
@@ -378,6 +389,55 @@ export class GameState {
     return 1.6 + (this.reputation - 4) * 0.8; // 1.6 to 2.4
   }
 
+  /** Launch a marketing campaign */
+  launchCampaign(campaignId: CampaignId): boolean {
+    const def = CAMPAIGN_CATALOG.find(c => c.id === campaignId);
+    if (!def) return false;
+
+    // Can't run the same campaign twice simultaneously
+    if (this.activeCampaigns.some(c => c.id === campaignId)) return false;
+
+    if (this.money < def.cost) return false;
+
+    this.money -= def.cost;
+    this.dailyExpenses += def.cost;
+    this.activeCampaigns.push({ id: campaignId, daysRemaining: def.durationDays });
+    return true;
+  }
+
+  /** Get combined effects of all active campaigns */
+  getCampaignEffects(): CampaignEffects {
+    const combined: CampaignEffects = {
+      customerSpawnMult: 1.0,
+      reputationBonus: 0,
+      tipBonus: 0,
+    };
+
+    for (const campaign of this.activeCampaigns) {
+      const def = CAMPAIGN_CATALOG.find(c => c.id === campaign.id);
+      if (!def) continue;
+      const fx = def.effects;
+      if (fx.customerSpawnMult !== undefined) {
+        combined.customerSpawnMult! *= fx.customerSpawnMult;
+      }
+      if (fx.reputationBonus !== undefined) {
+        combined.reputationBonus! += fx.reputationBonus;
+      }
+      if (fx.tipBonus !== undefined) {
+        combined.tipBonus! += fx.tipBonus;
+      }
+    }
+
+    return combined;
+  }
+
+  /** Tick down campaign durations (called at start of new day) */
+  private updateCampaigns(): void {
+    this.activeCampaigns = this.activeCampaigns
+      .map(c => ({ ...c, daysRemaining: c.daysRemaining - 1 }))
+      .filter(c => c.daysRemaining > 0);
+  }
+
   get profit(): number {
     return this.dailyRevenue - this.dailyExpenses;
   }
@@ -425,6 +485,9 @@ export class GameState {
 
     // Update staff morale
     this.updateStaffMorale();
+
+    // Tick down campaign durations
+    this.updateCampaigns();
   }
 }
 
