@@ -40,6 +40,16 @@
       "created_at": "2026-03-09T18:04:26.568831046Z",
       "updated_at": "2026-03-09T18:11:22.541833312Z"
     },
+    "lb-e4hg": {
+      "id": "lb-e4hg",
+      "title": "Staff hiring and management UI",
+      "description": "Hire staff with randomized stats, assign to stations, pay wages, morale system",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:11:40.264459854Z",
+      "updated_at": "2026-03-09T18:11:40.264459854Z"
+    },
     "lb-g435": {
       "id": "lb-g435",
       "title": "Customer spawning, ordering, patience, and serving flow",
@@ -150,6 +160,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-e4hg",
+      "to_id": "lb-pct9",
       "dep_type": "parent"
     }
   ]
