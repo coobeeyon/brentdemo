@@ -817,3 +817,72 @@ export const SERVING_STYLE_CATALOG: ServingStyleDef[] = [
   { id: 'milkshake', name: 'Milkshake', priceMult: 1.6, ingredientMult: 1.5, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
   { id: 'float', name: 'Float', priceMult: 1.5, ingredientMult: 1.3, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
 ];
+
+// Exterior Signage
+export enum SignageId {
+  NONE = 'none',
+  CHALKBOARD = 'chalkboard',
+  NEON = 'neon',
+  LIGHT_BOX = 'light_box',
+  DIGITAL = 'digital',
+}
+
+export interface SignageDef {
+  id: SignageId;
+  name: string;
+  description: string;
+  icon: string;
+  cost: number;
+  /** Multiplier on customer spawn rate (lower = more customers) */
+  curbAppealMult: number;
+  /** Flat reputation bonus per day from visibility */
+  dailyRepBonus: number;
+}
+
+export const SIGNAGE_CATALOG: SignageDef[] = [
+  {
+    id: SignageId.NONE,
+    name: 'No Sign',
+    description: 'Customers have to find you on their own.',
+    icon: '🚫',
+    cost: 0,
+    curbAppealMult: 1.0,
+    dailyRepBonus: 0,
+  },
+  {
+    id: SignageId.CHALKBOARD,
+    name: 'Chalkboard Sign',
+    description: 'A handwritten menu board on the sidewalk. Charming and affordable.',
+    icon: '📋',
+    cost: 100,
+    curbAppealMult: 0.92,
+    dailyRepBonus: 0.02,
+  },
+  {
+    id: SignageId.NEON,
+    name: 'Neon Sign',
+    description: 'A glowing neon ice cream cone. Hard to miss!',
+    icon: '💡',
+    cost: 400,
+    curbAppealMult: 0.85,
+    dailyRepBonus: 0.04,
+  },
+  {
+    id: SignageId.LIGHT_BOX,
+    name: 'Illuminated Light Box',
+    description: 'Professional backlit sign with your logo. Day or night visibility.',
+    icon: '🔲',
+    cost: 700,
+    curbAppealMult: 0.80,
+    dailyRepBonus: 0.06,
+  },
+  {
+    id: SignageId.DIGITAL,
+    name: 'Digital Display Board',
+    description: 'LED screen showing today\'s specials and flavors. Maximum curb appeal!',
+    icon: '📺',
+    cost: 1200,
+    curbAppealMult: 0.75,
+    dailyRepBonus: 0.08,
+  },
+];

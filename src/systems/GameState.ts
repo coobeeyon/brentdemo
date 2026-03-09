@@ -30,6 +30,9 @@ import {
   SeatingId,
   SEATING_CATALOG,
   SeatingDef,
+  SignageId,
+  SIGNAGE_CATALOG,
+  SignageDef,
   TOPPING_CATALOG,
   ToppingDef,
   SERVING_STYLE_CATALOG,
@@ -178,6 +181,10 @@ export class GameState {
   // Seating
   currentSeating: SeatingId = SeatingId.NONE;
   unlockedSeating: SeatingId[] = [SeatingId.NONE];
+
+  // Signage
+  currentSignage: SignageId = SignageId.NONE;
+  unlockedSignage: SignageId[] = [SignageId.NONE];
 
   // Loans
   loanAmount: number = 0;           // current outstanding loan principal
@@ -866,6 +873,28 @@ export class GameState {
     this.dailyExpenses += def.cost;
     this.unlockedSeating.push(seatingId);
     this.currentSeating = seatingId;
+    return true;
+  }
+
+  /** Get current signage definition */
+  getSignageDef(): SignageDef {
+    return SIGNAGE_CATALOG.find(s => s.id === this.currentSignage) ?? SIGNAGE_CATALOG[0];
+  }
+
+  /** Purchase and apply a signage option */
+  purchaseSignage(signageId: SignageId): boolean {
+    if (this.unlockedSignage.includes(signageId)) {
+      this.currentSignage = signageId;
+      return true;
+    }
+
+    const def = SIGNAGE_CATALOG.find(s => s.id === signageId);
+    if (!def || this.money < def.cost) return false;
+
+    this.money -= def.cost;
+    this.dailyExpenses += def.cost;
+    this.unlockedSignage.push(signageId);
+    this.currentSignage = signageId;
     return true;
   }
 

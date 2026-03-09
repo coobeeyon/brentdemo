@@ -784,6 +784,13 @@ export class GameplayScene extends Phaser.Scene {
       this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + campaignEffects.reputationBonus));
     }
 
+    // Apply signage daily reputation bonus
+    const signageRepBonus = this.gameState.getSignageDef().dailyRepBonus;
+    if (signageRepBonus > 0) {
+      repChange += signageRepBonus;
+      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + signageRepBonus));
+    }
+
     // Track cumulative stats for milestones
     this.gameState.totalCustomersServed += served;
 

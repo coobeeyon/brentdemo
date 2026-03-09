@@ -87,7 +87,9 @@ export class CustomerManager {
     // Loyalty: regulars bring friends
     const loyaltyFx = this.gameState.getLoyaltyEffects();
     const loyaltyMult = 1 - loyaltyFx.spawnBonus; // lower = more customers
-    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult * weatherMult * loyaltyMult / Math.max(wordOfMouth, 0.3);
+    // Signage curb appeal: lower = more customers
+    const signageMult = this.gameState.getSignageDef().curbAppealMult;
+    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult * weatherMult * loyaltyMult * signageMult / Math.max(wordOfMouth, 0.3);
   }
 
   private spawnCustomer(): void {

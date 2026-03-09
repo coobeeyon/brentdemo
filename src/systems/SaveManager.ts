@@ -1,5 +1,5 @@
 import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign, LoyalCustomer, Recipe } from './GameState';
-import { WeatherType, HealthInspectionResult, DecorThemeId, SeatingId } from '../config/constants';
+import { WeatherType, HealthInspectionResult, DecorThemeId, SeatingId, SignageId } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
 const AUTO_SAVE_KEY = SAVE_KEY_PREFIX + 'auto';
@@ -42,6 +42,8 @@ interface SerializedGameState {
   unlockedDecor: DecorThemeId[];
   currentSeating: SeatingId;
   unlockedSeating: SeatingId[];
+  currentSignage: SignageId;
+  unlockedSignage: SignageId[];
   unlockedResearch: string[];
   completedMilestones: string[];
   totalCustomersServed: number;
@@ -50,7 +52,7 @@ interface SerializedGameState {
   recipes: Recipe[];
 }
 
-const SAVE_VERSION = 7;
+const SAVE_VERSION = 8;
 
 export class SaveManager {
   static save(gameState: GameState, slot: string = 'auto', gameMode: string = 'story'): boolean {
@@ -89,6 +91,8 @@ export class SaveManager {
           unlockedDecor: gameState.unlockedDecor,
           currentSeating: gameState.currentSeating,
           unlockedSeating: gameState.unlockedSeating,
+          currentSignage: gameState.currentSignage,
+          unlockedSignage: gameState.unlockedSignage,
           unlockedResearch: Array.from(gameState.unlockedResearch),
           completedMilestones: Array.from(gameState.completedMilestones),
           totalCustomersServed: gameState.totalCustomersServed,
@@ -151,6 +155,8 @@ export class SaveManager {
       gameState.unlockedDecor = s.unlockedDecor ?? ['basic'];
       gameState.currentSeating = s.currentSeating ?? 'none';
       gameState.unlockedSeating = s.unlockedSeating ?? ['none'];
+      gameState.currentSignage = s.currentSignage ?? 'none';
+      gameState.unlockedSignage = s.unlockedSignage ?? ['none'];
       gameState.unlockedResearch = new Set(s.unlockedResearch ?? []);
       gameState.completedMilestones = new Set(s.completedMilestones ?? []);
       gameState.totalCustomersServed = s.totalCustomersServed ?? 0;
