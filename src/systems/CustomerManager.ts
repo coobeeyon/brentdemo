@@ -138,6 +138,12 @@ export class CustomerManager {
       customer.maxPatience += loyaltyFx.patienceBonus;
     }
 
+    // Apply challenge mode patience multiplier
+    const challengePatienceMult = this.scene.registry.get('challengePatienceMult') as number ?? 1.0;
+    if (challengePatienceMult !== 1.0) {
+      customer.maxPatience *= challengePatienceMult;
+    }
+
     customer.patience = customer.maxPatience;
 
     // Entrance animation

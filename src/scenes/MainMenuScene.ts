@@ -83,7 +83,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     storyBtn.on('pointerdown', () => this.startGame('story'));
     sandboxBtn.on('pointerdown', () => this.startGame('sandbox'));
-    challengeBtn.on('pointerdown', () => this.startGame('challenge'));
+    challengeBtn.on('pointerdown', () => this.scene.start('ChallengeScene'));
 
     // Version text
     this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, 'v0.1.0', {

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType } from '../config/constants';
+import { ChallengeDef } from './ChallengeScene';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager';
@@ -21,6 +22,7 @@ export class GameplayScene extends Phaser.Scene {
   private serveButton!: Phaser.GameObjects.Text;
   private eventText!: Phaser.GameObjects.Text;
   private weatherText!: Phaser.GameObjects.Text;
+  private challengeDef: ChallengeDef | null = null;
 
   constructor() {
     super({ key: 'GameplayScene' });
@@ -34,6 +36,29 @@ export class GameplayScene extends Phaser.Scene {
     const isLoadingSave = this.registry.get('loadSave') as boolean;
     if (!isLoadingSave) {
       this.gameState.startNewDay();
+    }
+
+    // Load challenge definition if in challenge mode
+    const gameMode = this.registry.get('gameMode') as string ?? 'story';
+    this.challengeDef = gameMode === 'challenge'
+      ? (this.registry.get('challengeDef') as ChallengeDef | null) ?? null
+      : null;
+
+    // Apply challenge weather constraint
+    if (this.challengeDef?.constraints.forcedWeather) {
+      const weatherMap: Record<string, WeatherType> = {
+        sunny: WeatherType.SUNNY, cloudy: WeatherType.CLOUDY,
+        rainy: WeatherType.RAINY, hot: WeatherType.HOT, stormy: WeatherType.STORMY,
+      };
+      const wt = weatherMap[this.challengeDef.constraints.forcedWeather];
+      if (wt !== undefined) this.gameState.weather = wt;
+    }
+
+    // Apply challenge patience constraint via customer manager
+    if (this.challengeDef?.constraints.patienceMultiplier) {
+      this.registry.set('challengePatienceMult', this.challengeDef.constraints.patienceMultiplier);
+    } else {
+      this.registry.set('challengePatienceMult', 1.0);
     }
 
     this.createStoreView();
@@ -434,9 +459,16 @@ export class GameplayScene extends Phaser.Scene {
   private updateHUD(): void {
     const s = this.gameState;
     const seasonDef = s.getSeasonDef();
-    const seasonLabel = seasonDef ? `${seasonDef.name}` : `Season ${s.season}`;
-    const daysLeft = seasonDef ? ` (${seasonDef.daysPerSeason - s.seasonDay + 1}d left)` : '';
-    this.dayText.setText(`Day ${s.seasonDay} | ${seasonLabel}${daysLeft}`);
+    let dayLabel: string;
+    if (this.challengeDef) {
+      const daysLeft = Math.max(0, this.challengeDef.days - s.day + 1);
+      dayLabel = `Day ${s.day}/${this.challengeDef.days} | ${this.challengeDef.icon} ${this.challengeDef.name} (${daysLeft}d left)`;
+    } else {
+      const seasonLabel = seasonDef ? `${seasonDef.name}` : `Season ${s.season}`;
+      const daysLeft = seasonDef ? ` (${seasonDef.daysPerSeason - s.seasonDay + 1}d left)` : '';
+      dayLabel = `Day ${s.seasonDay} | ${seasonLabel}${daysLeft}`;
+    }
+    this.dayText.setText(dayLabel);
     this.timeText.setText(s.currentTimeString);
     const weatherDef = s.getWeatherDef();
     this.weatherText.setText(`${weatherDef.icon} ${weatherDef.name}`);
@@ -928,6 +960,12 @@ export class GameplayScene extends Phaser.Scene {
         return;
       }
 
+      // Check for challenge completion
+      if (gameMode === 'challenge' && this.challengeDef && this.gameState.day >= this.challengeDef.days) {
+        this.showChallengeResults();
+        return;
+      }
+
       this.gameState.startNewDay();
       // Roll for next day's event
       this.rollDailyEvent();
@@ -1116,5 +1154,104 @@ export class GameplayScene extends Phaser.Scene {
         this.scene.start('MainMenuScene');
       });
     }
+  }
+
+  private showChallengeResults(): void {
+    const ch = this.challengeDef;
+    if (!ch) return;
+
+    const s = this.gameState;
+    const totalRevenue = s.dayReports.reduce((sum, r) => sum + r.revenue, 0);
+    const totalServed = s.dayReports.reduce((sum, r) => sum + r.customersServed, 0);
+    const totalLost = s.dayReports.reduce((sum, r) => sum + r.customersLost, 0);
+
+    // Calculate stars
+    const stars = totalRevenue >= ch.revenueTargets[2] ? 3
+      : totalRevenue >= ch.revenueTargets[1] ? 2
+      : totalRevenue >= ch.revenueTargets[0] ? 1 : 0;
+
+    // Save best score
+    const bestKey = `challenge_best_${ch.id}`;
+    const prevBest = parseInt(localStorage.getItem(bestKey) ?? '0', 10);
+    const isNewBest = totalRevenue > prevBest;
+    if (isNewBest) {
+      localStorage.setItem(bestKey, Math.floor(totalRevenue).toString());
+    }
+
+    const container = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+
+    const backdrop = this.add.graphics();
+    backdrop.fillStyle(0x000000, 0.8);
+    backdrop.fillRect(-GAME_WIDTH / 2, -GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT);
+    container.add(backdrop);
+
+    const panelW = 480;
+    const panelH = 420;
+    const panel = this.add.graphics();
+    const panelColor = stars >= 3 ? 0x1A5276 : stars >= 1 ? 0x2C3E50 : 0x4A1A1A;
+    panel.fillStyle(panelColor, 1);
+    panel.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
+    const borderColor = stars >= 3 ? 0xFFD700 : stars >= 1 ? 0xF1C40F : 0xE74C3C;
+    panel.lineStyle(3, borderColor);
+    panel.strokeRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
+    container.add(panel);
+
+    // Title
+    const resultIcon = stars >= 3 ? '🏆' : stars >= 1 ? '⭐' : '😔';
+    container.add(this.add.text(0, -panelH / 2 + 25, `${resultIcon} ${ch.icon} ${ch.name} Complete!`, {
+      fontFamily: 'Arial', fontSize: '22px', color: '#FFD700', fontStyle: 'bold',
+    }).setOrigin(0.5));
+
+    // Stars display
+    const starStr = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+    container.add(this.add.text(0, -panelH / 2 + 60, starStr, {
+      fontFamily: 'Arial', fontSize: '36px', color: '#FFD700',
+    }).setOrigin(0.5));
+
+    if (isNewBest) {
+      container.add(this.add.text(0, -panelH / 2 + 100, 'NEW BEST!', {
+        fontFamily: 'Arial', fontSize: '16px', color: '#2ECC71', fontStyle: 'bold',
+      }).setOrigin(0.5));
+    }
+
+    // Stats
+    let y = -panelH / 2 + 130;
+    const leftX = -panelW / 2 + 40;
+
+    const addLine = (text: string, color: string = '#BDC3C7') => {
+      container.add(this.add.text(leftX, y, text, {
+        fontFamily: 'Arial', fontSize: '16px', color,
+      }));
+      y += 28;
+    };
+
+    addLine(`Total Revenue: $${totalRevenue.toFixed(2)}`, '#FFD700');
+    addLine(`★ Target: $${ch.revenueTargets[0]}  ★★ $${ch.revenueTargets[1]}  ★★★ $${ch.revenueTargets[2]}`, '#7F8C8D');
+    y += 8;
+    addLine(`Customers Served: ${totalServed}`, '#2ECC71');
+    addLine(`Customers Lost: ${totalLost}`, totalLost > 0 ? '#E74C3C' : '#FFF');
+    addLine(`Final Reputation: ${'★'.repeat(Math.round(s.reputation))}${'☆'.repeat(5 - Math.round(s.reputation))}`, '#FFDC00');
+
+    // Buttons
+    const retryBtn = this.add.text(-80, panelH / 2 - 45, 'Retry', {
+      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      backgroundColor: '#F39C12', padding: { x: 20, y: 8 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    container.add(retryBtn);
+
+    retryBtn.on('pointerdown', () => {
+      container.destroy();
+      this.scene.start('ChallengeScene');
+    });
+
+    const menuBtn = this.add.text(80, panelH / 2 - 45, 'Menu', {
+      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      backgroundColor: '#34495E', padding: { x: 20, y: 8 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    container.add(menuBtn);
+
+    menuBtn.on('pointerdown', () => {
+      this.scene.start('MainMenuScene');
+    });
   }
 }
