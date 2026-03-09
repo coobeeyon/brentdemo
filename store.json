@@ -227,8 +227,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 4,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T19:32:51.743235868Z",
-      "updated_at": "2026-03-09T19:32:51.743235868Z"
+      "updated_at": "2026-03-09T19:47:02.083484199Z"
     },
     "lb-kt3n": {
       "id": "lb-kt3n",
