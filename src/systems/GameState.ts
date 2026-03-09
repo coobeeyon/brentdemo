@@ -32,6 +32,8 @@ import {
   SeatingDef,
   TOPPING_CATALOG,
   ToppingDef,
+  SERVING_STYLE_CATALOG,
+  ServingStyleDef,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -580,6 +582,15 @@ export class GameState {
     this.unlockedDecor.push(decorId);
     this.currentDecor = decorId;
     return true;
+  }
+
+  /** Get serving styles available based on equipment */
+  getAvailableStyles(): ServingStyleDef[] {
+    return SERVING_STYLE_CATALOG.filter(style => {
+      if (!style.requiredEquipment) return true;
+      const tier = this.getEquipmentTier(style.requiredEquipment);
+      return tier > 0;
+    });
   }
 
   /** Get toppings available based on Toppings Bar equipment tier */

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BASE_PATIENCE_MS, BASE_SCOOP_PRICE, ToppingDef } from '../config/constants';
+import { BASE_PATIENCE_MS, BASE_SCOOP_PRICE, ToppingDef, ServingStyleDef, SERVING_STYLE_CATALOG } from '../config/constants';
 
 export enum CustomerType {
   REGULAR = 'regular',
@@ -12,7 +12,7 @@ export enum CustomerType {
 export interface OrderItem {
   flavorId: string;
   toppings: string[];
-  style: 'cone' | 'cup' | 'sundae';
+  style: string;
 }
 
 export interface Order {
@@ -53,7 +53,7 @@ export class Customer {
   private orderBubble!: Phaser.GameObjects.Container;
   private nameTag!: Phaser.GameObjects.Text;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings?: ToppingDef[]) {
+  constructor(scene: Phaser.Scene, x: number, y: number, availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings?: ToppingDef[], availableStyles?: ServingStyleDef[]) {
     this.scene = scene;
 
     // Pick random type
@@ -74,19 +74,24 @@ export class Customer {
     this.tipMultiplier = typeInfo.tipMult;
 
     // Generate order
-    this.order = this.generateOrder(availableFlavors, menuPrices, availableToppings ?? []);
+    this.order = this.generateOrder(availableFlavors, menuPrices, availableToppings ?? [], availableStyles ?? SERVING_STYLE_CATALOG.filter(s => !s.requiredEquipment));
 
     // Create visuals
     this.sprite = scene.add.container(x, y);
     this.createVisuals();
   }
 
-  private generateOrder(availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings: ToppingDef[] = []): Order {
-    const numScoops = this.type === CustomerType.CHILD ? 1 :
-      this.type === CustomerType.TOURIST ? Math.ceil(Math.random() * 3) :
-      Math.ceil(Math.random() * 2);
+  private generateOrder(availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings: ToppingDef[] = [], availableStyles: ServingStyleDef[] = []): Order {
+    // Pick a serving style
+    const styleDef = availableStyles.length > 0
+      ? availableStyles[Math.floor(Math.random() * availableStyles.length)]
+      : SERVING_STYLE_CATALOG[0]; // fallback to cone
 
-    const styles: ('cone' | 'cup' | 'sundae')[] = ['cone', 'cup', 'sundae'];
+    const maxScoops = styleDef.maxScoops;
+    const numScoops = this.type === CustomerType.CHILD ? 1 :
+      this.type === CustomerType.TOURIST ? Math.ceil(Math.random() * Math.min(3, maxScoops)) :
+      Math.ceil(Math.random() * Math.min(2, maxScoops));
+
     const items: OrderItem[] = [];
 
     for (let i = 0; i < numScoops; i++) {
@@ -107,12 +112,12 @@ export class Customer {
       items.push({
         flavorId,
         toppings,
-        style: i === 0 ? styles[Math.floor(Math.random() * styles.length)] : items[0].style,
+        style: styleDef.id,
       });
     }
 
     const totalPrice = items.reduce((sum, item) => {
-      const scoopPrice = menuPrices?.get(item.flavorId) ?? BASE_SCOOP_PRICE;
+      const scoopPrice = (menuPrices?.get(item.flavorId) ?? BASE_SCOOP_PRICE) * styleDef.priceMult;
       // Sum topping prices from catalog, falling back to base price
       const toppingTotal = item.toppings.reduce((tSum, tId) => {
         const tDef = availableToppings.find(t => t.ingredientId === tId);

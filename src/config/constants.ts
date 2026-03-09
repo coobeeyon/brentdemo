@@ -534,3 +534,21 @@ export const EQUIPMENT_CATALOG: EquipmentDef[] = [
     ],
   },
 ];
+
+// Serving Styles
+export interface ServingStyleDef {
+  id: string;
+  name: string;
+  priceMult: number;         // multiplier on base scoop price
+  ingredientMult: number;    // multiplier on ingredient usage
+  maxScoops: number;         // max scoops for this style
+  requiredEquipment?: EquipmentId;  // equipment needed (undefined = always available)
+}
+
+export const SERVING_STYLE_CATALOG: ServingStyleDef[] = [
+  { id: 'cone', name: 'Cone', priceMult: 1.0, ingredientMult: 1.0, maxScoops: 3 },
+  { id: 'cup', name: 'Cup', priceMult: 1.0, ingredientMult: 1.0, maxScoops: 3 },
+  { id: 'sundae', name: 'Sundae', priceMult: 1.4, ingredientMult: 1.2, maxScoops: 3 },
+  { id: 'milkshake', name: 'Milkshake', priceMult: 1.6, ingredientMult: 1.5, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
+  { id: 'float', name: 'Float', priceMult: 1.5, ingredientMult: 1.3, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
+];

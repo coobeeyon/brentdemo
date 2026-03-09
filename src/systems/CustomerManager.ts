@@ -99,7 +99,8 @@ export class CustomerManager {
     const y = QUEUE_START_Y;
 
     const availableToppings = this.gameState.getAvailableToppings();
-    const customer = new Customer(this.scene, x, y, availableFlavors, this.gameState.menuPrices, availableToppings);
+    const availableStyles = this.gameState.getAvailableStyles();
+    const customer = new Customer(this.scene, x, y, availableFlavors, this.gameState.menuPrices, availableToppings, availableStyles);
 
     // Apply weather patience modifier
     const weatherPatienceMult = this.gameState.getWeatherDef().patienceMult;
