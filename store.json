@@ -114,6 +114,11 @@
   },
   "deps": [
     {
+      "from_id": "lb-3pxv",
+      "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
       "from_id": "lb-ak2s",
       "to_id": "lb-s4kc",
       "dep_type": "parent"
@@ -131,11 +136,6 @@
     {
       "from_id": "lb-if57",
       "to_id": "lb-s4kc",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-3pxv",
-      "to_id": "lb-hu03",
       "dep_type": "parent"
     }
   ]
