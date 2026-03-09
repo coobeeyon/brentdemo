@@ -255,11 +255,10 @@
       "title": "Topping system with ingredient integration",
       "description": "Add toppings to customer orders. Toppings have their own ingredients and prices. Toppings bar equipment tiers gate how many toppings are available. Customers randomly request 0-3 toppings.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T19:13:54.998257005Z",
-      "updated_at": "2026-03-09T19:14:15.460669562Z"
+      "updated_at": "2026-03-09T19:16:44.450369659Z"
     },
     "lb-mle0": {
       "id": "lb-mle0",
