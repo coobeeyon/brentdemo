@@ -1,4 +1,4 @@
-import { GameState, Ingredient, Flavor, StaffMember, DayReport } from './GameState';
+import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment } from './GameState';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
 const AUTO_SAVE_KEY = SAVE_KEY_PREFIX + 'auto';
@@ -24,10 +24,10 @@ interface SerializedGameState {
   menuPrices: [string, number][];
   dayReports: DayReport[];
   unlockedFlavors: string[];
-  unlockedEquipment: string[];
+  equipment: OwnedEquipment[];
 }
 
-const SAVE_VERSION = 1;
+const SAVE_VERSION = 2;
 
 export class SaveManager {
   static save(gameState: GameState, slot: string = 'auto', gameMode: string = 'story'): boolean {
@@ -49,7 +49,7 @@ export class SaveManager {
           menuPrices: Array.from(gameState.menuPrices.entries()),
           dayReports: gameState.dayReports,
           unlockedFlavors: Array.from(gameState.unlockedFlavors),
-          unlockedEquipment: Array.from(gameState.unlockedEquipment),
+          equipment: gameState.equipment,
         },
       };
 
@@ -84,7 +84,7 @@ export class SaveManager {
       gameState.menuPrices = new Map(s.menuPrices);
       gameState.dayReports = s.dayReports;
       gameState.unlockedFlavors = new Set(s.unlockedFlavors);
-      gameState.unlockedEquipment = new Set(s.unlockedEquipment);
+      gameState.equipment = s.equipment ?? [];
 
       return true;
     } catch {

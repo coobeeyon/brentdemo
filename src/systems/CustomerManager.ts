@@ -32,7 +32,9 @@ export class CustomerManager {
     // Spawn new customers
     this.spawnTimer += delta * speed;
     const spawnInterval = this.getSpawnInterval();
-    if (this.spawnTimer >= spawnInterval && this.queue.length < MAX_QUEUE_LENGTH) {
+    const effects = this.gameState.getEquipmentEffects();
+    const maxQueue = MAX_QUEUE_LENGTH + (effects.capacityBonus ?? 0);
+    if (this.spawnTimer >= spawnInterval && this.queue.length < maxQueue) {
       this.spawnTimer = 0;
       this.spawnCustomer();
     }
@@ -59,7 +61,10 @@ export class CustomerManager {
     if ((hour >= 11 && hour <= 14) || (hour >= 18 && hour <= 20)) {
       peakMult = 0.6; // shorter interval = more customers
     }
-    return this.baseSpawnInterval * peakMult / Math.max(repBonus, 0.3);
+    // Equipment serve speed multiplier reduces effective spawn interval
+    const effects = this.gameState.getEquipmentEffects();
+    const speedMult = effects.serveSpeedMult ?? 1.0;
+    return this.baseSpawnInterval * peakMult * speedMult / Math.max(repBonus, 0.3);
   }
 
   private spawnCustomer(): void {
@@ -112,8 +117,9 @@ export class CustomerManager {
     // Deduct ingredients
     this.deductIngredients(customer);
 
-    // Serve and get revenue
-    const revenue = customer.serve();
+    // Serve and get revenue (equipment quality bonus increases tips)
+    const effects = this.gameState.getEquipmentEffects();
+    const revenue = customer.serve(effects.qualityBonus ?? 0);
     this.queue.shift();
     this.customersServed++;
     this.repositionQueue();

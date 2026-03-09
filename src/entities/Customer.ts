@@ -201,7 +201,7 @@ export class Customer {
     }
   }
 
-  serve(): number {
+  serve(qualityBonus: number = 0): number {
     this.served = true;
     this.orderBubble.setVisible(false);
 
@@ -215,9 +215,9 @@ export class Customer {
       onComplete: () => this.sprite.destroy(),
     });
 
-    // Calculate tip based on remaining patience
+    // Calculate tip based on remaining patience + equipment quality bonus
     const patienceRatio = this.patience / this.maxPatience;
-    const tip = this.order.totalPrice * 0.1 * patienceRatio * this.tipMultiplier;
+    const tip = this.order.totalPrice * (0.1 + qualityBonus) * patienceRatio * this.tipMultiplier;
     return this.order.totalPrice + tip;
   }
 

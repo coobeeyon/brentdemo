@@ -6,6 +6,9 @@ import {
   STORE_OPEN_HOUR,
   HOURS_PER_DAY,
   SPEED_NORMAL,
+  EquipmentId,
+  EQUIPMENT_CATALOG,
+  EquipmentEffects,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -44,6 +47,13 @@ export interface DayReport {
   satisfactionScore: number;
 }
 
+export interface OwnedEquipment {
+  id: EquipmentId;
+  tier: number;       // current tier (0 = not purchased for optional equipment)
+  condition: number;  // 0-100, degrades over time
+  broken: boolean;    // if true, effects don't apply until repaired
+}
+
 export class GameState {
   // Time
   day: number = 1;
@@ -78,10 +88,13 @@ export class GameState {
   // Unlocks
   researchPoints: number = 0;
   unlockedFlavors: Set<string> = new Set(['vanilla', 'chocolate', 'strawberry']);
-  unlockedEquipment: Set<string> = new Set(['basic_maker', 'basic_freezer', 'basic_pos']);
+
+  // Equipment
+  equipment: OwnedEquipment[] = [];
 
   constructor() {
     this.initializeStartingInventory();
+    this.initializeStartingEquipment();
   }
 
   private initializeStartingInventory(): void {
@@ -100,6 +113,84 @@ export class GameState {
       { id: 'cream', name: 'Whipped Cream', quantity: 20, costPer: 0.4, expiresInDays: 5 },
       { id: 'sprinkles', name: 'Sprinkles', quantity: 40, costPer: 0.1, expiresInDays: 90 },
     ];
+  }
+
+  private initializeStartingEquipment(): void {
+    // Start with tier 1 of the three core equipment pieces
+    this.equipment = [
+      { id: EquipmentId.ICE_CREAM_MAKER, tier: 1, condition: 100, broken: false },
+      { id: EquipmentId.FREEZER, tier: 1, condition: 100, broken: false },
+      { id: EquipmentId.POS, tier: 1, condition: 100, broken: false },
+    ];
+  }
+
+  getEquipment(id: EquipmentId): OwnedEquipment | undefined {
+    return this.equipment.find(e => e.id === id);
+  }
+
+  getEquipmentTier(id: EquipmentId): number {
+    return this.getEquipment(id)?.tier ?? 0;
+  }
+
+  /** Get combined equipment effects (only from non-broken equipment) */
+  getEquipmentEffects(): EquipmentEffects {
+    const combined: EquipmentEffects = {
+      serveSpeedMult: 1.0,
+      capacityBonus: 0,
+      qualityBonus: 0,
+    };
+
+    for (const owned of this.equipment) {
+      if (owned.broken || owned.tier === 0) continue;
+      const def = EQUIPMENT_CATALOG.find(e => e.id === owned.id);
+      if (!def) continue;
+      const tierDef = def.tiers.find(t => t.tier === owned.tier);
+      if (!tierDef) continue;
+
+      const fx = tierDef.effects;
+      if (fx.serveSpeedMult !== undefined) {
+        combined.serveSpeedMult! *= fx.serveSpeedMult;
+      }
+      if (fx.capacityBonus !== undefined) {
+        combined.capacityBonus! += fx.capacityBonus;
+      }
+      if (fx.qualityBonus !== undefined) {
+        combined.qualityBonus! += fx.qualityBonus;
+      }
+    }
+
+    return combined;
+  }
+
+  /** Degrade equipment condition and check for breakdowns */
+  degradeEquipment(): void {
+    for (const owned of this.equipment) {
+      if (owned.tier === 0 || owned.broken) continue;
+      // Lose 5-15 condition per day
+      const degradation = 5 + Math.random() * 10;
+      owned.condition = Math.max(0, owned.condition - degradation);
+
+      // Breakdown chance increases as condition drops
+      if (owned.condition < 30) {
+        const breakChance = (30 - owned.condition) / 100; // up to 30%
+        if (Math.random() < breakChance) {
+          owned.broken = true;
+        }
+      }
+    }
+  }
+
+  /** Get total daily maintenance cost for all equipment */
+  getMaintenanceCost(): number {
+    let total = 0;
+    for (const owned of this.equipment) {
+      if (owned.tier === 0) continue;
+      const def = EQUIPMENT_CATALOG.find(e => e.id === owned.id);
+      if (!def) continue;
+      const tierDef = def.tiers.find(t => t.tier === owned.tier);
+      if (tierDef) total += tierDef.maintenanceCost;
+    }
+    return total;
   }
 
   get profit(): number {
@@ -138,6 +229,14 @@ export class GameState {
     const totalWages = this.staff.reduce((sum, s) => sum + s.wage, 0);
     this.money -= totalWages;
     this.dailyExpenses += totalWages;
+
+    // Deduct equipment maintenance
+    const maintenance = this.getMaintenanceCost();
+    this.money -= maintenance;
+    this.dailyExpenses += maintenance;
+
+    // Degrade equipment
+    this.degradeEquipment();
   }
 }
 

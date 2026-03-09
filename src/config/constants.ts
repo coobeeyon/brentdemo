@@ -32,3 +32,98 @@ export const MAX_QUEUE_LENGTH = 8;
 // Pricing
 export const BASE_SCOOP_PRICE = 3.00;
 export const BASE_TOPPING_PRICE = 0.50;
+
+// Equipment
+export enum EquipmentId {
+  ICE_CREAM_MAKER = 'ice_cream_maker',
+  SOFT_SERVE_MACHINE = 'soft_serve_machine',
+  FREEZER = 'freezer',
+  BLENDER = 'blender',
+  TOPPINGS_BAR = 'toppings_bar',
+  POS = 'pos',
+}
+
+export interface EquipmentTier {
+  tier: number;
+  name: string;
+  cost: number;
+  maintenanceCost: number; // per day
+  effects: EquipmentEffects;
+}
+
+export interface EquipmentEffects {
+  serveSpeedMult?: number;     // multiplier on serve time (lower = faster)
+  capacityBonus?: number;      // extra max queue slots
+  qualityBonus?: number;       // bonus to customer satisfaction/tips
+  breakdownChance?: number;    // chance per day of breakdown (0-1)
+}
+
+export interface EquipmentDef {
+  id: EquipmentId;
+  name: string;
+  description: string;
+  tiers: EquipmentTier[];
+}
+
+export const EQUIPMENT_CATALOG: EquipmentDef[] = [
+  {
+    id: EquipmentId.ICE_CREAM_MAKER,
+    name: 'Ice Cream Maker',
+    description: 'Produces base flavors. Upgrades improve quality.',
+    tiers: [
+      { tier: 1, name: 'Basic Maker', cost: 0, maintenanceCost: 5, effects: { qualityBonus: 0 } },
+      { tier: 2, name: 'Standard Maker', cost: 200, maintenanceCost: 10, effects: { qualityBonus: 0.1 } },
+      { tier: 3, name: 'Pro Maker', cost: 500, maintenanceCost: 20, effects: { qualityBonus: 0.25 } },
+    ],
+  },
+  {
+    id: EquipmentId.FREEZER,
+    name: 'Display Freezer',
+    description: 'Stores pre-made batches. Upgrades increase queue capacity.',
+    tiers: [
+      { tier: 1, name: 'Mini Freezer', cost: 0, maintenanceCost: 3, effects: { capacityBonus: 0 } },
+      { tier: 2, name: 'Standard Freezer', cost: 250, maintenanceCost: 8, effects: { capacityBonus: 2 } },
+      { tier: 3, name: 'Walk-In Freezer', cost: 600, maintenanceCost: 15, effects: { capacityBonus: 4 } },
+    ],
+  },
+  {
+    id: EquipmentId.POS,
+    name: 'Point of Sale',
+    description: 'Handles payments. Upgrades speed up serving.',
+    tiers: [
+      { tier: 1, name: 'Cash Register', cost: 0, maintenanceCost: 2, effects: { serveSpeedMult: 1.0 } },
+      { tier: 2, name: 'Digital POS', cost: 300, maintenanceCost: 8, effects: { serveSpeedMult: 0.8 } },
+      { tier: 3, name: 'Smart POS', cost: 700, maintenanceCost: 15, effects: { serveSpeedMult: 0.6 } },
+    ],
+  },
+  {
+    id: EquipmentId.SOFT_SERVE_MACHINE,
+    name: 'Soft-Serve Machine',
+    description: 'Enables soft-serve options. Improves quality and speed.',
+    tiers: [
+      { tier: 0, name: 'Not Purchased', cost: 0, maintenanceCost: 0, effects: {} },
+      { tier: 1, name: 'Basic Soft-Serve', cost: 400, maintenanceCost: 10, effects: { qualityBonus: 0.05, serveSpeedMult: 0.95 } },
+      { tier: 2, name: 'Dual Swirl Machine', cost: 800, maintenanceCost: 18, effects: { qualityBonus: 0.15, serveSpeedMult: 0.85 } },
+    ],
+  },
+  {
+    id: EquipmentId.BLENDER,
+    name: 'Blender Station',
+    description: 'For milkshakes and smoothies. Boosts quality.',
+    tiers: [
+      { tier: 0, name: 'Not Purchased', cost: 0, maintenanceCost: 0, effects: {} },
+      { tier: 1, name: 'Basic Blender', cost: 150, maintenanceCost: 5, effects: { qualityBonus: 0.05 } },
+      { tier: 2, name: 'Commercial Blender', cost: 400, maintenanceCost: 12, effects: { qualityBonus: 0.15 } },
+    ],
+  },
+  {
+    id: EquipmentId.TOPPINGS_BAR,
+    name: 'Toppings Bar',
+    description: 'Self-serve toppings. Improves satisfaction and tips.',
+    tiers: [
+      { tier: 0, name: 'Not Purchased', cost: 0, maintenanceCost: 0, effects: {} },
+      { tier: 1, name: 'Basic Bar', cost: 200, maintenanceCost: 5, effects: { qualityBonus: 0.05 } },
+      { tier: 2, name: 'Deluxe Bar', cost: 500, maintenanceCost: 12, effects: { qualityBonus: 0.2 } },
+    ],
+  },
+];

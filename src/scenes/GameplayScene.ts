@@ -204,6 +204,20 @@ export class GameplayScene extends Phaser.Scene {
 
       const prepContainer = this.add.container(0, 0).setName('phaseUI');
 
+      const equipBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 180, '🔧 Equipment', {
+        fontFamily: 'Arial',
+        fontSize: '22px',
+        color: '#FFF',
+        backgroundColor: '#2980B9',
+        padding: { x: 20, y: 8 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+      equipBtn.on('pointerdown', () => {
+        this.scene.launch('EquipmentScene');
+        this.scene.pause();
+      });
+      prepContainer.add(equipBtn);
+
       const shopBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 120, '🛒 Buy Ingredients', {
         fontFamily: 'Arial',
         fontSize: '22px',

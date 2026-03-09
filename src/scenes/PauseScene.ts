@@ -15,7 +15,7 @@ export class PauseScene extends Phaser.Scene {
     // Pause panel
     const panel = this.add.graphics();
     panel.fillStyle(0x2C3E50, 1);
-    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, 150, 300, 400, 15);
+    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, 150, 300, 440, 15);
 
     this.add.text(GAME_WIDTH / 2, 190, 'PAUSED', {
       fontFamily: 'Arial',
@@ -43,15 +43,23 @@ export class PauseScene extends Phaser.Scene {
       // TODO: open menu editor sub-scene
     });
 
+    // Equipment
+    const equipBtn = this.add.text(GAME_WIDTH / 2, 400, '  Equipment  ', btnStyle)
+      .setOrigin(0.5).setInteractive({ useHandCursor: true });
+    equipBtn.on('pointerdown', () => {
+      this.scene.stop();
+      this.scene.launch('EquipmentScene');
+    });
+
     // Staff (placeholder)
-    const staffBtn = this.add.text(GAME_WIDTH / 2, 400, '  Staff  ', btnStyle)
+    const staffBtn = this.add.text(GAME_WIDTH / 2, 460, '  Staff  ', btnStyle)
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
     staffBtn.on('pointerdown', () => {
       // TODO: open staff management sub-scene
     });
 
     // Main menu
-    const mainMenuBtn = this.add.text(GAME_WIDTH / 2, 460, ' Main Menu ', btnStyle)
+    const mainMenuBtn = this.add.text(GAME_WIDTH / 2, 520, ' Main Menu ', btnStyle)
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
     mainMenuBtn.on('pointerdown', () => {
       this.scene.stop('GameplayScene');
