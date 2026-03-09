@@ -478,6 +478,11 @@
       "dep_type": "parent"
     },
     {
+      "from_id": "lb-m4b8",
+      "to_id": "lb-vsat",
+      "dep_type": "parent"
+    },
+    {
       "from_id": "lb-s251",
       "to_id": "lb-cn3r",
       "dep_type": "parent"
@@ -488,18 +493,13 @@
       "dep_type": "parent"
     },
     {
-      "from_id": "lb-ypij",
-      "to_id": "lb-hu03",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-m4b8",
-      "to_id": "lb-vsat",
-      "dep_type": "parent"
-    },
-    {
       "from_id": "lb-vs0r",
       "to_id": "lb-vsat",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-ypij",
+      "to_id": "lb-hu03",
       "dep_type": "parent"
     }
   ]
