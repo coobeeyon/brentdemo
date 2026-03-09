@@ -30,6 +30,16 @@
       "created_at": "2026-03-09T18:04:26.564299764Z",
       "updated_at": "2026-03-09T18:11:17.690700913Z"
     },
+    "lb-byoe": {
+      "id": "lb-byoe",
+      "title": "Low stock warnings during serve phase",
+      "description": "Show warning indicators when ingredient stock is critically low during the serve phase",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:15:21.924144695Z",
+      "updated_at": "2026-03-09T18:15:21.924144695Z"
+    },
     "lb-cn3r": {
       "id": "lb-cn3r",
       "title": "Financial System",
@@ -220,6 +230,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-byoe",
+      "to_id": "lb-u8ep",
       "dep_type": "parent"
     }
   ]
