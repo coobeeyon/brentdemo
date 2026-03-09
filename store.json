@@ -170,6 +170,16 @@
       "created_at": "2026-03-09T18:04:26.577297901Z",
       "updated_at": "2026-03-09T18:11:22.549970685Z"
     },
+    "lb-m2wz": {
+      "id": "lb-m2wz",
+      "title": "Core event system with random daily events",
+      "description": "Event system that triggers random events at day start. Events modify gameplay for that day. Include event notification UI and per-event effect application/removal.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:34:20.185338356Z",
+      "updated_at": "2026-03-09T18:34:20.185338356Z"
+    },
     "lb-nk2g": {
       "id": "lb-nk2g",
       "title": "Story mode progression",
@@ -295,6 +305,11 @@
     {
       "from_id": "lb-9v3z",
       "to_id": "lb-gm7w",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-m2wz",
+      "to_id": "lb-fbl1",
       "dep_type": "parent"
     }
   ]
