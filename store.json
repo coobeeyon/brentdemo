@@ -30,6 +30,16 @@
       "created_at": "2026-03-09T18:29:22.918354326Z",
       "updated_at": "2026-03-09T18:31:02.241782980Z"
     },
+    "lb-9v3z": {
+      "id": "lb-9v3z",
+      "title": "Marketing campaigns system",
+      "description": "Marketing campaigns: local ads, social media, loyalty cards. Each costs money but boosts customer volume or reputation for duration",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-09T18:34:18.273688882Z",
+      "updated_at": "2026-03-09T18:34:18.273688882Z"
+    },
     "lb-ak2s": {
       "id": "lb-ak2s",
       "title": "Core game state machine and scene management",
@@ -279,6 +289,11 @@
     },
     {
       "from_id": "lb-ggv0",
+      "to_id": "lb-gm7w",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-9v3z",
       "to_id": "lb-gm7w",
       "dep_type": "parent"
     }
