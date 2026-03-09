@@ -187,8 +187,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:11:40.258997798Z",
-      "updated_at": "2026-03-09T18:11:40.258997798Z"
+      "updated_at": "2026-03-09T18:18:29.814153234Z"
     }
   },
   "deps": [
