@@ -11,13 +11,21 @@ interface ShopItem {
 }
 
 const SHOP_CATALOG: ShopItem[] = [
+  // Base ingredients
   { id: 'milk', name: 'Milk', basePrice: 5.00, bulkSize: 10, expiresInDays: 3 },
   { id: 'sugar', name: 'Sugar', basePrice: 3.00, bulkSize: 20, expiresInDays: 30 },
   { id: 'vanilla_extract', name: 'Vanilla Extract', basePrice: 8.00, bulkSize: 10, expiresInDays: 60 },
   { id: 'cocoa', name: 'Cocoa Powder', basePrice: 6.00, bulkSize: 10, expiresInDays: 30 },
   { id: 'strawberries', name: 'Strawberries', basePrice: 5.00, bulkSize: 10, expiresInDays: 2 },
+  // Toppings
   { id: 'cream', name: 'Whipped Cream', basePrice: 4.00, bulkSize: 10, expiresInDays: 5 },
   { id: 'sprinkles', name: 'Sprinkles', basePrice: 1.50, bulkSize: 20, expiresInDays: 90 },
+  { id: 'hot_fudge', name: 'Hot Fudge', basePrice: 5.00, bulkSize: 10, expiresInDays: 14 },
+  { id: 'cherries', name: 'Cherries', basePrice: 3.50, bulkSize: 10, expiresInDays: 5 },
+  { id: 'nuts', name: 'Crushed Nuts', basePrice: 4.00, bulkSize: 10, expiresInDays: 30 },
+  { id: 'candy_pieces', name: 'Candy Pieces', basePrice: 3.00, bulkSize: 15, expiresInDays: 60 },
+  { id: 'fruit', name: 'Fresh Fruit', basePrice: 5.50, bulkSize: 10, expiresInDays: 3 },
+  { id: 'caramel', name: 'Caramel Drizzle', basePrice: 4.50, bulkSize: 10, expiresInDays: 21 },
 ];
 
 export class ShopScene extends Phaser.Scene {
@@ -40,9 +48,9 @@ export class ShopScene extends Phaser.Scene {
 
     // Panel
     const panelX = GAME_WIDTH / 2 - 300;
-    const panelY = 60;
+    const panelY = 30;
     const panelW = 600;
-    const panelH = 580;
+    const panelH = 660;
 
     const panel = this.add.graphics();
     panel.fillStyle(0x2C3E50, 1);
@@ -107,30 +115,25 @@ export class ShopScene extends Phaser.Scene {
     startY: number,
     colX: Record<string, number>,
   ): void {
-    const y = startY + index * 58;
+    const y = startY + index * 42;
     const row = this.add.container(0, 0);
 
     // Row background
     const rowBg = this.add.graphics();
     rowBg.fillStyle(index % 2 === 0 ? 0x34495E : 0x2C3E50, 1);
-    rowBg.fillRect(panelX + 10, y - 5, 580, 50);
+    rowBg.fillRect(panelX + 10, y - 3, 580, 38);
     row.add(rowBg);
 
-    // Name & expires
-    const nameText = this.add.text(colX.name, y + 5, item.name, {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+    // Name with expiry hint
+    const nameText = this.add.text(colX.name, y + 8, `${item.name} (${item.expiresInDays}d)`, {
+      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
     });
     row.add(nameText);
 
-    const expiryText = this.add.text(colX.name, y + 26, `Expires: ${item.expiresInDays}d`, {
-      fontFamily: 'Arial', fontSize: '11px', color: '#7F8C8D',
-    });
-    row.add(expiryText);
-
     // Current stock
     const existing = this.gameState.ingredients.find(i => i.id === item.id);
-    const stockText = this.add.text(colX.stock, y + 12, `${existing?.quantity ?? 0}`, {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+    const stockText = this.add.text(colX.stock, y + 8, `${existing?.quantity ?? 0}`, {
+      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
     });
     row.add(stockText);
 
@@ -138,33 +141,28 @@ export class ShopScene extends Phaser.Scene {
     const priceMult = this.getPriceMultiplier(item.id);
     const actualPrice = Math.round(item.basePrice * priceMult * 100) / 100;
     const priceColor = priceMult > 1.1 ? '#E74C3C' : priceMult < 0.9 ? '#2ECC71' : '#FFF';
-    const priceText = this.add.text(colX.price, y + 5, `$${actualPrice.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '16px', color: priceColor,
+    const priceText = this.add.text(colX.price, y + 8, `$${actualPrice.toFixed(2)}/${item.bulkSize}`, {
+      fontFamily: 'Arial', fontSize: '14px', color: priceColor,
     });
     row.add(priceText);
 
-    const perUnitText = this.add.text(colX.price, y + 26, `per ${item.bulkSize} units`, {
-      fontFamily: 'Arial', fontSize: '11px', color: '#7F8C8D',
-    });
-    row.add(perUnitText);
-
     // Quantity selector
     let qty = 1;
-    const qtyText = this.add.text(colX.qty + 25, y + 12, '1', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
+    const qtyText = this.add.text(colX.qty + 25, y + 10, '1', {
+      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
     }).setOrigin(0.5);
     row.add(qtyText);
 
-    const minusBtn = this.add.text(colX.qty, y + 12, '−', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#E74C3C',
+    const minusBtn = this.add.text(colX.qty, y + 10, '−', {
+      fontFamily: 'Arial', fontSize: '18px', color: '#E74C3C',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     minusBtn.on('pointerdown', () => {
       if (qty > 1) { qty--; qtyText.setText(`${qty}`); }
     });
     row.add(minusBtn);
 
-    const plusBtn = this.add.text(colX.qty + 50, y + 12, '+', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#2ECC71',
+    const plusBtn = this.add.text(colX.qty + 50, y + 10, '+', {
+      fontFamily: 'Arial', fontSize: '18px', color: '#2ECC71',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     plusBtn.on('pointerdown', () => {
       if (qty < 10) { qty++; qtyText.setText(`${qty}`); }
@@ -172,7 +170,7 @@ export class ShopScene extends Phaser.Scene {
     row.add(plusBtn);
 
     // Buy button
-    const buyBtn = this.add.text(colX.buy, y + 12, 'Buy', {
+    const buyBtn = this.add.text(colX.buy, y + 10, 'Buy', {
       fontFamily: 'Arial',
       fontSize: '16px',
       color: '#FFF',

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BASE_PATIENCE_MS, BASE_SCOOP_PRICE, BASE_TOPPING_PRICE } from '../config/constants';
+import { BASE_PATIENCE_MS, BASE_SCOOP_PRICE, ToppingDef } from '../config/constants';
 
 export enum CustomerType {
   REGULAR = 'regular',
@@ -53,7 +53,7 @@ export class Customer {
   private orderBubble!: Phaser.GameObjects.Container;
   private nameTag!: Phaser.GameObjects.Text;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, availableFlavors: string[], menuPrices?: Map<string, number>) {
+  constructor(scene: Phaser.Scene, x: number, y: number, availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings?: ToppingDef[]) {
     this.scene = scene;
 
     // Pick random type
@@ -74,14 +74,14 @@ export class Customer {
     this.tipMultiplier = typeInfo.tipMult;
 
     // Generate order
-    this.order = this.generateOrder(availableFlavors, menuPrices);
+    this.order = this.generateOrder(availableFlavors, menuPrices, availableToppings ?? []);
 
     // Create visuals
     this.sprite = scene.add.container(x, y);
     this.createVisuals();
   }
 
-  private generateOrder(availableFlavors: string[], menuPrices?: Map<string, number>): Order {
+  private generateOrder(availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings: ToppingDef[] = []): Order {
     const numScoops = this.type === CustomerType.CHILD ? 1 :
       this.type === CustomerType.TOURIST ? Math.ceil(Math.random() * 3) :
       Math.ceil(Math.random() * 2);
@@ -91,9 +91,18 @@ export class Customer {
 
     for (let i = 0; i < numScoops; i++) {
       const flavorId = availableFlavors[Math.floor(Math.random() * availableFlavors.length)];
+
+      // Pick toppings based on available catalog and popularity
       const toppings: string[] = [];
-      if (Math.random() > 0.5) toppings.push('sprinkles');
-      if (Math.random() > 0.7) toppings.push('cream');
+      for (const topping of availableToppings) {
+        if (Math.random() < topping.popularity) {
+          toppings.push(topping.ingredientId);
+        }
+      }
+      // Cap at 3 toppings max
+      while (toppings.length > 3) {
+        toppings.splice(Math.floor(Math.random() * toppings.length), 1);
+      }
 
       items.push({
         flavorId,
@@ -104,7 +113,12 @@ export class Customer {
 
     const totalPrice = items.reduce((sum, item) => {
       const scoopPrice = menuPrices?.get(item.flavorId) ?? BASE_SCOOP_PRICE;
-      return sum + scoopPrice + item.toppings.length * BASE_TOPPING_PRICE;
+      // Sum topping prices from catalog, falling back to base price
+      const toppingTotal = item.toppings.reduce((tSum, tId) => {
+        const tDef = availableToppings.find(t => t.ingredientId === tId);
+        return tSum + (tDef?.price ?? 0.50);
+      }, 0);
+      return sum + scoopPrice + toppingTotal;
     }, 0);
 
     return { items, totalPrice };

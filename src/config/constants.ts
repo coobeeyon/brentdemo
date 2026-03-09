@@ -33,6 +33,27 @@ export const MAX_QUEUE_LENGTH = 8;
 export const BASE_SCOOP_PRICE = 3.00;
 export const BASE_TOPPING_PRICE = 0.50;
 
+// Toppings
+export interface ToppingDef {
+  id: string;
+  name: string;
+  ingredientId: string;     // matches an ingredient in inventory
+  price: number;            // price charged to customer
+  popularity: number;       // 0-1, chance of being requested
+  requiredTier: number;     // minimum Toppings Bar tier to offer (0 = always available)
+}
+
+export const TOPPING_CATALOG: ToppingDef[] = [
+  { id: 'sprinkles', name: 'Sprinkles', ingredientId: 'sprinkles', price: 0.50, popularity: 0.5, requiredTier: 0 },
+  { id: 'cream', name: 'Whipped Cream', ingredientId: 'cream', price: 0.50, popularity: 0.4, requiredTier: 0 },
+  { id: 'hot_fudge', name: 'Hot Fudge', ingredientId: 'hot_fudge', price: 0.75, popularity: 0.35, requiredTier: 1 },
+  { id: 'cherries', name: 'Cherries', ingredientId: 'cherries', price: 0.50, popularity: 0.3, requiredTier: 1 },
+  { id: 'nuts', name: 'Crushed Nuts', ingredientId: 'nuts', price: 0.60, popularity: 0.25, requiredTier: 1 },
+  { id: 'candy_pieces', name: 'Candy Pieces', ingredientId: 'candy_pieces', price: 0.65, popularity: 0.2, requiredTier: 2 },
+  { id: 'fruit', name: 'Fresh Fruit', ingredientId: 'fruit', price: 0.70, popularity: 0.2, requiredTier: 2 },
+  { id: 'caramel', name: 'Caramel Drizzle', ingredientId: 'caramel', price: 0.75, popularity: 0.3, requiredTier: 2 },
+];
+
 // Equipment
 export enum EquipmentId {
   ICE_CREAM_MAKER = 'ice_cream_maker',

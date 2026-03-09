@@ -30,6 +30,8 @@ import {
   SeatingId,
   SEATING_CATALOG,
   SeatingDef,
+  TOPPING_CATALOG,
+  ToppingDef,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -578,6 +580,12 @@ export class GameState {
     this.unlockedDecor.push(decorId);
     this.currentDecor = decorId;
     return true;
+  }
+
+  /** Get toppings available based on Toppings Bar equipment tier */
+  getAvailableToppings(): ToppingDef[] {
+    const toppingsTier = this.getEquipmentTier(EquipmentId.TOPPINGS_BAR);
+    return TOPPING_CATALOG.filter(t => t.requiredTier <= toppingsTier);
   }
 
   /** Get current seating definition */
