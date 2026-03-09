@@ -1,5 +1,15 @@
 {
   "items": {
+    "lb-3pxv": {
+      "id": "lb-3pxv",
+      "title": "Ingredient purchasing shop in prepare phase",
+      "description": "Shop UI during prepare phase to buy ingredients from suppliers. Price fluctuations, quantity selection.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 1,
+      "created_at": "2026-03-09T18:09:39.618264218Z",
+      "updated_at": "2026-03-09T18:09:39.618264218Z"
+    },
     "lb-ak2s": {
       "id": "lb-ak2s",
       "title": "Core game state machine and scene management",
@@ -121,6 +131,11 @@
     {
       "from_id": "lb-if57",
       "to_id": "lb-s4kc",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-3pxv",
+      "to_id": "lb-hu03",
       "dep_type": "parent"
     }
   ]
