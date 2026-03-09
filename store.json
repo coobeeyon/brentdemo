@@ -10,6 +10,16 @@
       "created_at": "2026-03-09T18:04:26.564299764Z",
       "updated_at": "2026-03-09T18:04:26.564299764Z"
     },
+    "lb-cn3r": {
+      "id": "lb-cn3r",
+      "title": "Financial System",
+      "description": "Revenue, expenses, pricing, loans, end-of-day reports",
+      "item_type": "epic",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:04:26.585547326Z",
+      "updated_at": "2026-03-09T18:04:26.585547326Z"
+    },
     "lb-dwfb": {
       "id": "lb-dwfb",
       "title": "Game Day/Time System",
