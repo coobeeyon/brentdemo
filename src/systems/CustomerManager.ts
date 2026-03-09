@@ -102,6 +102,11 @@ export class CustomerManager {
     // Apply weather patience modifier
     const weatherPatienceMult = this.gameState.getWeatherDef().patienceMult;
     customer.maxPatience *= weatherPatienceMult;
+
+    // Apply decor ambiance patience modifier
+    const decorDef = this.gameState.getDecorDef();
+    customer.maxPatience *= decorDef.patienceMult;
+
     customer.patience = customer.maxPatience;
 
     // Entrance animation
@@ -159,6 +164,11 @@ export class CustomerManager {
     const campaignEffects = this.gameState.getCampaignEffects();
     if (campaignEffects.tipBonus) {
       revenue *= (1 + campaignEffects.tipBonus);
+    }
+    // Apply decor price tolerance bonus
+    const decorPriceTolerance = this.gameState.getDecorDef().priceTolerance;
+    if (decorPriceTolerance > 0) {
+      revenue *= (1 + decorPriceTolerance);
     }
     this.queue.shift();
     this.customersServed++;

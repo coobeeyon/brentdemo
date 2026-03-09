@@ -123,19 +123,20 @@ export class GameplayScene extends Phaser.Scene {
   }
 
   private createStoreView(): void {
-    // Store floor background
+    // Store floor background (color from decor theme)
+    const decorDef = this.gameState.getDecorDef();
     const floor = this.add.graphics();
-    floor.fillStyle(0xFFF5E6, 1);
+    floor.fillStyle(decorDef.floorColor, 1);
     floor.fillRect(0, 60, GAME_WIDTH, GAME_HEIGHT - 60);
 
     // Counter
     this.add.image(GAME_WIDTH / 2, 300, 'counter').setScale(3, 1.5);
 
-    // Display case area
+    // Display case area (accent from decor theme)
     const displayCase = this.add.graphics();
-    displayCase.fillStyle(0xADD8E6, 0.3);
+    displayCase.fillStyle(decorDef.accentColor, 0.3);
     displayCase.fillRoundedRect(GAME_WIDTH / 2 - 250, 260, 500, 40, 5);
-    displayCase.lineStyle(2, 0x6B8E9B);
+    displayCase.lineStyle(2, decorDef.accentColor);
     displayCase.strokeRoundedRect(GAME_WIDTH / 2 - 250, 260, 500, 40, 5);
 
     // Place flavor scoops in display

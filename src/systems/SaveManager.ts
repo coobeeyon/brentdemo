@@ -1,5 +1,5 @@
 import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign } from './GameState';
-import { WeatherType, HealthInspectionResult } from '../config/constants';
+import { WeatherType, HealthInspectionResult, DecorThemeId } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
 const AUTO_SAVE_KEY = SAVE_KEY_PREFIX + 'auto';
@@ -38,6 +38,8 @@ interface SerializedGameState {
   loanAmount: number;
   loanInterestRate: number;
   loanDaysRemaining: number;
+  currentDecor: DecorThemeId;
+  unlockedDecor: DecorThemeId[];
 }
 
 const SAVE_VERSION = 5;
@@ -75,6 +77,8 @@ export class SaveManager {
           loanAmount: gameState.loanAmount,
           loanInterestRate: gameState.loanInterestRate,
           loanDaysRemaining: gameState.loanDaysRemaining,
+          currentDecor: gameState.currentDecor,
+          unlockedDecor: gameState.unlockedDecor,
         },
       };
 
@@ -127,6 +131,8 @@ export class SaveManager {
       gameState.loanAmount = s.loanAmount ?? 0;
       gameState.loanInterestRate = s.loanInterestRate ?? 0;
       gameState.loanDaysRemaining = s.loanDaysRemaining ?? 0;
+      gameState.currentDecor = s.currentDecor ?? 'basic';
+      gameState.unlockedDecor = s.unlockedDecor ?? ['basic'];
 
       return true;
     } catch {

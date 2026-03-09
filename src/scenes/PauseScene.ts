@@ -15,74 +15,49 @@ export class PauseScene extends Phaser.Scene {
     // Pause panel
     const panel = this.add.graphics();
     panel.fillStyle(0x2C3E50, 1);
-    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, 150, 300, 560, 15);
+    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, 120, 300, 520, 15);
 
-    this.add.text(GAME_WIDTH / 2, 190, 'PAUSED', {
+    this.add.text(GAME_WIDTH / 2, 150, 'PAUSED', {
       fontFamily: 'Arial',
-      fontSize: '36px',
+      fontSize: '32px',
       color: '#FFF',
     }).setOrigin(0.5);
 
     const btnStyle = {
       fontFamily: 'Arial',
-      fontSize: '22px',
+      fontSize: '20px',
       color: '#FFF',
       backgroundColor: '#34495E',
-      padding: { x: 20, y: 8 },
+      padding: { x: 20, y: 6 },
     };
 
-    // Resume
-    const resumeBtn = this.add.text(GAME_WIDTH / 2, 280, '  Resume  ', btnStyle)
-      .setOrigin(0.5).setInteractive({ useHandCursor: true });
-    resumeBtn.on('pointerdown', () => this.resumeGame());
+    const buttons: { label: string; scene?: string; action?: () => void }[] = [
+      { label: '  Resume  ', action: () => this.resumeGame() },
+      { label: '  Menu Editor  ', scene: 'MenuEditorScene' },
+      { label: '  Equipment  ', scene: 'EquipmentScene' },
+      { label: '  Staff  ', scene: 'StaffScene' },
+      { label: '  Marketing  ', scene: 'MarketingScene' },
+      { label: '  Loans  ', scene: 'LoanScene' },
+      { label: '  Decor  ', scene: 'DecorScene' },
+      { label: ' Main Menu ', action: () => { this.scene.stop('GameplayScene'); this.scene.start('MainMenuScene'); } },
+    ];
 
-    // Menu editor
-    const menuBtn = this.add.text(GAME_WIDTH / 2, 340, '  Menu Editor  ', btnStyle)
-      .setOrigin(0.5).setInteractive({ useHandCursor: true });
-    menuBtn.on('pointerdown', () => {
-      this.scene.stop();
-      this.scene.launch('MenuEditorScene');
-    });
+    let y = 210;
+    for (const btn of buttons) {
+      const text = this.add.text(GAME_WIDTH / 2, y, btn.label, btnStyle)
+        .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    // Equipment
-    const equipBtn = this.add.text(GAME_WIDTH / 2, 400, '  Equipment  ', btnStyle)
-      .setOrigin(0.5).setInteractive({ useHandCursor: true });
-    equipBtn.on('pointerdown', () => {
-      this.scene.stop();
-      this.scene.launch('EquipmentScene');
-    });
+      if (btn.scene) {
+        text.on('pointerdown', () => {
+          this.scene.stop();
+          this.scene.launch(btn.scene!);
+        });
+      } else if (btn.action) {
+        text.on('pointerdown', btn.action);
+      }
 
-    // Staff
-    const staffBtn = this.add.text(GAME_WIDTH / 2, 460, '  Staff  ', btnStyle)
-      .setOrigin(0.5).setInteractive({ useHandCursor: true });
-    staffBtn.on('pointerdown', () => {
-      this.scene.stop();
-      this.scene.launch('StaffScene');
-    });
-
-    // Marketing
-    const marketingBtn = this.add.text(GAME_WIDTH / 2, 520, '  Marketing  ', btnStyle)
-      .setOrigin(0.5).setInteractive({ useHandCursor: true });
-    marketingBtn.on('pointerdown', () => {
-      this.scene.stop();
-      this.scene.launch('MarketingScene');
-    });
-
-    // Loans
-    const loanBtn = this.add.text(GAME_WIDTH / 2, 580, '  Loans  ', btnStyle)
-      .setOrigin(0.5).setInteractive({ useHandCursor: true });
-    loanBtn.on('pointerdown', () => {
-      this.scene.stop();
-      this.scene.launch('LoanScene');
-    });
-
-    // Main menu
-    const mainMenuBtn = this.add.text(GAME_WIDTH / 2, 640, ' Main Menu ', btnStyle)
-      .setOrigin(0.5).setInteractive({ useHandCursor: true });
-    mainMenuBtn.on('pointerdown', () => {
-      this.scene.stop('GameplayScene');
-      this.scene.start('MainMenuScene');
-    });
+      y += 52;
+    }
 
     // ESC to resume
     this.input.keyboard!.on('keydown-ESC', () => this.resumeGame());

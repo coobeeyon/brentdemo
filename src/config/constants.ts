@@ -293,6 +293,91 @@ export const LOAN_CATALOG: LoanDef[] = [
   },
 ];
 
+// Store Decor Themes
+export enum DecorThemeId {
+  BASIC = 'basic',
+  CLASSIC_PARLOR = 'classic_parlor',
+  TROPICAL = 'tropical',
+  MODERN = 'modern',
+  RETRO_DINER = 'retro_diner',
+}
+
+export interface DecorThemeDef {
+  id: DecorThemeId;
+  name: string;
+  description: string;
+  icon: string;
+  cost: number;               // one-time purchase cost
+  ambiance: number;           // ambiance score 0-100
+  patienceMult: number;       // multiplier on customer patience (>1 = more patient)
+  priceTolerance: number;     // willingness to pay premium (0 = none, 0.1 = 10% more)
+  floorColor: number;         // hex color for store floor
+  accentColor: number;        // hex color for accents
+}
+
+export const DECOR_CATALOG: DecorThemeDef[] = [
+  {
+    id: DecorThemeId.BASIC,
+    name: 'Basic Setup',
+    description: 'A simple, no-frills ice cream stand.',
+    icon: '🏠',
+    cost: 0,
+    ambiance: 10,
+    patienceMult: 1.0,
+    priceTolerance: 0,
+    floorColor: 0xFFF5E6,
+    accentColor: 0xADD8E6,
+  },
+  {
+    id: DecorThemeId.CLASSIC_PARLOR,
+    name: 'Classic Parlor',
+    description: 'Checkered floors, chrome stools, and a warm nostalgic feel.',
+    icon: '🍨',
+    cost: 400,
+    ambiance: 40,
+    patienceMult: 1.1,
+    priceTolerance: 0.05,
+    floorColor: 0xFAEBD7,
+    accentColor: 0xCD853F,
+  },
+  {
+    id: DecorThemeId.TROPICAL,
+    name: 'Tropical Paradise',
+    description: 'Palm trees, bright colors, and island vibes.',
+    icon: '🌴',
+    cost: 600,
+    ambiance: 55,
+    patienceMult: 1.15,
+    priceTolerance: 0.08,
+    floorColor: 0xE0F8E0,
+    accentColor: 0x20B2AA,
+  },
+  {
+    id: DecorThemeId.MODERN,
+    name: 'Modern Minimalist',
+    description: 'Clean lines, soft lighting, and a premium feel.',
+    icon: '✨',
+    cost: 900,
+    ambiance: 70,
+    patienceMult: 1.2,
+    priceTolerance: 0.12,
+    floorColor: 0xF0F0F0,
+    accentColor: 0x708090,
+  },
+  {
+    id: DecorThemeId.RETRO_DINER,
+    name: 'Retro Diner',
+    description: 'Neon signs, jukeboxes, and 50s Americana charm.',
+    icon: '🎶',
+    cost: 750,
+    ambiance: 60,
+    patienceMult: 1.18,
+    priceTolerance: 0.10,
+    floorColor: 0xFFE4E1,
+    accentColor: 0xFF6347,
+  },
+];
+
 export const EQUIPMENT_CATALOG: EquipmentDef[] = [
   {
     id: EquipmentId.ICE_CREAM_MAKER,

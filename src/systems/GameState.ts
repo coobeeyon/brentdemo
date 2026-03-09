@@ -24,6 +24,9 @@ import {
   LOAN_CATALOG,
   ShiftType,
   SHIFT_HOURS,
+  DecorThemeId,
+  DECOR_CATALOG,
+  DecorThemeDef,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -130,6 +133,10 @@ export class GameState {
 
   // Weather
   weather: WeatherType = WeatherType.SUNNY;
+
+  // Store decor
+  currentDecor: DecorThemeId = DecorThemeId.BASIC;
+  unlockedDecor: DecorThemeId[] = [DecorThemeId.BASIC];
 
   // Loans
   loanAmount: number = 0;           // current outstanding loan principal
@@ -541,6 +548,29 @@ export class GameState {
         }
       }
     }
+  }
+
+  /** Get current decor definition */
+  getDecorDef(): DecorThemeDef {
+    return DECOR_CATALOG.find(d => d.id === this.currentDecor) ?? DECOR_CATALOG[0];
+  }
+
+  /** Purchase and apply a decor theme */
+  purchaseDecor(decorId: DecorThemeId): boolean {
+    if (this.unlockedDecor.includes(decorId)) {
+      // Already owned — just switch
+      this.currentDecor = decorId;
+      return true;
+    }
+
+    const def = DECOR_CATALOG.find(d => d.id === decorId);
+    if (!def || this.money < def.cost) return false;
+
+    this.money -= def.cost;
+    this.dailyExpenses += def.cost;
+    this.unlockedDecor.push(decorId);
+    this.currentDecor = decorId;
+    return true;
   }
 
   /** Take out a loan */
