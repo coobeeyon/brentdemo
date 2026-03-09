@@ -365,11 +365,10 @@
       "title": "Serving styles with different prices",
       "description": "Add serving styles: single/double/triple scoop cones, cups, sundaes, milkshakes, floats. Each style has a base price multiplier and ingredient cost multiplier. Customers choose a random style. Milkshakes/floats require blender equipment.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T19:14:02.154289755Z",
-      "updated_at": "2026-03-09T19:16:51.827496092Z"
+      "updated_at": "2026-03-09T19:19:03.832383626Z"
     },
     "lb-vsat": {
       "id": "lb-vsat",
