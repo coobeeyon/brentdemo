@@ -255,11 +255,10 @@
       "title": "Health inspections system",
       "description": "Random health inspections: cleanliness/food safety compliance affects rating, can result in temporary closure if failed",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:53:32.962551785Z",
-      "updated_at": "2026-03-09T18:56:46.799290500Z"
+      "updated_at": "2026-03-09T18:59:47.940607096Z"
     },
     "lb-s251": {
       "id": "lb-s251",
