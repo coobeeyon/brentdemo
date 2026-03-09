@@ -109,6 +109,16 @@
       "priority": 2,
       "created_at": "2026-03-09T18:04:26.589673389Z",
       "updated_at": "2026-03-09T18:04:26.589673389Z"
+    },
+    "lb-ypij": {
+      "id": "lb-ypij",
+      "title": "Equipment system and upgrades",
+      "description": "Ice cream maker, freezer, soft-serve machine, blender, toppings bar, POS. Each has upgrade tiers affecting speed/capacity/quality. Breakdown/maintenance mechanic.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:11:40.258997798Z",
+      "updated_at": "2026-03-09T18:11:40.258997798Z"
     }
   },
   "deps": [
@@ -135,6 +145,11 @@
     {
       "from_id": "lb-if57",
       "to_id": "lb-s4kc",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-ypij",
+      "to_id": "lb-hu03",
       "dep_type": "parent"
     }
   ]
