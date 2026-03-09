@@ -185,11 +185,10 @@
       "title": "Staff morale and training system",
       "description": "Staff morale affected by wages and conditions. Low morale reduces performance. Training programs improve skills over time.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:34:22.292369388Z",
-      "updated_at": "2026-03-09T18:41:08.846509646Z"
+      "updated_at": "2026-03-09T18:42:22.220265035Z"
     },
     "lb-ldv3": {
       "id": "lb-ldv3",
