@@ -51,11 +51,12 @@ export class PauseScene extends Phaser.Scene {
       this.scene.launch('EquipmentScene');
     });
 
-    // Staff (placeholder)
+    // Staff
     const staffBtn = this.add.text(GAME_WIDTH / 2, 460, '  Staff  ', btnStyle)
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
     staffBtn.on('pointerdown', () => {
-      // TODO: open staff management sub-scene
+      this.scene.stop();
+      this.scene.launch('StaffScene');
     });
 
     // Main menu

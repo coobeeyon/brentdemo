@@ -64,7 +64,10 @@ export class CustomerManager {
     // Equipment serve speed multiplier reduces effective spawn interval
     const effects = this.gameState.getEquipmentEffects();
     const speedMult = effects.serveSpeedMult ?? 1.0;
-    return this.baseSpawnInterval * peakMult * speedMult / Math.max(repBonus, 0.3);
+    // Staff speed bonus reduces interval further
+    const staffEffects = this.gameState.getStaffEffects();
+    const staffSpeedMult = Math.max(0.5, 1.0 - staffEffects.speedBonus);
+    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult / Math.max(repBonus, 0.3);
   }
 
   private spawnCustomer(): void {
@@ -117,9 +120,11 @@ export class CustomerManager {
     // Deduct ingredients
     this.deductIngredients(customer);
 
-    // Serve and get revenue (equipment quality bonus increases tips)
+    // Serve and get revenue (equipment quality + staff friendliness boost tips)
     const effects = this.gameState.getEquipmentEffects();
-    const revenue = customer.serve(effects.qualityBonus ?? 0);
+    const staffEffects = this.gameState.getStaffEffects();
+    const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus;
+    const revenue = customer.serve(totalQualityBonus);
     this.queue.shift();
     this.customersServed++;
     this.repositionQueue();

@@ -180,6 +180,28 @@ export class GameState {
     }
   }
 
+  /** Get staff bonuses from assigned (working) staff */
+  getStaffEffects(): { speedBonus: number; tipBonus: number } {
+    const assigned = this.staff.filter(s => s.assigned);
+    if (assigned.length === 0) return { speedBonus: 0, tipBonus: 0 };
+
+    // Average speed of assigned staff: each point above 5 gives 3% speed bonus
+    const avgSpeed = assigned.reduce((sum, s) => sum + s.speed, 0) / assigned.length;
+    const speedBonus = (avgSpeed - 5) * 0.03; // can be negative if staff is slow
+
+    // Average friendliness: each point above 5 gives 2% tip bonus
+    const avgFriendliness = assigned.reduce((sum, s) => sum + s.friendliness, 0) / assigned.length;
+    const tipBonus = (avgFriendliness - 5) * 0.02;
+
+    // More staff = faster service (diminishing returns)
+    const staffCountBonus = Math.min(assigned.length * 0.05, 0.2); // up to 20%
+
+    return {
+      speedBonus: speedBonus + staffCountBonus,
+      tipBonus: Math.max(0, tipBonus),
+    };
+  }
+
   /** Get total daily maintenance cost for all equipment */
   getMaintenanceCost(): number {
     let total = 0;
