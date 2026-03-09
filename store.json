@@ -260,6 +260,16 @@
       "created_at": "2026-03-09T19:04:44.914905383Z",
       "updated_at": "2026-03-09T19:07:50.229300833Z"
     },
+    "lb-ljjm": {
+      "id": "lb-ljjm",
+      "title": "Recipes: combine flavors and toppings into signature creations",
+      "description": "Let players create named signature recipes (flavor + topping combos). Well-rated recipes attract repeat customers and can be priced at a premium.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-09T19:32:51.748016849Z",
+      "updated_at": "2026-03-09T19:32:51.748016849Z"
+    },
     "lb-m2wz": {
       "id": "lb-m2wz",
       "title": "Core event system with random daily events",
