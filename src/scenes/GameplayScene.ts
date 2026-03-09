@@ -369,6 +369,14 @@ export class GameplayScene extends Phaser.Scene {
         }
       }
 
+      // Loan status
+      if (this.gameState.loanAmount > 0) {
+        const isOverdue = this.gameState.loanDaysRemaining <= 0;
+        costLines.push('');
+        costLines.push(`🏦 Loan: $${this.gameState.loanAmount.toFixed(0)} owed`);
+        costLines.push(`  ${isOverdue ? '⚠ OVERDUE!' : `${this.gameState.loanDaysRemaining}d remaining`}`);
+      }
+
       // Health inspection status
       if (this.gameState.closureDaysRemaining > 0) {
         costLines.push('');

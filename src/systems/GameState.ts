@@ -20,6 +20,8 @@ import {
   INSPECTION_CHANCE,
   INSPECTION_COOLDOWN_DAYS,
   INSPECTION_PASS_THRESHOLD,
+  LoanDef,
+  LOAN_CATALOG,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -517,6 +519,65 @@ export class GameState {
     }
   }
 
+  /** Take out a loan */
+  takeLoan(loanId: string): boolean {
+    // Can't take a loan if one is already active
+    if (this.loanAmount > 0) return false;
+
+    const def = LOAN_CATALOG.find(l => l.id === loanId);
+    if (!def) return false;
+
+    this.loanAmount = def.amount;
+    this.loanInterestRate = def.interestRate;
+    this.loanDaysRemaining = def.durationDays;
+    this.money += def.amount;
+    return true;
+  }
+
+  /** Make a payment on the active loan. Returns actual amount paid. */
+  makeLoanPayment(amount: number): number {
+    if (this.loanAmount <= 0) return 0;
+    const payment = Math.min(amount, this.loanAmount, this.money);
+    if (payment <= 0) return 0;
+
+    this.money -= payment;
+    this.dailyExpenses += payment;
+    this.loanAmount = Math.max(0, this.loanAmount - payment);
+
+    // If fully repaid, clear loan state
+    if (this.loanAmount <= 0) {
+      this.loanAmount = 0;
+      this.loanInterestRate = 0;
+      this.loanDaysRemaining = 0;
+    }
+
+    return payment;
+  }
+
+  /** Accrue daily interest on outstanding loan */
+  private accrueInterest(): void {
+    if (this.loanAmount <= 0) return;
+
+    this.loanDaysRemaining--;
+
+    // Apply daily interest
+    const interest = this.loanAmount * this.loanInterestRate;
+    this.loanAmount += interest;
+
+    // If loan is overdue, apply penalty: double interest rate and reputation hit
+    if (this.loanDaysRemaining <= 0 && this.loanAmount > 0) {
+      const penalty = this.loanAmount * this.loanInterestRate; // extra interest
+      this.loanAmount += penalty;
+      this.reputation = Math.max(0.5, this.reputation - 0.1);
+    }
+  }
+
+  /** Get total amount owed including future interest */
+  getLoanTotalOwed(): number {
+    if (this.loanAmount <= 0) return 0;
+    return this.loanAmount;
+  }
+
   /** Run a health inspection and return the result */
   runHealthInspection(): HealthInspectionResult {
     let score = 100;
@@ -689,6 +750,9 @@ export class GameState {
 
     // Tick down campaign durations
     this.updateCampaigns();
+
+    // Accrue loan interest
+    this.accrueInterest();
 
     // Tick down closure days from failed inspections
     if (this.closureDaysRemaining > 0) {

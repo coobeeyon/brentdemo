@@ -241,6 +241,43 @@ export const INSPECTION_COOLDOWN_DAYS = 5;
 /** Score threshold to pass */
 export const INSPECTION_PASS_THRESHOLD = 60;
 
+// Loans
+export interface LoanDef {
+  id: string;
+  name: string;
+  amount: number;         // principal
+  interestRate: number;   // daily interest rate (e.g., 0.02 = 2% per day)
+  durationDays: number;   // repayment period
+  description: string;
+}
+
+export const LOAN_CATALOG: LoanDef[] = [
+  {
+    id: 'small_loan',
+    name: 'Small Loan',
+    amount: 300,
+    interestRate: 0.01,
+    durationDays: 14,
+    description: 'A small loan for minor upgrades. Low interest.',
+  },
+  {
+    id: 'medium_loan',
+    name: 'Business Loan',
+    amount: 800,
+    interestRate: 0.015,
+    durationDays: 21,
+    description: 'A standard business loan for equipment and expansion.',
+  },
+  {
+    id: 'large_loan',
+    name: 'Expansion Loan',
+    amount: 2000,
+    interestRate: 0.02,
+    durationDays: 30,
+    description: 'A large loan for major expansion. Higher interest rate.',
+  },
+];
+
 export const EQUIPMENT_CATALOG: EquipmentDef[] = [
   {
     id: EquipmentId.ICE_CREAM_MAKER,
