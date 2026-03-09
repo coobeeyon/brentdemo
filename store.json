@@ -320,6 +320,16 @@
       "created_at": "2026-03-09T19:04:48.793873768Z",
       "updated_at": "2026-03-09T19:13:17.363271530Z"
     },
+    "lb-vsat": {
+      "id": "lb-vsat",
+      "title": "Serving styles and toppings",
+      "description": "Add serving styles (cone/cup/sundae/milkshake/float) and toppings (sprinkles, hot fudge, whipped cream, etc.) to orders. Toppings bar equipment should gate topping availability. Different styles have different base prices and ingredient costs.",
+      "item_type": "epic",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T19:13:50.240887701Z",
+      "updated_at": "2026-03-09T19:13:50.240887701Z"
+    },
     "lb-ypij": {
       "id": "lb-ypij",
       "title": "Equipment system and upgrades",
