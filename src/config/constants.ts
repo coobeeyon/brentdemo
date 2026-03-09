@@ -378,6 +378,79 @@ export const DECOR_CATALOG: DecorThemeDef[] = [
   },
 ];
 
+// Seating Arrangements
+export enum SeatingId {
+  NONE = 'none',
+  BASIC_STOOLS = 'basic_stools',
+  BOOTHS = 'booths',
+  PATIO_SET = 'patio_set',
+  PREMIUM_LOUNGE = 'premium_lounge',
+}
+
+export interface SeatingDef {
+  id: SeatingId;
+  name: string;
+  description: string;
+  icon: string;
+  cost: number;               // one-time purchase cost
+  capacityBonus: number;      // extra max queue slots
+  ambianceBonus: number;      // added to decor ambiance score
+  patienceMult: number;       // multiplier on patience (>1 = more patient)
+}
+
+export const SEATING_CATALOG: SeatingDef[] = [
+  {
+    id: SeatingId.NONE,
+    name: 'No Seating',
+    description: 'Customers stand in line. No extras.',
+    icon: '🚶',
+    cost: 0,
+    capacityBonus: 0,
+    ambianceBonus: 0,
+    patienceMult: 1.0,
+  },
+  {
+    id: SeatingId.BASIC_STOOLS,
+    name: 'Counter Stools',
+    description: 'Simple stools along the counter. A few extra seats.',
+    icon: '🪑',
+    cost: 150,
+    capacityBonus: 2,
+    ambianceBonus: 5,
+    patienceMult: 1.05,
+  },
+  {
+    id: SeatingId.BOOTHS,
+    name: 'Cozy Booths',
+    description: 'Padded booths for families and groups. Comfortable wait.',
+    icon: '🛋️',
+    cost: 400,
+    capacityBonus: 3,
+    ambianceBonus: 15,
+    patienceMult: 1.12,
+  },
+  {
+    id: SeatingId.PATIO_SET,
+    name: 'Outdoor Patio',
+    description: 'Umbrella tables outside. Great for sunny days.',
+    icon: '☂️',
+    cost: 600,
+    capacityBonus: 4,
+    ambianceBonus: 20,
+    patienceMult: 1.1,
+  },
+  {
+    id: SeatingId.PREMIUM_LOUNGE,
+    name: 'Premium Lounge',
+    description: 'Plush seating, mood lighting, the works. Maximum comfort.',
+    icon: '💎',
+    cost: 1000,
+    capacityBonus: 5,
+    ambianceBonus: 30,
+    patienceMult: 1.2,
+  },
+];
+
 export const EQUIPMENT_CATALOG: EquipmentDef[] = [
   {
     id: EquipmentId.ICE_CREAM_MAKER,

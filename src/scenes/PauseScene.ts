@@ -15,7 +15,7 @@ export class PauseScene extends Phaser.Scene {
     // Pause panel
     const panel = this.add.graphics();
     panel.fillStyle(0x2C3E50, 1);
-    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, 120, 300, 520, 15);
+    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, 120, 300, 572, 15);
 
     this.add.text(GAME_WIDTH / 2, 150, 'PAUSED', {
       fontFamily: 'Arial',
@@ -39,6 +39,7 @@ export class PauseScene extends Phaser.Scene {
       { label: '  Marketing  ', scene: 'MarketingScene' },
       { label: '  Loans  ', scene: 'LoanScene' },
       { label: '  Decor  ', scene: 'DecorScene' },
+      { label: '  Seating  ', scene: 'SeatingScene' },
       { label: ' Main Menu ', action: () => { this.scene.stop('GameplayScene'); this.scene.start('MainMenuScene'); } },
     ];
 

@@ -39,7 +39,8 @@ export class CustomerManager {
     const spawnInterval = this.getSpawnInterval();
     const eqOffline = this.eventEffects.equipmentOffline ?? false;
     const eqEffects = eqOffline ? { capacityBonus: 0 } : this.gameState.getEquipmentEffects();
-    const maxQueue = MAX_QUEUE_LENGTH + (eqEffects.capacityBonus ?? 0);
+    const seatingCapacity = this.gameState.getSeatingDef().capacityBonus;
+    const maxQueue = MAX_QUEUE_LENGTH + (eqEffects.capacityBonus ?? 0) + seatingCapacity;
     if (this.spawnTimer >= spawnInterval && this.queue.length < maxQueue) {
       this.spawnTimer = 0;
       this.spawnCustomer();
@@ -106,6 +107,10 @@ export class CustomerManager {
     // Apply decor ambiance patience modifier
     const decorDef = this.gameState.getDecorDef();
     customer.maxPatience *= decorDef.patienceMult;
+
+    // Apply seating patience modifier
+    const seatingDef = this.gameState.getSeatingDef();
+    customer.maxPatience *= seatingDef.patienceMult;
 
     customer.patience = customer.maxPatience;
 

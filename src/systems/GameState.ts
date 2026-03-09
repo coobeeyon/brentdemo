@@ -27,6 +27,9 @@ import {
   DecorThemeId,
   DECOR_CATALOG,
   DecorThemeDef,
+  SeatingId,
+  SEATING_CATALOG,
+  SeatingDef,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -137,6 +140,10 @@ export class GameState {
   // Store decor
   currentDecor: DecorThemeId = DecorThemeId.BASIC;
   unlockedDecor: DecorThemeId[] = [DecorThemeId.BASIC];
+
+  // Seating
+  currentSeating: SeatingId = SeatingId.NONE;
+  unlockedSeating: SeatingId[] = [SeatingId.NONE];
 
   // Loans
   loanAmount: number = 0;           // current outstanding loan principal
@@ -570,6 +577,29 @@ export class GameState {
     this.dailyExpenses += def.cost;
     this.unlockedDecor.push(decorId);
     this.currentDecor = decorId;
+    return true;
+  }
+
+  /** Get current seating definition */
+  getSeatingDef(): SeatingDef {
+    return SEATING_CATALOG.find(s => s.id === this.currentSeating) ?? SEATING_CATALOG[0];
+  }
+
+  /** Purchase and apply a seating arrangement */
+  purchaseSeating(seatingId: SeatingId): boolean {
+    if (this.unlockedSeating.includes(seatingId)) {
+      // Already owned — just switch
+      this.currentSeating = seatingId;
+      return true;
+    }
+
+    const def = SEATING_CATALOG.find(s => s.id === seatingId);
+    if (!def || this.money < def.cost) return false;
+
+    this.money -= def.cost;
+    this.dailyExpenses += def.cost;
+    this.unlockedSeating.push(seatingId);
+    this.currentSeating = seatingId;
     return true;
   }
 

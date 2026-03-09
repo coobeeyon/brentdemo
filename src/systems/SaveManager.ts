@@ -1,5 +1,5 @@
 import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign } from './GameState';
-import { WeatherType, HealthInspectionResult, DecorThemeId } from '../config/constants';
+import { WeatherType, HealthInspectionResult, DecorThemeId, SeatingId } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
 const AUTO_SAVE_KEY = SAVE_KEY_PREFIX + 'auto';
@@ -40,9 +40,11 @@ interface SerializedGameState {
   loanDaysRemaining: number;
   currentDecor: DecorThemeId;
   unlockedDecor: DecorThemeId[];
+  currentSeating: SeatingId;
+  unlockedSeating: SeatingId[];
 }
 
-const SAVE_VERSION = 5;
+const SAVE_VERSION = 6;
 
 export class SaveManager {
   static save(gameState: GameState, slot: string = 'auto', gameMode: string = 'story'): boolean {
@@ -79,6 +81,8 @@ export class SaveManager {
           loanDaysRemaining: gameState.loanDaysRemaining,
           currentDecor: gameState.currentDecor,
           unlockedDecor: gameState.unlockedDecor,
+          currentSeating: gameState.currentSeating,
+          unlockedSeating: gameState.unlockedSeating,
         },
       };
 
@@ -133,6 +137,8 @@ export class SaveManager {
       gameState.loanDaysRemaining = s.loanDaysRemaining ?? 0;
       gameState.currentDecor = s.currentDecor ?? 'basic';
       gameState.unlockedDecor = s.unlockedDecor ?? ['basic'];
+      gameState.currentSeating = s.currentSeating ?? 'none';
+      gameState.unlockedSeating = s.unlockedSeating ?? ['none'];
 
       return true;
     } catch {
