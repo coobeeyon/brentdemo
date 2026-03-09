@@ -53,7 +53,7 @@ export class Customer {
   private orderBubble!: Phaser.GameObjects.Container;
   private nameTag!: Phaser.GameObjects.Text;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, availableFlavors: string[]) {
+  constructor(scene: Phaser.Scene, x: number, y: number, availableFlavors: string[], menuPrices?: Map<string, number>) {
     this.scene = scene;
 
     // Pick random type
@@ -74,14 +74,14 @@ export class Customer {
     this.tipMultiplier = typeInfo.tipMult;
 
     // Generate order
-    this.order = this.generateOrder(availableFlavors);
+    this.order = this.generateOrder(availableFlavors, menuPrices);
 
     // Create visuals
     this.sprite = scene.add.container(x, y);
     this.createVisuals();
   }
 
-  private generateOrder(availableFlavors: string[]): Order {
+  private generateOrder(availableFlavors: string[], menuPrices?: Map<string, number>): Order {
     const numScoops = this.type === CustomerType.CHILD ? 1 :
       this.type === CustomerType.TOURIST ? Math.ceil(Math.random() * 3) :
       Math.ceil(Math.random() * 2);
@@ -103,7 +103,8 @@ export class Customer {
     }
 
     const totalPrice = items.reduce((sum, item) => {
-      return sum + BASE_SCOOP_PRICE + item.toppings.length * BASE_TOPPING_PRICE;
+      const scoopPrice = menuPrices?.get(item.flavorId) ?? BASE_SCOOP_PRICE;
+      return sum + scoopPrice + item.toppings.length * BASE_TOPPING_PRICE;
     }, 0);
 
     return { items, totalPrice };

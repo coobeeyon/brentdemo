@@ -36,11 +36,12 @@ export class PauseScene extends Phaser.Scene {
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
     resumeBtn.on('pointerdown', () => this.resumeGame());
 
-    // Menu editor (placeholder)
+    // Menu editor
     const menuBtn = this.add.text(GAME_WIDTH / 2, 340, '  Menu Editor  ', btnStyle)
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
     menuBtn.on('pointerdown', () => {
-      // TODO: open menu editor sub-scene
+      this.scene.stop();
+      this.scene.launch('MenuEditorScene');
     });
 
     // Equipment
