@@ -215,11 +215,10 @@
       "title": "Story mode progression",
       "description": "5 seasons with escalating challenges, unlock cities, revenue/reputation targets",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:11:40.282390060Z",
-      "updated_at": "2026-03-09T18:50:39.370919418Z"
+      "updated_at": "2026-03-09T18:53:08.785166529Z"
     },
     "lb-pct9": {
       "id": "lb-pct9",
