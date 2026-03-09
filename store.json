@@ -140,6 +140,16 @@
       "created_at": "2026-03-09T18:34:21.390658855Z",
       "updated_at": "2026-03-09T18:41:02.653703544Z"
     },
+    "lb-futq": {
+      "id": "lb-futq",
+      "title": "Research tree for unlocking flavors and upgrades",
+      "description": "Implement research point system. Players earn research points from milestones (days survived, customers served, revenue targets). Research tree UI lets players spend points to unlock new flavors, equipment upgrades, staff training programs, and marketing tools.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-09T19:14:08.534306144Z",
+      "updated_at": "2026-03-09T19:14:08.534306144Z"
+    },
     "lb-g435": {
       "id": "lb-g435",
       "title": "Customer spawning, ordering, patience, and serving flow",
