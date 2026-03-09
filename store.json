@@ -60,6 +60,16 @@
       "created_at": "2026-03-09T18:34:18.273688882Z",
       "updated_at": "2026-03-09T18:48:06.416824826Z"
     },
+    "lb-actv": {
+      "id": "lb-actv",
+      "title": "Community events: pop-up booth mini-game",
+      "description": "Implement pop-up booth at local fairs as a mini-game for bonus revenue. Player can set up a temporary booth with limited menu, serve customers in a timed challenge.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-09T19:32:51.732707704Z",
+      "updated_at": "2026-03-09T19:32:51.732707704Z"
+    },
     "lb-ak2s": {
       "id": "lb-ak2s",
       "title": "Core game state machine and scene management",
