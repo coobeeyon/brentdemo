@@ -1,5 +1,15 @@
 {
   "items": {
+    "lb-ak2s": {
+      "id": "lb-ak2s",
+      "title": "Core game state machine and scene management",
+      "description": "Boot scene, main menu scene, gameplay scene, pause menu. Scene transitions and shared game state.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:04:26.564299764Z",
+      "updated_at": "2026-03-09T18:04:26.564299764Z"
+    },
     "lb-if57": {
       "id": "lb-if57",
       "title": "Initialize project with TypeScript, Phaser 3, Vite, and basic folder structure",
@@ -24,6 +34,11 @@
   "deps": [
     {
       "from_id": "lb-if57",
+      "to_id": "lb-s4kc",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-ak2s",
       "to_id": "lb-s4kc",
       "dep_type": "parent"
     }
