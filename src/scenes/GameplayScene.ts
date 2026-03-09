@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG } from '../config/constants';
-import { GameState, getGameState } from '../systems/GameState';
+import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { SaveManager } from '../systems/SaveManager';
 
@@ -34,6 +34,11 @@ export class GameplayScene extends Phaser.Scene {
     this.createStoreView();
     this.createHUD();
     this.createPhaseUI();
+
+    // Show notification when a critic leaves a review
+    this.customerManager.onCriticReview = (review: CriticReview) => {
+      this.showCriticReviewNotification(review);
+    };
 
     // Keyboard shortcuts
     this.input.keyboard!.on('keydown-ESC', () => {
@@ -362,19 +367,70 @@ export class GameplayScene extends Phaser.Scene {
     this.gameState.gameSpeed = speeds[(idx + 1) % speeds.length];
   }
 
+  private showCriticReviewNotification(review: CriticReview): void {
+    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+    const color = review.rating >= 4 ? '#2ECC40' : review.rating >= 3 ? '#F39C12' : '#E74C3C';
+    const messages = review.rating >= 4
+      ? ['Excellent!', 'Outstanding service!', 'A hidden gem!']
+      : review.rating >= 3
+      ? ['Decent experience.', 'Nothing special.', 'Adequate.']
+      : ['Disappointing.', 'Would not recommend.', 'Poor service.'];
+    const msg = messages[Math.floor(Math.random() * messages.length)];
+
+    const notif = this.add.container(GAME_WIDTH / 2, 80);
+    const bg = this.add.graphics();
+    bg.fillStyle(0x2C3E50, 0.95);
+    bg.fillRoundedRect(-160, -30, 320, 60, 10);
+    bg.lineStyle(2, review.rating >= 4 ? 0x2ECC71 : review.rating >= 3 ? 0xF39C12 : 0xE74C3C);
+    bg.strokeRoundedRect(-160, -30, 320, 60, 10);
+    notif.add(bg);
+
+    const title = this.add.text(0, -18, `📝 Critic Review: ${stars}`, {
+      fontFamily: 'Arial', fontSize: '14px', color,
+    }).setOrigin(0.5, 0);
+    notif.add(title);
+
+    const quote = this.add.text(0, 2, `"${msg}"`, {
+      fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7', fontStyle: 'italic',
+    }).setOrigin(0.5, 0);
+    notif.add(quote);
+
+    // Animate in and out
+    notif.setAlpha(0);
+    this.tweens.add({
+      targets: notif,
+      alpha: 1,
+      y: 100,
+      duration: 400,
+      ease: 'Power2',
+      onComplete: () => {
+        this.time.delayedCall(3000, () => {
+          this.tweens.add({
+            targets: notif,
+            alpha: 0,
+            y: 80,
+            duration: 400,
+            onComplete: () => notif.destroy(),
+          });
+        });
+      },
+    });
+  }
+
   private onDayEnd(): void {
     this.serveButton.setVisible(false);
     this.customerManager.clearQueue();
 
-    // Update reputation based on service quality
+    // Calculate enhanced reputation change
     const served = this.customerManager.customersServed;
     const lost = this.customerManager.customersLost;
     const total = served + lost;
-    if (total > 0) {
-      const serviceRatio = served / total;
-      const repChange = (serviceRatio - 0.5) * 0.5; // +/- 0.25 max per day
-      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + repChange));
-    }
+    const avgSatisfaction = this.customerManager.getAverageSatisfaction();
+    const criticReview = this.customerManager.getLastCriticReview() ?? undefined;
+
+    const repChange = this.gameState.calculateReputationChange(
+      served, lost, avgSatisfaction, criticReview,
+    );
 
     // Record day report with full stats
     const s = this.gameState;
@@ -386,6 +442,8 @@ export class GameplayScene extends Phaser.Scene {
       customersServed: served,
       customersLost: lost,
       satisfactionScore: satisfaction,
+      criticReview,
+      reputationChange: repChange,
     });
 
     // Show end-of-day report
@@ -429,8 +487,21 @@ export class GameplayScene extends Phaser.Scene {
     addStat(rightX, y, 'CUSTOMERS LOST', `${lost}`, lost > 0 ? '#E74C3C' : '#FFF');
     y += 45;
     addStat(leftX, y, 'SATISFACTION', `${satisfaction}%`, satisfaction >= 70 ? '#2ECC40' : '#F39C12');
-    addStat(rightX, y, 'REPUTATION', '★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation)), '#FFDC00');
+    const repChangeSign = repChange >= 0 ? '+' : '';
+    const repChangeColor = repChange > 0 ? '#2ECC40' : repChange < 0 ? '#E74C3C' : '#95A5A6';
+    addStat(rightX, y, 'REPUTATION', '★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation)) + ` (${repChangeSign}${repChange.toFixed(2)})`, '#FFDC00');
     y += 45;
+
+    // Show critic review in report if present
+    if (criticReview) {
+      const criticStars = '★'.repeat(criticReview.rating) + '☆'.repeat(5 - criticReview.rating);
+      const criticColor = criticReview.rating >= 4 ? '#2ECC71' : criticReview.rating >= 3 ? '#F39C12' : '#E74C3C';
+      const criticLabel = this.add.text(leftX, y, `📝 CRITIC REVIEW: ${criticStars}`, {
+        fontFamily: 'Arial', fontSize: '14px', color: criticColor, fontStyle: 'bold',
+      });
+      report.add(criticLabel);
+      y += 25;
+    }
 
     // Separator
     const sep = this.add.graphics();

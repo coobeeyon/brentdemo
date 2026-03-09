@@ -1,4 +1,4 @@
-import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment } from './GameState';
+import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview } from './GameState';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
 const AUTO_SAVE_KEY = SAVE_KEY_PREFIX + 'auto';
@@ -17,6 +17,8 @@ interface SerializedGameState {
   money: number;
   loanBalance: number;
   reputation: number;
+  reputationMomentum: number;
+  criticReviews: CriticReview[];
   researchPoints: number;
   ingredients: Ingredient[];
   flavors: Flavor[];
@@ -27,7 +29,7 @@ interface SerializedGameState {
   equipment: OwnedEquipment[];
 }
 
-const SAVE_VERSION = 2;
+const SAVE_VERSION = 3;
 
 export class SaveManager {
   static save(gameState: GameState, slot: string = 'auto', gameMode: string = 'story'): boolean {
@@ -42,6 +44,8 @@ export class SaveManager {
           money: gameState.money,
           loanBalance: gameState.loanBalance,
           reputation: gameState.reputation,
+          reputationMomentum: gameState.reputationMomentum,
+          criticReviews: gameState.criticReviews,
           researchPoints: gameState.researchPoints,
           ingredients: gameState.ingredients,
           flavors: gameState.flavors,
@@ -77,6 +81,8 @@ export class SaveManager {
       gameState.money = s.money;
       gameState.loanBalance = s.loanBalance;
       gameState.reputation = s.reputation;
+      gameState.reputationMomentum = s.reputationMomentum ?? 0;
+      gameState.criticReviews = s.criticReviews ?? [];
       gameState.researchPoints = s.researchPoints;
       gameState.ingredients = s.ingredients;
       gameState.flavors = s.flavors;

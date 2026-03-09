@@ -38,6 +38,13 @@ export interface StaffMember {
   assigned: boolean;
 }
 
+export interface CriticReview {
+  day: number;
+  rating: number;     // 1-5 stars
+  patienceRatio: number;
+  qualityBonus: number;
+}
+
 export interface DayReport {
   day: number;
   revenue: number;
@@ -45,6 +52,8 @@ export interface DayReport {
   customersServed: number;
   customersLost: number;
   satisfactionScore: number;
+  criticReview?: CriticReview;
+  reputationChange: number;
 }
 
 export interface OwnedEquipment {
@@ -71,6 +80,8 @@ export class GameState {
 
   // Reputation
   reputation: number = STARTING_REPUTATION;
+  reputationMomentum: number = 0; // rolling momentum: positive = trending up, negative = down
+  criticReviews: CriticReview[] = [];
 
   // Inventory
   ingredients: Ingredient[] = [];
@@ -213,6 +224,63 @@ export class GameState {
       if (tierDef) total += tierDef.maintenanceCost;
     }
     return total;
+  }
+
+  /** Calculate reputation change for end of day based on service quality and events */
+  calculateReputationChange(
+    served: number,
+    lost: number,
+    avgSatisfaction: number, // 0-1, weighted by patience ratio
+    criticReview?: CriticReview,
+  ): number {
+    const total = served + lost;
+    if (total === 0) return 0;
+
+    // Base change from service ratio (-0.2 to +0.2)
+    const serviceRatio = served / total;
+    let change = (serviceRatio - 0.5) * 0.4;
+
+    // Satisfaction quality bonus/penalty (-0.1 to +0.1)
+    // avgSatisfaction is weighted by patience remaining
+    change += (avgSatisfaction - 0.5) * 0.2;
+
+    // Critic review has outsized impact (-0.5 to +0.5)
+    if (criticReview) {
+      const criticImpact = (criticReview.rating - 3) * 0.2; // -0.4 to +0.4
+      change += criticImpact;
+      this.criticReviews.push(criticReview);
+    }
+
+    // Momentum: consecutive good/bad days amplify change (up to ±50% boost)
+    if ((change > 0 && this.reputationMomentum > 0) || (change < 0 && this.reputationMomentum < 0)) {
+      const momentumBoost = Math.min(Math.abs(this.reputationMomentum) * 0.1, 0.5);
+      change *= (1 + momentumBoost);
+    }
+
+    // Update momentum (decays toward 0, pushed by current change)
+    this.reputationMomentum = this.reputationMomentum * 0.7 + (change > 0 ? 1 : change < 0 ? -1 : 0);
+
+    // Clamp total change to reasonable bounds
+    change = Math.max(-0.5, Math.min(0.5, change));
+
+    // Apply and clamp reputation
+    this.reputation = Math.max(0.5, Math.min(5, this.reputation + change));
+
+    return change;
+  }
+
+  /** Word-of-mouth multiplier: higher rep = more customers, with accelerating returns */
+  getWordOfMouthMultiplier(): number {
+    // Below 2.5 stars: fewer customers. Above 2.5: more. Exponential above 4.
+    if (this.reputation <= 2.5) {
+      return 0.6 + (this.reputation / 2.5) * 0.4; // 0.6 to 1.0
+    }
+    // 2.5 to 4: linear growth
+    if (this.reputation <= 4) {
+      return 1.0 + (this.reputation - 2.5) * 0.4; // 1.0 to 1.6
+    }
+    // 4 to 5: accelerating growth (word of mouth kicks in)
+    return 1.6 + (this.reputation - 4) * 0.8; // 1.6 to 2.4
   }
 
   get profit(): number {

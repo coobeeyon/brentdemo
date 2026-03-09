@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import { Customer } from '../entities/Customer';
-import { GameState } from './GameState';
+import { Customer, CustomerType } from '../entities/Customer';
+import { GameState, CriticReview } from './GameState';
 import { GAME_WIDTH, MAX_QUEUE_LENGTH, DayPhase } from '../config/constants';
 
 const QUEUE_START_X = 240;
@@ -17,6 +17,9 @@ export class CustomerManager {
   // Stats for the day
   customersServed: number = 0;
   customersLost: number = 0;
+  private satisfactionSum: number = 0; // sum of patience ratios for served customers
+  private lastCriticReview: CriticReview | null = null;
+  onCriticReview?: (review: CriticReview) => void; // callback for UI notification
 
   constructor(scene: Phaser.Scene, gameState: GameState) {
     this.scene = scene;
@@ -53,8 +56,8 @@ export class CustomerManager {
   }
 
   private getSpawnInterval(): number {
-    // More customers come as reputation increases
-    const repBonus = this.gameState.reputation / 5;
+    // Word-of-mouth: reputation drives customer volume with accelerating returns
+    const wordOfMouth = this.gameState.getWordOfMouthMultiplier();
     // More customers during peak hours (11am-2pm, 6pm-8pm)
     const hour = this.gameState.currentHour;
     let peakMult = 1.0;
@@ -67,7 +70,7 @@ export class CustomerManager {
     // Staff speed bonus reduces interval further
     const staffEffects = this.gameState.getStaffEffects();
     const staffSpeedMult = Math.max(0.5, 1.0 - staffEffects.speedBonus);
-    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult / Math.max(repBonus, 0.3);
+    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult / Math.max(wordOfMouth, 0.3);
   }
 
   private spawnCustomer(): void {
@@ -124,12 +127,38 @@ export class CustomerManager {
     const effects = this.gameState.getEquipmentEffects();
     const staffEffects = this.gameState.getStaffEffects();
     const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus;
+    const patienceRatio = customer.patience / customer.maxPatience;
     const revenue = customer.serve(totalQualityBonus);
     this.queue.shift();
     this.customersServed++;
+    this.satisfactionSum += patienceRatio;
     this.repositionQueue();
 
+    // Handle critic review
+    if (customer.type === CustomerType.CRITIC) {
+      const review: CriticReview = {
+        day: this.gameState.day,
+        rating: this.calculateCriticRating(patienceRatio, totalQualityBonus),
+        patienceRatio,
+        qualityBonus: totalQualityBonus,
+      };
+      this.lastCriticReview = review;
+      this.onCriticReview?.(review);
+    }
+
     return revenue;
+  }
+
+  /** Critics rate based on patience (speed), quality (equipment+staff), and some randomness */
+  private calculateCriticRating(patienceRatio: number, qualityBonus: number): number {
+    // Base: patience ratio heavily weighted (they care about wait time)
+    let score = patienceRatio * 3; // 0-3 points from patience
+    // Quality bonus adds up to 1.5 points
+    score += Math.min(qualityBonus * 3, 1.5);
+    // Small random factor (±0.5)
+    score += (Math.random() - 0.5);
+    // Clamp to 1-5
+    return Math.max(1, Math.min(5, Math.round(score)));
   }
 
   private canFulfillOrder(customer: Customer): boolean {
@@ -168,9 +197,21 @@ export class CustomerManager {
     return this.queue.length;
   }
 
+  /** Average satisfaction (patience ratio) of served customers, 0-1 */
+  getAverageSatisfaction(): number {
+    return this.customersServed > 0 ? this.satisfactionSum / this.customersServed : 0.5;
+  }
+
+  /** Get the last critic review from this day, if any */
+  getLastCriticReview(): CriticReview | null {
+    return this.lastCriticReview;
+  }
+
   resetDayStats(): void {
     this.customersServed = 0;
     this.customersLost = 0;
+    this.satisfactionSum = 0;
+    this.lastCriticReview = null;
     this.spawnTimer = 0;
   }
 
