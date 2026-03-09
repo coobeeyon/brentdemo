@@ -20,6 +20,16 @@
       "created_at": "2026-03-09T18:09:39.618264218Z",
       "updated_at": "2026-03-09T18:11:05.551043638Z"
     },
+    "lb-4arw": {
+      "id": "lb-4arw",
+      "title": "HUD improvements: equipment alerts and staff count display",
+      "description": "Show broken equipment warnings in HUD during serve phase. Display active staff count. Show daily maintenance/wage costs in prepare phase summary.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-09T18:29:22.918354326Z",
+      "updated_at": "2026-03-09T18:29:22.918354326Z"
+    },
     "lb-ak2s": {
       "id": "lb-ak2s",
       "title": "Core game state machine and scene management",
@@ -250,6 +260,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-4arw",
+      "to_id": "lb-u8ep",
       "dep_type": "parent"
     }
   ]
