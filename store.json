@@ -7,8 +7,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:11:40.287255086Z",
-      "updated_at": "2026-03-09T18:11:40.287255086Z"
+      "updated_at": "2026-03-09T18:11:48.851266873Z"
     },
     "lb-3pxv": {
       "id": "lb-3pxv",
