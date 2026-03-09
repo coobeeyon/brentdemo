@@ -33,6 +33,45 @@ export const MAX_QUEUE_LENGTH = 8;
 export const BASE_SCOOP_PRICE = 3.00;
 export const BASE_TOPPING_PRICE = 0.50;
 
+// Flavor Catalog
+export interface FlavorDef {
+  id: string;
+  name: string;
+  ingredients: string[];     // ingredient ids required
+  popularity: number;        // 0-1 base popularity
+  starter: boolean;          // true = unlocked from the start
+}
+
+export const FLAVOR_CATALOG: FlavorDef[] = [
+  // Starters
+  { id: 'vanilla', name: 'Vanilla', ingredients: ['milk', 'sugar', 'vanilla_extract'], popularity: 0.8, starter: true },
+  { id: 'chocolate', name: 'Chocolate', ingredients: ['milk', 'sugar', 'cocoa'], popularity: 0.9, starter: true },
+  { id: 'strawberry', name: 'Strawberry', ingredients: ['milk', 'sugar', 'strawberries'], popularity: 0.7, starter: true },
+  // Season 2 unlocks
+  { id: 'mint_chip', name: 'Mint Chip', ingredients: ['milk', 'sugar', 'vanilla_extract'], popularity: 0.7, starter: false },
+  { id: 'cookies_cream', name: 'Cookies & Cream', ingredients: ['milk', 'sugar', 'cocoa'], popularity: 0.8, starter: false },
+  // Season 3 unlocks
+  { id: 'mango', name: 'Mango', ingredients: ['milk', 'sugar', 'fruit'], popularity: 0.6, starter: false },
+  { id: 'pistachio', name: 'Pistachio', ingredients: ['milk', 'sugar', 'nuts'], popularity: 0.5, starter: false },
+  // Season 4 unlocks
+  { id: 'salted_caramel', name: 'Salted Caramel', ingredients: ['milk', 'sugar', 'caramel'], popularity: 0.8, starter: false },
+  { id: 'lavender', name: 'Lavender', ingredients: ['milk', 'sugar', 'vanilla_extract'], popularity: 0.4, starter: false },
+  // Season 5 unlocks
+  { id: 'matcha', name: 'Matcha', ingredients: ['milk', 'sugar'], popularity: 0.5, starter: false },
+  { id: 'rocky_road', name: 'Rocky Road', ingredients: ['milk', 'sugar', 'cocoa', 'nuts'], popularity: 0.7, starter: false },
+  // Additional unlockable flavors (for research tree / events)
+  { id: 'butter_pecan', name: 'Butter Pecan', ingredients: ['milk', 'sugar', 'nuts'], popularity: 0.6, starter: false },
+  { id: 'cookie_dough', name: 'Cookie Dough', ingredients: ['milk', 'sugar', 'vanilla_extract'], popularity: 0.75, starter: false },
+  { id: 'coffee', name: 'Coffee', ingredients: ['milk', 'sugar'], popularity: 0.65, starter: false },
+  { id: 'lemon_sorbet', name: 'Lemon Sorbet', ingredients: ['sugar', 'fruit'], popularity: 0.5, starter: false },
+  { id: 'coconut', name: 'Coconut', ingredients: ['milk', 'sugar'], popularity: 0.45, starter: false },
+  { id: 'raspberry', name: 'Raspberry', ingredients: ['milk', 'sugar', 'fruit'], popularity: 0.55, starter: false },
+  { id: 'peanut_butter', name: 'Peanut Butter', ingredients: ['milk', 'sugar', 'nuts'], popularity: 0.6, starter: false },
+  { id: 'birthday_cake', name: 'Birthday Cake', ingredients: ['milk', 'sugar', 'vanilla_extract', 'sprinkles'], popularity: 0.7, starter: false },
+  { id: 'caramel_swirl', name: 'Caramel Swirl', ingredients: ['milk', 'sugar', 'caramel'], popularity: 0.65, starter: false },
+  { id: 'blueberry', name: 'Blueberry', ingredients: ['milk', 'sugar', 'fruit'], popularity: 0.5, starter: false },
+];
+
 // Toppings
 export interface ToppingDef {
   id: string;

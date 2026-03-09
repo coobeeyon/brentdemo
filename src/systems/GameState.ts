@@ -34,6 +34,7 @@ import {
   ToppingDef,
   SERVING_STYLE_CATALOG,
   ServingStyleDef,
+  FLAVOR_CATALOG,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -169,11 +170,14 @@ export class GameState {
   }
 
   private initializeStartingInventory(): void {
-    this.flavors = [
-      { id: 'vanilla', name: 'Vanilla', unlocked: true, ingredients: ['milk', 'sugar', 'vanilla_extract'], popularity: 0.8 },
-      { id: 'chocolate', name: 'Chocolate', unlocked: true, ingredients: ['milk', 'sugar', 'cocoa'], popularity: 0.9 },
-      { id: 'strawberry', name: 'Strawberry', unlocked: true, ingredients: ['milk', 'sugar', 'strawberries'], popularity: 0.7 },
-    ];
+    // Initialize flavors from catalog — starters are unlocked
+    this.flavors = FLAVOR_CATALOG.filter(f => f.starter).map(f => ({
+      id: f.id,
+      name: f.name,
+      unlocked: true,
+      ingredients: f.ingredients,
+      popularity: f.popularity,
+    }));
 
     this.ingredients = [
       { id: 'milk', name: 'Milk', quantity: 50, costPer: 0.5, expiresInDays: 3 },
@@ -544,21 +548,39 @@ export class GameState {
       // Unlock new flavors for this season
       if (seasonDef.unlockFlavors) {
         for (const flavorId of seasonDef.unlockFlavors) {
-          if (!this.unlockedFlavors.has(flavorId)) {
-            this.unlockedFlavors.add(flavorId);
-            // Add the flavor to available flavors
-            const name = flavorId.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
-            this.flavors.push({
-              id: flavorId,
-              name,
-              unlocked: true,
-              ingredients: ['milk', 'sugar'], // simplified - uses base ingredients
-              popularity: 0.5 + Math.random() * 0.3,
-            });
-          }
+          this.unlockFlavor(flavorId);
         }
       }
     }
+  }
+
+  /** Unlock a flavor by id, using catalog data */
+  unlockFlavor(flavorId: string): boolean {
+    if (this.unlockedFlavors.has(flavorId)) return false;
+    this.unlockedFlavors.add(flavorId);
+
+    // Look up from catalog for proper data
+    const catalogEntry = FLAVOR_CATALOG.find(f => f.id === flavorId);
+    if (catalogEntry) {
+      this.flavors.push({
+        id: catalogEntry.id,
+        name: catalogEntry.name,
+        unlocked: true,
+        ingredients: catalogEntry.ingredients,
+        popularity: catalogEntry.popularity,
+      });
+    } else {
+      // Fallback for flavors not in catalog
+      const name = flavorId.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+      this.flavors.push({
+        id: flavorId,
+        name,
+        unlocked: true,
+        ingredients: ['milk', 'sugar'],
+        popularity: 0.5,
+      });
+    }
+    return true;
   }
 
   /** Get current decor definition */
