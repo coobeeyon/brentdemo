@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, WEATHER_TABLE } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG } from '../config/constants';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent } from '../systems/EventManager';
@@ -298,6 +298,24 @@ export class GameplayScene extends Phaser.Scene {
       }).setOrigin(1, 0);
       prepContainer.add(invText);
 
+      // Season progress (story mode)
+      const gameMode = this.registry.get('gameMode') as string ?? 'story';
+      const curSeasonDef = this.gameState.getSeasonDef();
+      if (gameMode === 'story' && curSeasonDef) {
+        const progressLines = [
+          `Season ${curSeasonDef.season}: ${curSeasonDef.name}`,
+          `Revenue: $${this.gameState.seasonRevenue.toFixed(0)} / $${curSeasonDef.revenueTarget}`,
+          `Reputation: ${this.gameState.reputation.toFixed(1)} / ${curSeasonDef.reputationTarget.toFixed(1)}`,
+          `Days: ${this.gameState.seasonDay} / ${curSeasonDef.daysPerSeason}`,
+        ];
+        const progressText = this.add.text(GAME_WIDTH / 2, 70, progressLines.join('\n'), {
+          fontFamily: 'Arial', fontSize: '13px', color: '#333',
+          backgroundColor: '#D5F5E3CC', padding: { x: 10, y: 8 },
+          lineSpacing: 3, align: 'center',
+        }).setOrigin(0.5, 0);
+        prepContainer.add(progressText);
+      }
+
       // Daily costs summary
       const totalWages = this.gameState.staff.reduce((sum, st) => sum + st.wage, 0);
       const maintenance = this.gameState.getMaintenanceCost();
@@ -344,7 +362,10 @@ export class GameplayScene extends Phaser.Scene {
 
   private updateHUD(): void {
     const s = this.gameState;
-    this.dayText.setText(`Day ${s.day} | Season ${s.season}`);
+    const seasonDef = s.getSeasonDef();
+    const seasonLabel = seasonDef ? `${seasonDef.name}` : `Season ${s.season}`;
+    const daysLeft = seasonDef ? ` (${seasonDef.daysPerSeason - s.seasonDay + 1}d left)` : '';
+    this.dayText.setText(`Day ${s.seasonDay} | ${seasonLabel}${daysLeft}`);
     this.timeText.setText(s.currentTimeString);
     const weatherDef = s.getWeatherDef();
     this.weatherText.setText(`${weatherDef.icon} ${weatherDef.name}`);
@@ -702,10 +723,200 @@ export class GameplayScene extends Phaser.Scene {
       // Auto-save at end of day
       const gameMode = this.registry.get('gameMode') as string ?? 'story';
       SaveManager.save(this.gameState, 'auto', gameMode);
+
+      // Check for season completion in story mode
+      if (gameMode === 'story' && this.gameState.isSeasonComplete()) {
+        this.showSeasonResults();
+        return;
+      }
+
       this.gameState.startNewDay();
       // Roll for next day's event
       this.rollDailyEvent();
       this.updatePhaseUI();
     });
+  }
+
+  private showSeasonResults(): void {
+    const s = this.gameState;
+    const seasonDef = s.getSeasonDef();
+    if (!seasonDef) return;
+
+    // Include today's revenue in the total
+    const totalRevenue = s.seasonRevenue + s.dailyRevenue;
+    const result = s.getSeasonResult();
+
+    const container = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+
+    // Full-screen backdrop
+    const backdrop = this.add.graphics();
+    backdrop.fillStyle(0x000000, 0.8);
+    backdrop.fillRect(-GAME_WIDTH / 2, -GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT);
+    container.add(backdrop);
+
+    const panelW = 500;
+    const panelH = 440;
+    const panel = this.add.graphics();
+
+    // Panel color based on result
+    const panelColor = result === 'win' ? 0x1A5276 : result === 'soft_fail' ? 0x4A3728 : 0x4A1A1A;
+    panel.fillStyle(panelColor, 1);
+    panel.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
+
+    const borderColor = result === 'win' ? 0x2ECC71 : result === 'soft_fail' ? 0xF39C12 : 0xE74C3C;
+    panel.lineStyle(3, borderColor);
+    panel.strokeRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
+    container.add(panel);
+
+    // Result header
+    const resultLabels = {
+      win: 'Season Complete!',
+      soft_fail: 'Season Over — Targets Missed',
+      hard_fail: 'Bankrupt — Game Over',
+    };
+    const resultColors = { win: '#2ECC71', soft_fail: '#F39C12', hard_fail: '#E74C3C' };
+    const resultIcons = { win: '🎉', soft_fail: '😔', hard_fail: '💀' };
+
+    const title = this.add.text(0, -panelH / 2 + 25, `${resultIcons[result]} ${resultLabels[result]}`, {
+      fontFamily: 'Arial', fontSize: '24px', color: resultColors[result], fontStyle: 'bold',
+    }).setOrigin(0.5, 0);
+    container.add(title);
+
+    const seasonName = this.add.text(0, -panelH / 2 + 60, `Season ${seasonDef.season}: ${seasonDef.name}`, {
+      fontFamily: 'Arial', fontSize: '18px', color: '#BDC3C7',
+    }).setOrigin(0.5, 0);
+    container.add(seasonName);
+
+    // Targets vs actual
+    let y = -panelH / 2 + 100;
+    const leftX = -panelW / 2 + 40;
+
+    const addTarget = (yPos: number, label: string, actual: string, target: string, met: boolean) => {
+      const l = this.add.text(leftX, yPos, label, {
+        fontFamily: 'Arial', fontSize: '15px', color: '#95A5A6',
+      });
+      container.add(l);
+      const check = met ? '✅' : '❌';
+      const v = this.add.text(leftX, yPos + 20, `${check} ${actual}  (target: ${target})`, {
+        fontFamily: 'Arial', fontSize: '16px', color: met ? '#2ECC71' : '#E74C3C',
+      });
+      container.add(v);
+    };
+
+    const metRevenue = totalRevenue >= seasonDef.revenueTarget;
+    addTarget(y, 'TOTAL REVENUE', `$${totalRevenue.toFixed(2)}`, `$${seasonDef.revenueTarget}`, metRevenue);
+    y += 55;
+
+    const metRep = s.reputation >= seasonDef.reputationTarget;
+    const repStars = '★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation));
+    addTarget(y, 'REPUTATION', `${repStars} (${s.reputation.toFixed(1)})`, `${seasonDef.reputationTarget.toFixed(1)}+`, metRep);
+    y += 55;
+
+    // Season stats summary
+    const seasonReports = s.dayReports.slice(-seasonDef.daysPerSeason);
+    const totalServed = seasonReports.reduce((sum, r) => sum + r.customersServed, 0);
+    const totalLost = seasonReports.reduce((sum, r) => sum + r.customersLost, 0);
+
+    const statsText = this.add.text(leftX, y, [
+      `Days Played: ${seasonDef.daysPerSeason}`,
+      `Customers Served: ${totalServed}`,
+      `Customers Lost: ${totalLost}`,
+      `Final Balance: $${s.money.toFixed(2)}`,
+    ].join('\n'), {
+      fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7', lineSpacing: 4,
+    });
+    container.add(statsText);
+
+    y += 100;
+
+    // Action buttons based on result
+    if (result === 'win') {
+      const nextSeasonDef = SEASON_CATALOG.find(sd => sd.season === seasonDef.season + 1);
+      if (nextSeasonDef) {
+        // Preview next season
+        const preview = this.add.text(0, y, `Next: Season ${nextSeasonDef.season} — ${nextSeasonDef.name}`, {
+          fontFamily: 'Arial', fontSize: '14px', color: '#7FDBFF',
+        }).setOrigin(0.5, 0);
+        container.add(preview);
+
+        const previewDesc = this.add.text(0, y + 22, nextSeasonDef.description, {
+          fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6',
+          wordWrap: { width: panelW - 80 },
+        }).setOrigin(0.5, 0);
+        container.add(previewDesc);
+
+        const nextBtn = this.add.text(0, panelH / 2 - 45, 'Next Season →', {
+          fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+          backgroundColor: '#27AE60', padding: { x: 20, y: 8 },
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        container.add(nextBtn);
+
+        nextBtn.on('pointerdown', () => {
+          container.destroy();
+          s.advanceSeason();
+          s.startNewDay();
+          SaveManager.save(s, 'auto', 'story');
+          this.rollDailyEvent();
+          this.updatePhaseUI();
+        });
+      } else {
+        // Game complete! All 5 seasons done
+        const victoryText = this.add.text(0, y, '🏆 Congratulations! You completed all 5 seasons! 🏆', {
+          fontFamily: 'Arial', fontSize: '18px', color: '#FFD700', fontStyle: 'bold',
+          wordWrap: { width: panelW - 60 },
+        }).setOrigin(0.5, 0);
+        container.add(victoryText);
+
+        const menuBtn = this.add.text(0, panelH / 2 - 45, 'Main Menu', {
+          fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+          backgroundColor: '#3498DB', padding: { x: 20, y: 8 },
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        container.add(menuBtn);
+
+        menuBtn.on('pointerdown', () => {
+          this.scene.start('MainMenuScene');
+        });
+      }
+    } else if (result === 'soft_fail') {
+      // Retry or continue options
+      const retryBtn = this.add.text(-80, panelH / 2 - 45, 'Retry Season', {
+        fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+        backgroundColor: '#F39C12', padding: { x: 16, y: 8 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      container.add(retryBtn);
+
+      retryBtn.on('pointerdown', () => {
+        container.destroy();
+        // Reset season state but keep equipment/staff
+        s.seasonDay = 0;
+        s.seasonRevenue = 0;
+        s.money = seasonDef.startingMoney;
+        s.startNewDay();
+        SaveManager.save(s, 'auto', 'story');
+        this.rollDailyEvent();
+        this.updatePhaseUI();
+      });
+
+      const menuBtn = this.add.text(100, panelH / 2 - 45, 'Main Menu', {
+        fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+        backgroundColor: '#34495E', padding: { x: 16, y: 8 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      container.add(menuBtn);
+
+      menuBtn.on('pointerdown', () => {
+        this.scene.start('MainMenuScene');
+      });
+    } else {
+      // Hard fail — game over
+      const menuBtn = this.add.text(0, panelH / 2 - 45, 'Main Menu', {
+        fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+        backgroundColor: '#E74C3C', padding: { x: 20, y: 8 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      container.add(menuBtn);
+
+      menuBtn.on('pointerdown', () => {
+        this.scene.start('MainMenuScene');
+      });
+    }
   }
 }

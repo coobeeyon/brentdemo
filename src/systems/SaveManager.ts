@@ -30,6 +30,8 @@ interface SerializedGameState {
   equipment: OwnedEquipment[];
   activeCampaigns: ActiveCampaign[];
   weather: WeatherType;
+  seasonDay: number;
+  seasonRevenue: number;
 }
 
 const SAVE_VERSION = 4;
@@ -59,6 +61,8 @@ export class SaveManager {
           equipment: gameState.equipment,
           activeCampaigns: gameState.activeCampaigns,
           weather: gameState.weather,
+          seasonDay: gameState.seasonDay,
+          seasonRevenue: gameState.seasonRevenue,
         },
       };
 
@@ -98,6 +102,8 @@ export class SaveManager {
       gameState.equipment = s.equipment ?? [];
       gameState.activeCampaigns = s.activeCampaigns ?? [];
       gameState.weather = s.weather ?? 'sunny';
+      gameState.seasonDay = s.seasonDay ?? 1;
+      gameState.seasonRevenue = s.seasonRevenue ?? 0;
 
       return true;
     } catch {

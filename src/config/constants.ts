@@ -65,6 +65,76 @@ export interface EquipmentDef {
   tiers: EquipmentTier[];
 }
 
+// Story Mode Seasons
+export interface SeasonDef {
+  season: number;
+  name: string;
+  setting: string;
+  description: string;
+  daysPerSeason: number;
+  revenueTarget: number;     // total revenue needed to pass
+  reputationTarget: number;  // minimum reputation at season end
+  startingMoney: number;     // money player starts with (or carries over)
+  unlockFlavors?: string[];  // new flavors unlocked at season start
+}
+
+export const SEASON_CATALOG: SeasonDef[] = [
+  {
+    season: 1,
+    name: 'Humble Beginnings',
+    setting: 'Hometown Stand',
+    description: 'Start your ice cream journey at a small roadside stand. Learn the basics of running a shop.',
+    daysPerSeason: 14,
+    revenueTarget: 500,
+    reputationTarget: 2.0,
+    startingMoney: STARTING_MONEY,
+  },
+  {
+    season: 2,
+    name: 'Beach Town',
+    setting: 'Small Beach Town',
+    description: 'Move to a busy beach town. Higher customer volume but more competition.',
+    daysPerSeason: 18,
+    revenueTarget: 1500,
+    reputationTarget: 2.5,
+    startingMoney: 800,
+    unlockFlavors: ['mint_chip', 'cookies_cream'],
+  },
+  {
+    season: 3,
+    name: 'City Food Court',
+    setting: 'City Food Court',
+    description: 'Take on the big city. Manage multiple stations and face fierce competition.',
+    daysPerSeason: 21,
+    revenueTarget: 3000,
+    reputationTarget: 3.0,
+    startingMoney: 1200,
+    unlockFlavors: ['mango', 'pistachio'],
+  },
+  {
+    season: 4,
+    name: 'Resort Living',
+    setting: 'Tourist Resort',
+    description: 'Serve premium VIP clientele at a luxury resort. High expectations, high rewards.',
+    daysPerSeason: 21,
+    revenueTarget: 5000,
+    reputationTarget: 3.5,
+    startingMoney: 2000,
+    unlockFlavors: ['salted_caramel', 'lavender'],
+  },
+  {
+    season: 5,
+    name: 'Franchise Launch',
+    setting: 'Franchise HQ',
+    description: 'The ultimate challenge: launch your franchise. Prove you can build a brand.',
+    daysPerSeason: 28,
+    revenueTarget: 10000,
+    reputationTarget: 4.0,
+    startingMoney: 3000,
+    unlockFlavors: ['matcha', 'rocky_road'],
+  },
+];
+
 // Accessibility
 export interface AccessibilitySettings {
   textScale: number;         // 1.0 = normal, 1.25 = large, 1.5 = extra large

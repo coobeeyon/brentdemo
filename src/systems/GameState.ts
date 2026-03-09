@@ -14,6 +14,8 @@ import {
   CampaignEffects,
   WeatherType,
   WEATHER_TABLE,
+  SEASON_CATALOG,
+  SeasonDef,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -118,6 +120,10 @@ export class GameState {
 
   // Weather
   weather: WeatherType = WeatherType.SUNNY;
+
+  // Story mode
+  seasonDay: number = 1;              // day within current season
+  seasonRevenue: number = 0;          // total revenue accumulated this season
 
   constructor() {
     this.initializeStartingInventory();
@@ -443,6 +449,60 @@ export class GameState {
       .filter(c => c.daysRemaining > 0);
   }
 
+  /** Get the current season definition */
+  getSeasonDef(): SeasonDef | undefined {
+    return SEASON_CATALOG.find(s => s.season === this.season);
+  }
+
+  /** Check if the current season is complete (last day reached) */
+  isSeasonComplete(): boolean {
+    const seasonDef = this.getSeasonDef();
+    if (!seasonDef) return false;
+    return this.seasonDay >= seasonDef.daysPerSeason;
+  }
+
+  /** Check season result: 'win', 'soft_fail', or 'hard_fail' */
+  getSeasonResult(): 'win' | 'soft_fail' | 'hard_fail' {
+    if (this.money < -100) return 'hard_fail'; // bankrupt
+
+    const seasonDef = this.getSeasonDef();
+    if (!seasonDef) return 'soft_fail';
+
+    const metRevenue = this.seasonRevenue >= seasonDef.revenueTarget;
+    const metReputation = this.reputation >= seasonDef.reputationTarget;
+
+    if (metRevenue && metReputation) return 'win';
+    return 'soft_fail';
+  }
+
+  /** Advance to the next season */
+  advanceSeason(): void {
+    this.season++;
+    this.seasonDay = 1;
+    this.seasonRevenue = 0;
+
+    const seasonDef = this.getSeasonDef();
+    if (seasonDef) {
+      // Unlock new flavors for this season
+      if (seasonDef.unlockFlavors) {
+        for (const flavorId of seasonDef.unlockFlavors) {
+          if (!this.unlockedFlavors.has(flavorId)) {
+            this.unlockedFlavors.add(flavorId);
+            // Add the flavor to available flavors
+            const name = flavorId.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+            this.flavors.push({
+              id: flavorId,
+              name,
+              unlocked: true,
+              ingredients: ['milk', 'sugar'], // simplified - uses base ingredients
+              popularity: 0.5 + Math.random() * 0.3,
+            });
+          }
+        }
+      }
+    }
+  }
+
   /** Roll random weather for the day (weighted: sunny/cloudy more likely) */
   private rollWeather(): void {
     const weights = [3, 3, 2, 1.5, 0.5]; // sunny, cloudy, rainy, hot, stormy
@@ -483,7 +543,11 @@ export class GameState {
   }
 
   startNewDay(): void {
+    // Track season revenue from previous day before resetting
+    this.seasonRevenue += this.dailyRevenue;
+
     this.day++;
+    this.seasonDay++;
     this.currentHour = STORE_OPEN_HOUR;
     this.phase = DayPhase.PREPARE;
     this.dailyRevenue = 0;
