@@ -65,11 +65,10 @@
       "title": "Community events: pop-up booth mini-game",
       "description": "Implement pop-up booth at local fairs as a mini-game for bonus revenue. Player can set up a temporary booth with limited menu, serve customers in a timed challenge.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T19:32:51.732707704Z",
-      "updated_at": "2026-03-09T19:40:52.213633573Z"
+      "updated_at": "2026-03-09T19:43:36.315853581Z"
     },
     "lb-ak2s": {
       "id": "lb-ak2s",
