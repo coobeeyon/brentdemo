@@ -35,11 +35,10 @@
       "title": "UI polish: weather display, accessibility, side panels",
       "description": "Add weather display in top bar, accessibility options, side panel improvements",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-09T18:34:22.827599765Z",
-      "updated_at": "2026-03-09T18:48:25.546430176Z"
+      "updated_at": "2026-03-09T18:50:17.571483010Z"
     },
     "lb-9v3z": {
       "id": "lb-9v3z",
