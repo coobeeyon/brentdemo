@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { SaveManager } from '../systems/SaveManager';
@@ -15,6 +15,7 @@ export class GameplayScene extends Phaser.Scene {
   private queueText!: Phaser.GameObjects.Text;
   private speedText!: Phaser.GameObjects.Text;
   private stockWarningText!: Phaser.GameObjects.Text;
+  private equipWarningText!: Phaser.GameObjects.Text;
   private serveButton!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -179,6 +180,14 @@ export class GameplayScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '16px', color: '#FFDC00',
     }).setOrigin(1, 0);
 
+    // Equipment warnings (bottom-right)
+    this.equipWarningText = this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, '', {
+      fontFamily: 'Arial', fontSize: '13px', color: '#F39C12',
+      backgroundColor: '#00000088',
+      padding: { x: 6, y: 4 },
+      lineSpacing: 2,
+    }).setOrigin(1, 1).setVisible(false);
+
     // Low stock warnings (bottom-left during serve phase)
     this.stockWarningText = this.add.text(10, GAME_HEIGHT - 10, '', {
       fontFamily: 'Arial', fontSize: '13px', color: '#E74C3C',
@@ -261,6 +270,38 @@ export class GameplayScene extends Phaser.Scene {
         lineSpacing: 3,
       }).setOrigin(1, 0);
       prepContainer.add(invText);
+
+      // Daily costs summary
+      const totalWages = this.gameState.staff.reduce((sum, st) => sum + st.wage, 0);
+      const maintenance = this.gameState.getMaintenanceCost();
+      const assignedCount = this.gameState.staff.filter(st => st.assigned).length;
+      const costLines = [
+        'Daily Costs:',
+        `  Staff (${assignedCount}/${this.gameState.staff.length}): $${totalWages}`,
+        `  Maintenance: $${maintenance}`,
+        `  Total: $${totalWages + maintenance}/day`,
+      ];
+
+      // Add broken equipment warnings
+      const brokenEquip = this.gameState.equipment.filter(e => e.broken);
+      if (brokenEquip.length > 0) {
+        costLines.push('');
+        costLines.push('Broken Equipment:');
+        for (const eq of brokenEquip) {
+          const def = EQUIPMENT_CATALOG.find(e => e.id === eq.id);
+          costLines.push(`  🔧 ${def?.name ?? eq.id}`);
+        }
+      }
+
+      const costText = this.add.text(20, 70, costLines.join('\n'), {
+        fontFamily: 'Arial',
+        fontSize: '13px',
+        color: '#333',
+        backgroundColor: '#FFFFFFCC',
+        padding: { x: 10, y: 8 },
+        lineSpacing: 3,
+      });
+      prepContainer.add(costText);
     }
   }
 
@@ -271,7 +312,9 @@ export class GameplayScene extends Phaser.Scene {
     this.phaseText.setText(s.phase.toUpperCase());
     this.moneyText.setText(`$${s.money.toFixed(2)}`);
     this.reputationText.setText('★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation)));
-    this.queueText.setText(`Queue: ${this.customerManager.getQueueLength()} | Served: ${this.customerManager.customersServed} | Lost: ${this.customerManager.customersLost}`);
+    const assignedStaff = s.staff.filter(st => st.assigned).length;
+    const staffLabel = assignedStaff > 0 ? ` | Staff: ${assignedStaff}` : '';
+    this.queueText.setText(`Queue: ${this.customerManager.getQueueLength()} | Served: ${this.customerManager.customersServed} | Lost: ${this.customerManager.customersLost}${staffLabel}`);
 
     const speedLabels: Record<number, string> = { 0: '⏸ PAUSED', 1: '▶ 1x', 2: '▶▶ 2x' };
     this.speedText.setText(speedLabels[s.gameSpeed] ?? `${s.gameSpeed}x`);
@@ -291,6 +334,25 @@ export class GameplayScene extends Phaser.Scene {
       }
     } else {
       this.stockWarningText.setVisible(false);
+    }
+
+    // Equipment warnings (broken or low condition)
+    const equipWarnings: string[] = [];
+    for (const owned of s.equipment) {
+      if (owned.tier === 0) continue;
+      const def = EQUIPMENT_CATALOG.find(e => e.id === owned.id);
+      const name = def?.name ?? owned.id;
+      if (owned.broken) {
+        equipWarnings.push(`🔧 ${name}: BROKEN`);
+      } else if (owned.condition < 30) {
+        equipWarnings.push(`⚠ ${name}: ${Math.round(owned.condition)}%`);
+      }
+    }
+    if (equipWarnings.length > 0) {
+      this.equipWarningText.setText(equipWarnings.join('\n'));
+      this.equipWarningText.setVisible(true);
+    } else {
+      this.equipWarningText.setVisible(false);
     }
   }
 
