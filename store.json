@@ -144,11 +144,10 @@
       "title": "TutorialScene highlight border leaks between steps",
       "description": "In TutorialScene.showStep(), each step with a highlight creates a new Graphics object named 'highlightBorder', but the cleanup logic is broken: getByName returns the first match (not the newest), so old borders survive and accumulate in the scene. The declared 'oldBorder' variable is also unused. Fix: add a private highlightBorder class field, destroy it before creating a new one each step.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T10:03:48.347355838Z",
-      "updated_at": "2026-03-10T10:08:19.302411152Z"
+      "updated_at": "2026-03-10T10:08:36.887049361Z"
     },
     "lb-cn3r": {
       "id": "lb-cn3r",
