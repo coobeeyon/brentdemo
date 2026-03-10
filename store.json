@@ -65,11 +65,10 @@
       "title": "Add Load Game option to MainMenuScene for manual save slots",
       "description": "MainMenuScene only shows Continue (auto-save). With manual save slots now available via PauseScene, add a Load Game button to main menu that shows slot selection.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T13:56:06.473760437Z",
-      "updated_at": "2026-03-10T13:56:10.382747047Z"
+      "updated_at": "2026-03-10T13:57:11.703102729Z"
     },
     "lb-3l93": {
       "id": "lb-3l93",
