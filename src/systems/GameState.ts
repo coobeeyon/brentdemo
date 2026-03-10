@@ -904,7 +904,14 @@ export class GameState {
     const seasonDef = this.getSeasonDef();
     if (!seasonDef) return 'soft_fail';
 
-    const metRevenue = this.seasonRevenue >= seasonDef.revenueTarget;
+    // Include current day's revenue that hasn't been accumulated yet
+    const allLocs: LocationState[] = this.franchiseMode && this.locations.length > 0
+      ? this.locations
+      : [this as any];
+    const pendingRevenue = allLocs.reduce((sum, loc) => sum + loc.dailyRevenue, 0);
+    const effectiveRevenue = this.seasonRevenue + pendingRevenue;
+
+    const metRevenue = effectiveRevenue >= seasonDef.revenueTarget;
 
     // In franchise mode, use aggregate reputation and check location target
     if (seasonDef.isFranchise && this.franchiseMode) {
