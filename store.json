@@ -463,11 +463,10 @@
       "title": "Supplier system with price fluctuations and bulk discounts",
       "description": "Spec calls for dynamic supplier mechanics: price fluctuations based on season/demand, supplier shortages, and bulk-buy discount opportunities. Currently ingredients are purchased at flat rates.",
       "item_type": "feature",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T10:21:58.375588412Z",
-      "updated_at": "2026-03-10T10:30:01.688094208Z"
+      "updated_at": "2026-03-10T10:33:03.367589027Z"
     },
     "lb-pct9": {
       "id": "lb-pct9",
