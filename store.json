@@ -345,10 +345,10 @@
       "title": "No guidance on how much of each supply to buy",
       "description": "Player feedback: unclear how much of each supply type is needed. Players have no way to estimate quantities before purchasing.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
       "created_at": "2026-03-10T09:50:28.403119370Z",
-      "updated_at": "2026-03-10T09:51:37.099679619Z"
+      "updated_at": "2026-03-10T09:56:21.405123518Z"
     },
     "lb-mle0": {
       "id": "lb-mle0",
