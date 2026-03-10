@@ -1508,6 +1508,16 @@
       "created_at": "2026-03-10T10:24:24.171993139Z",
       "updated_at": "2026-03-10T10:27:41.333996925Z"
     },
+    "lb-ymsa": {
+      "id": "lb-ymsa",
+      "title": "Daily challenge rotation system",
+      "description": "Implement date-based daily rotation for challenge mode. The spec says 'daily community challenges' but currently all 6 challenges are always available. Add a 'Challenge of the Day' that rotates based on the current date, using a deterministic seed so all players get the same daily challenge.",
+      "item_type": "feature",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T16:27:45.802744710Z",
+      "updated_at": "2026-03-10T16:27:45.802744710Z"
+    },
     "lb-ypij": {
       "id": "lb-ypij",
       "title": "Equipment system and upgrades",
