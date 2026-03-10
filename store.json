@@ -833,11 +833,10 @@
       "title": "Ensure minimum touch target sizes for mobile",
       "description": "Audit interactive elements across scenes to ensure minimum 44px touch targets. Key areas: ShopScene buy buttons, StaffScene actions, side panel items in GameplayScene, small text buttons in modals.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T18:26:28.581120936Z",
-      "updated_at": "2026-03-10T18:26:33.386258505Z"
+      "updated_at": "2026-03-10T18:30:38.125519568Z"
     },
     "lb-i7uz": {
       "id": "lb-i7uz",
