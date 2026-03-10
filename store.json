@@ -755,8 +755,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 3,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:39:58.277369862Z",
-      "updated_at": "2026-03-10T12:39:58.277369862Z"
+      "updated_at": "2026-03-10T12:44:32.344673817Z"
     },
     "lb-pct9": {
       "id": "lb-pct9",
