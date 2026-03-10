@@ -945,6 +945,8 @@ export const SERVING_STYLE_CATALOG: ServingStyleDef[] = [
   { id: 'milkshake', name: 'Milkshake', priceMult: 1.6, ingredientMult: 1.5, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
   { id: 'float', name: 'Float', priceMult: 1.5, ingredientMult: 1.3, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
   { id: 'sandwich', name: 'Ice Cream Sandwich', priceMult: 1.3, ingredientMult: 1.1, maxScoops: 1 },
+  { id: 'soft_serve_cone', name: 'Soft-Serve Cone', priceMult: 1.1, ingredientMult: 0.9, maxScoops: 2, requiredEquipment: EquipmentId.SOFT_SERVE_MACHINE },
+  { id: 'soft_serve_cup', name: 'Soft-Serve Cup', priceMult: 1.1, ingredientMult: 0.9, maxScoops: 2, requiredEquipment: EquipmentId.SOFT_SERVE_MACHINE },
 ];
 
 // Exterior Signage
