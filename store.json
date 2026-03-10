@@ -97,7 +97,7 @@
       "status": "open",
       "priority": 2,
       "created_at": "2026-03-10T09:50:28.383805663Z",
-      "updated_at": "2026-03-10T09:50:28.383805663Z"
+      "updated_at": "2026-03-10T09:51:37.081498859Z"
     },
     "lb-actv": {
       "id": "lb-actv",
@@ -618,6 +618,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-a7v8",
+      "to_id": "lb-6f4u",
       "dep_type": "parent"
     }
   ]
