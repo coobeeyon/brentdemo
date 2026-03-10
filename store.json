@@ -1143,11 +1143,10 @@
       "title": "Apply scaledFontSize to all remaining scenes (~230 hardcoded font sizes)",
       "description": "19 scene files still have hardcoded fontSize values that don't respect text size accessibility. Convert all to scaledFontSize(). Scenes: ShopScene(15), ChallengeScene(16), MarketingScene(15), TutorialScene(5), FranchiseScene(10), EquipmentScene(13), StaffScene(21), SeatingScene(8), BootScene(1), RecipeScene(21), PauseScene(8), SettingsScene(13), MainMenuScene(11), ResearchScene(10), PopUpBoothScene(18), LoanScene(14), SignageScene(8), DecorScene(8), MenuEditorScene(15).",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 4,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:10:01.857008441Z",
-      "updated_at": "2026-03-10T15:15:49.343302883Z"
+      "updated_at": "2026-03-10T15:20:44.492363366Z"
     },
     "lb-t5zv": {
       "id": "lb-t5zv",
