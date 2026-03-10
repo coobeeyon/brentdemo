@@ -763,11 +763,10 @@
       "title": "CustomerManager reads top-level flavors/ingredients/menuPrices instead of loc-scoped fields in franchise mode",
       "description": "In franchise mode, CustomerManager.spawnCustomer(), canFulfillOrder(), and deductIngredients() read gameState.flavors, gameState.ingredients, and gameState.menuPrices instead of gameState.loc.flavors/ingredients/menuPrices. This means all locations use the same (stale) top-level data instead of location-specific inventories.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:59:39.182293537Z",
-      "updated_at": "2026-03-10T19:59:43.298658741Z"
+      "updated_at": "2026-03-10T20:00:45.095163073Z"
     },
     "lb-fbl1": {
       "id": "lb-fbl1",
