@@ -454,11 +454,10 @@
       "title": "Add low balance warning in story mode when approaching bankruptcy",
       "description": "In story mode, show a warning notification when money drops below $0, alerting the player they risk bankruptcy (hard fail) at end of season if they don't recover. Currently there's no warning before the hard_fail check.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:01:58.528551331Z",
-      "updated_at": "2026-03-10T15:02:02.824333285Z"
+      "updated_at": "2026-03-10T15:02:49.229638781Z"
     },
     "lb-dwfb": {
       "id": "lb-dwfb",
