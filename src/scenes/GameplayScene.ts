@@ -1256,19 +1256,26 @@ export class GameplayScene extends Phaser.Scene {
     addStat(rightX, y, 'BALANCE', `$${s.loc.money.toFixed(2)}`);
     y += 50;
 
-    // Low balance warning in story mode
+    // Low balance warning in story mode — check ALL franchise locations
     const gameMode = this.registry.get('gameMode') as string ?? 'story';
-    if (gameMode === 'story' && s.loc.money < 0) {
-      const warningColor = s.loc.money < -50 ? uiColor(this, 'red') : uiColor(this, 'yellow');
-      const warningMsg = s.loc.money < -50
-        ? '⚠️ DANGER: Bankruptcy at -$100! Cut costs immediately!'
-        : '⚠️ Warning: Balance is negative. Risk of bankruptcy!';
-      const warning = this.add.text(0, y - 10, warningMsg, {
-        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: warningColor, fontStyle: 'bold',
-        wordWrap: { width: panelW - 60 },
-      }).setOrigin(0.5, 0);
-      report.add(warning);
-      y += 22;
+    if (gameMode === 'story') {
+      const locationsToCheck = s.franchiseMode && s.locations.length > 0
+        ? s.locations : [s.loc];
+      for (const loc of locationsToCheck) {
+        if (loc.money < 0) {
+          const warningColor = loc.money < -50 ? uiColor(this, 'red') : uiColor(this, 'yellow');
+          const locLabel = s.franchiseMode ? ` (${loc.name})` : '';
+          const warningMsg = loc.money < -50
+            ? `⚠️ DANGER${locLabel}: Bankruptcy at -$100! Cut costs immediately!`
+            : `⚠️ Warning${locLabel}: Balance is negative. Risk of bankruptcy!`;
+          const warning = this.add.text(0, y - 10, warningMsg, {
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: warningColor, fontStyle: 'bold',
+            wordWrap: { width: panelW - 60 },
+          }).setOrigin(0.5, 0);
+          report.add(warning);
+          y += 22;
+        }
+      }
     }
 
     // Mini revenue chart (last 7 days)
