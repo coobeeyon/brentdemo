@@ -309,7 +309,7 @@ export class GameState {
   }
 
   getEquipment(id: EquipmentId): OwnedEquipment | undefined {
-    return this.equipment.find(e => e.id === id);
+    return this.loc.equipment.find(e => e.id === id);
   }
 
   getEquipmentTier(id: EquipmentId): number {
@@ -324,7 +324,7 @@ export class GameState {
       qualityBonus: 0,
     };
 
-    for (const owned of this.equipment) {
+    for (const owned of this.loc.equipment) {
       if (owned.broken || owned.tier === 0) continue;
       const def = EQUIPMENT_CATALOG.find(e => e.id === owned.id);
       if (!def) continue;
@@ -348,7 +348,7 @@ export class GameState {
 
   /** Degrade equipment condition and check for breakdowns */
   degradeEquipment(): void {
-    for (const owned of this.equipment) {
+    for (const owned of this.loc.equipment) {
       if (owned.tier === 0 || owned.broken) continue;
       // Lose 5-15 condition per day
       const degradation = 5 + Math.random() * 10;
@@ -374,7 +374,7 @@ export class GameState {
   /** Get staff currently on shift at the given hour */
   getActiveStaff(hour?: number): StaffMember[] {
     const h = hour ?? this.currentHour;
-    return this.staff.filter(s => {
+    return this.loc.staff.filter(s => {
       if (!s.assigned || s.shift === ShiftType.OFF) return false;
       const shiftDef = SHIFT_HOURS[s.shift];
       return h >= shiftDef.start && h < shiftDef.end;
@@ -405,9 +405,9 @@ export class GameState {
 
   /** Update staff morale at end of day */
   updateStaffMorale(): void {
-    const brokenCount = this.equipment.filter(e => e.broken).length;
+    const brokenCount = this.loc.equipment.filter(e => e.broken).length;
 
-    for (const member of this.staff) {
+    for (const member of this.loc.staff) {
       let moraleChange = 0;
       const isWorking = member.assigned && member.shift !== ShiftType.OFF;
 
@@ -459,7 +459,8 @@ export class GameState {
 
   /** Train a staff member: improve one random stat by 1 (costs money) */
   trainStaff(memberId: string): { success: boolean; stat?: string; cost: number } {
-    const member = this.staff.find(s => s.id === memberId);
+    const loc = this.loc;
+    const member = loc.staff.find(s => s.id === memberId);
     if (!member) return { success: false, cost: 0 };
 
     // Training cost scales with current skill level
@@ -470,7 +471,7 @@ export class GameState {
       cost = Math.round(cost * (1 - researchFx.staffTrainingDiscount));
     }
 
-    if (this.money < cost) return { success: false, cost };
+    if (loc.money < cost) return { success: false, cost };
 
     // Pick a random stat to improve (weighted toward lowest stat)
     const stats: { key: 'speed' | 'accuracy' | 'friendliness'; value: number }[] = [
@@ -502,8 +503,8 @@ export class GameState {
       chosen = other;
     }
 
-    this.money -= cost;
-    this.dailyExpenses += cost;
+    loc.money -= cost;
+    loc.dailyExpenses += cost;
     member[chosen.key] += 1;
     // Training also gives a small morale boost
     member.morale = Math.min(100, member.morale + 5);
@@ -514,7 +515,7 @@ export class GameState {
   /** Get total daily maintenance cost for all equipment */
   getMaintenanceCost(): number {
     let total = 0;
-    for (const owned of this.equipment) {
+    for (const owned of this.loc.equipment) {
       if (owned.tier === 0) continue;
       const def = EQUIPMENT_CATALOG.find(e => e.id === owned.id);
       if (!def) continue;
@@ -629,7 +630,8 @@ export class GameState {
 
   /** Tick down campaign durations (called at start of new day) */
   private updateCampaigns(): void {
-    this.activeCampaigns = this.activeCampaigns
+    const loc = this.loc;
+    loc.activeCampaigns = loc.activeCampaigns
       .map(c => ({ ...c, daysRemaining: c.daysRemaining - 1 }))
       .filter(c => c.daysRemaining > 0);
   }
@@ -640,6 +642,25 @@ export class GameState {
   get currentLocation(): LocationState | undefined {
     if (!this.franchiseMode || this.locations.length === 0) return undefined;
     return this.locations[this.currentLocationId];
+  }
+
+  /**
+   * Get the active location-scoped data source.
+   * In franchise mode, returns the current location object.
+   * In non-franchise mode, returns `this` (GameState has all LocationState fields).
+   * Writes to the returned object update the correct source.
+   */
+  get loc(): LocationState {
+    if (this.franchiseMode && this.locations.length > 0) {
+      return this.locations[this.currentLocationId];
+    }
+    return this as any;
+  }
+
+  /** Get the display name of the active location, or empty string if not in franchise mode */
+  get locationName(): string {
+    if (!this.franchiseMode || this.locations.length === 0) return '';
+    return this.locations[this.currentLocationId].name;
   }
 
   /** Initialize franchise mode by wrapping current single-location state into locations[0] */
@@ -996,8 +1017,8 @@ export class GameState {
       totalCustomersServed: this.totalCustomersServed,
       totalRevenue: this.totalRevenue,
       reputation: this.reputation,
-      equipmentOwned: this.equipment.filter(e => e.tier > 0).length,
-      staffCount: this.staff.length,
+      equipmentOwned: this.loc.equipment.filter(e => e.tier > 0).length,
+      staffCount: this.loc.staff.length,
       flavorsUnlocked: this.unlockedFlavors.size,
     };
   }
@@ -1137,19 +1158,20 @@ export class GameState {
 
   /** Accrue daily interest on outstanding loan */
   private accrueInterest(): void {
-    if (this.loanAmount <= 0) return;
+    const loc = this.loc;
+    if (loc.loanAmount <= 0) return;
 
-    this.loanDaysRemaining--;
+    loc.loanDaysRemaining--;
 
     // Apply daily interest
-    const interest = this.loanAmount * this.loanInterestRate;
-    this.loanAmount += interest;
+    const interest = loc.loanAmount * loc.loanInterestRate;
+    loc.loanAmount += interest;
 
     // If loan is overdue, apply penalty: double interest rate and reputation hit
-    if (this.loanDaysRemaining <= 0 && this.loanAmount > 0) {
-      const penalty = this.loanAmount * this.loanInterestRate; // extra interest
-      this.loanAmount += penalty;
-      this.reputation = Math.max(0.5, this.reputation - 0.1);
+    if (loc.loanDaysRemaining <= 0 && loc.loanAmount > 0) {
+      const penalty = loc.loanAmount * loc.loanInterestRate; // extra interest
+      loc.loanAmount += penalty;
+      loc.reputation = Math.max(0.5, loc.reputation - 0.1);
     }
   }
 
@@ -1165,7 +1187,7 @@ export class GameState {
     const violations: string[] = [];
 
     // Equipment condition: each broken piece is -15, low condition is -5
-    for (const owned of this.equipment) {
+    for (const owned of this.loc.equipment) {
       if (owned.tier === 0) continue;
       const def = EQUIPMENT_CATALOG.find(e => e.id === owned.id);
       const name = def?.name ?? owned.id;
@@ -1186,14 +1208,14 @@ export class GameState {
     }
 
     // No staff assigned: -15 (food handling without proper staffing)
-    const assignedStaff = this.staff.filter(s => s.assigned).length;
-    if (this.staff.length > 0 && assignedStaff === 0) {
+    const assignedStaff = this.loc.staff.filter(s => s.assigned).length;
+    if (this.loc.staff.length > 0 && assignedStaff === 0) {
       score -= 15;
       violations.push('No staff assigned — understaffed');
     }
 
     // Low staff morale: -5 per staff with morale < 25 (indicates poor conditions)
-    const unhappyStaff = this.staff.filter(s => s.morale < 25).length;
+    const unhappyStaff = this.loc.staff.filter(s => s.morale < 25).length;
     if (unhappyStaff > 0) {
       score -= unhappyStaff * 5;
       violations.push(`${unhappyStaff} staff member(s) with critically low morale`);
@@ -1308,21 +1330,28 @@ export class GameState {
     this.dailyRevenue = 0;
     this.dailyExpenses = 0;
 
+    // Also reset location-scoped daily counters in franchise mode
+    if (this.franchiseMode && this.currentLocation) {
+      this.currentLocation.dailyRevenue = 0;
+      this.currentLocation.dailyExpenses = 0;
+    }
+
     // Expire ingredients
-    this.ingredients = this.ingredients.map(ing => ({
+    const loc = this.loc;
+    loc.ingredients = loc.ingredients.map(ing => ({
       ...ing,
       expiresInDays: ing.expiresInDays - 1,
     })).filter(ing => ing.expiresInDays > 0 && ing.quantity > 0);
 
     // Deduct staff wages
-    const totalWages = this.staff.reduce((sum, s) => sum + s.wage, 0);
-    this.money -= totalWages;
-    this.dailyExpenses += totalWages;
+    const totalWages = loc.staff.reduce((sum, s) => sum + s.wage, 0);
+    loc.money -= totalWages;
+    loc.dailyExpenses += totalWages;
 
     // Deduct equipment maintenance
     const maintenance = this.getMaintenanceCost();
-    this.money -= maintenance;
-    this.dailyExpenses += maintenance;
+    loc.money -= maintenance;
+    loc.dailyExpenses += maintenance;
 
     // Degrade equipment
     this.degradeEquipment();
@@ -1337,8 +1366,8 @@ export class GameState {
     this.accrueInterest();
 
     // Tick down closure days from failed inspections
-    if (this.closureDaysRemaining > 0) {
-      this.closureDaysRemaining--;
+    if (loc.closureDaysRemaining > 0) {
+      loc.closureDaysRemaining--;
     }
 
     // Roll weather for the day

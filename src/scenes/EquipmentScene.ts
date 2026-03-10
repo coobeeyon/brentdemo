@@ -31,7 +31,8 @@ export class EquipmentScene extends Phaser.Scene {
     panel.fillRoundedRect(panelX, panelY, panelW, panelH, 15);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, panelY + 25, 'Equipment & Upgrades', {
+    const titleSuffix = this.gameState.franchiseMode ? ` — ${this.gameState.locationName}` : '';
+    this.add.text(GAME_WIDTH / 2, panelY + 25, `Equipment & Upgrades${titleSuffix}`, {
       fontFamily: 'Arial',
       fontSize: '28px',
       color: '#FFF',
@@ -135,9 +136,9 @@ export class EquipmentScene extends Phaser.Scene {
       }).setInteractive({ useHandCursor: true });
 
       repairBtn.on('pointerdown', () => {
-        if (this.gameState.money >= repairCost) {
-          this.gameState.money -= repairCost;
-          this.gameState.dailyExpenses += repairCost;
+        if (this.gameState.loc.money >= repairCost) {
+          this.gameState.loc.money -= repairCost;
+          this.gameState.loc.dailyExpenses += repairCost;
           owned.broken = false;
           owned.condition = 80;
           this.refreshUI();
@@ -166,7 +167,7 @@ export class EquipmentScene extends Phaser.Scene {
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       upgradeBtn.on('pointerdown', () => {
-        if (this.gameState.money >= discountedCost) {
+        if (this.gameState.loc.money >= discountedCost) {
           this.purchaseUpgrade(def.id, nextTier.tier, discountedCost);
           this.refreshUI();
         } else {
@@ -218,8 +219,8 @@ export class EquipmentScene extends Phaser.Scene {
   }
 
   private purchaseUpgrade(equipmentId: EquipmentId, newTier: number, cost: number): void {
-    this.gameState.money -= cost;
-    this.gameState.dailyExpenses += cost;
+    this.gameState.loc.money -= cost;
+    this.gameState.loc.dailyExpenses += cost;
 
     const existing = this.gameState.getEquipment(equipmentId);
     if (existing) {
@@ -227,7 +228,7 @@ export class EquipmentScene extends Phaser.Scene {
       existing.condition = 100;
       existing.broken = false;
     } else {
-      this.gameState.equipment.push({
+      this.gameState.loc.equipment.push({
         id: equipmentId,
         tier: newTier,
         condition: 100,
@@ -270,7 +271,7 @@ export class EquipmentScene extends Phaser.Scene {
   }
 
   private updateDisplay(): void {
-    this.moneyText.setText(`Balance: $${this.gameState.money.toFixed(2)}`);
+    this.moneyText.setText(`Balance: $${this.gameState.loc.money.toFixed(2)}`);
     this.maintenanceText.setText(`Maint: $${this.gameState.getMaintenanceCost()}/day`);
   }
 }

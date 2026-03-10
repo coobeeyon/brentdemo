@@ -137,8 +137,16 @@ export class ShopScene extends Phaser.Scene {
     this.add.text(colX.qty, headerY, 'QTY', headerStyle);
     this.add.text(colX.buy, headerY, '', headerStyle);
 
+    // Location indicator in franchise mode
+    if (this.gameState.franchiseMode) {
+      this.add.text(GAME_WIDTH / 2, panelY + 42, `📍 ${this.gameState.locationName}`, {
+        fontFamily: 'Arial', fontSize: '13px', color: '#F1C40F',
+      }).setOrigin(0.5);
+    }
+
     // Supply guidance hint for new players (Day 1, low stock)
-    const totalStock = this.gameState.ingredients.reduce((sum, i) => sum + i.quantity, 0);
+    const loc = this.gameState.loc;
+    const totalStock = loc.ingredients.reduce((sum, i) => sum + i.quantity, 0);
     if (this.gameState.day <= 3 || totalStock < 30) {
       this.add.text(GAME_WIDTH / 2, panelY + 132, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
         fontFamily: 'Arial',
@@ -201,7 +209,7 @@ export class ShopScene extends Phaser.Scene {
     row.add(nameText);
 
     // Current stock with low-stock warning
-    const existing = this.gameState.ingredients.find(i => i.id === item.id);
+    const existing = this.gameState.loc.ingredients.find(i => i.id === item.id);
     const currentQty = existing?.quantity ?? 0;
     const isBaseIngredient = ['milk', 'sugar', 'vanilla_extract', 'cocoa', 'strawberries'].includes(item.id);
     const isLow = isBaseIngredient && currentQty < LOW_STOCK_THRESHOLD;
@@ -267,18 +275,18 @@ export class ShopScene extends Phaser.Scene {
     buyBtn.on('pointerdown', () => {
       const discount = this.getBulkDiscount(qty);
       const totalCost = actualPrice * qty * (1 - discount);
-      if (this.gameState.money >= totalCost) {
-        this.gameState.money -= totalCost;
-        this.gameState.dailyExpenses += totalCost;
+      if (this.gameState.loc.money >= totalCost) {
+        this.gameState.loc.money -= totalCost;
+        this.gameState.loc.dailyExpenses += totalCost;
 
         // Add to inventory
-        const existingIng = this.gameState.ingredients.find(i => i.id === item.id);
+        const existingIng = this.gameState.loc.ingredients.find(i => i.id === item.id);
         if (existingIng) {
           existingIng.quantity += item.bulkSize * qty;
           // Refresh expiry to max of existing and new
           existingIng.expiresInDays = Math.max(existingIng.expiresInDays, item.expiresInDays);
         } else {
-          this.gameState.ingredients.push({
+          this.gameState.loc.ingredients.push({
             id: item.id,
             name: item.name,
             quantity: item.bulkSize * qty,
@@ -294,7 +302,7 @@ export class ShopScene extends Phaser.Scene {
         }
 
         // Refresh stock display with low-stock re-evaluation
-        const newQty = this.gameState.ingredients.find(i => i.id === item.id)?.quantity ?? 0;
+        const newQty = this.gameState.loc.ingredients.find(i => i.id === item.id)?.quantity ?? 0;
         const newIsLow = isBaseIngredient && newQty < LOW_STOCK_THRESHOLD;
         stockText.setText(newIsLow ? `${newQty} ⚠` : `${newQty}`);
         stockText.setColor(newIsLow ? '#E74C3C' : '#FFF');
@@ -348,6 +356,6 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private updateDisplay(): void {
-    this.moneyText.setText(`Balance: $${this.gameState.money.toFixed(2)}`);
+    this.moneyText.setText(`Balance: $${this.gameState.loc.money.toFixed(2)}`);
   }
 }

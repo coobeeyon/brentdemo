@@ -29,7 +29,8 @@ export class MenuEditorScene extends Phaser.Scene {
     panel.fillRoundedRect(panelX, panelY, panelW, panelH, 15);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, panelY + 25, 'Menu Editor', {
+    const titleSuffix = this.gameState.franchiseMode ? ` — ${this.gameState.locationName}` : '';
+    this.add.text(GAME_WIDTH / 2, panelY + 25, `Menu Editor${titleSuffix}`, {
       fontFamily: 'Arial', fontSize: '28px', color: '#FFF',
     }).setOrigin(0.5);
 
@@ -74,18 +75,18 @@ export class MenuEditorScene extends Phaser.Scene {
     this.contentContainer.add(this.add.text(cols.price, startY, 'YOUR PRICE', hStyle));
     this.contentContainer.add(this.add.text(cols.ingredients, startY, 'NEEDS', hStyle));
 
-    this.gameState.flavors.forEach((flavor, i) => {
+    this.gameState.loc.flavors.forEach((flavor, i) => {
       this.createFlavorRow(flavor, i, startY + 25, cols);
     });
 
     // Summary section
-    const summaryY = startY + 25 + this.gameState.flavors.length * 65 + 10;
+    const summaryY = startY + 25 + this.gameState.loc.flavors.length * 65 + 10;
     const sep = this.add.graphics();
     sep.lineStyle(1, 0x7F8C8D, 0.5);
     sep.lineBetween(panelX + 20, summaryY, panelX + 580, summaryY);
     this.contentContainer.add(sep);
 
-    const activeFlavors = this.gameState.flavors.filter(f => f.unlocked).length;
+    const activeFlavors = this.gameState.loc.flavors.filter(f => f.unlocked).length;
     this.contentContainer.add(
       this.add.text(GAME_WIDTH / 2, summaryY + 15, `${activeFlavors} flavor${activeFlavors !== 1 ? 's' : ''} active on menu`, {
         fontFamily: 'Arial', fontSize: '15px', color: '#FFF',
@@ -99,7 +100,7 @@ export class MenuEditorScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     resetBtn.on('pointerdown', () => {
-      this.gameState.menuPrices.clear();
+      this.gameState.loc.menuPrices.clear();
       this.refreshUI();
     });
     this.contentContainer.add(resetBtn);
@@ -147,7 +148,7 @@ export class MenuEditorScene extends Phaser.Scene {
 
     // Ingredient list
     const ingNames = flavor.ingredients.map(id => {
-      const ing = this.gameState.ingredients.find(i => i.id === id);
+      const ing = this.gameState.loc.ingredients.find(i => i.id === id);
       return ing ? `${ing.name}(${ing.quantity})` : id;
     }).join(', ');
     this.contentContainer.add(
@@ -183,7 +184,7 @@ export class MenuEditorScene extends Phaser.Scene {
     );
 
     // Custom price controls
-    const currentPrice = this.gameState.menuPrices.get(flavor.id) ?? BASE_SCOOP_PRICE;
+    const currentPrice = this.gameState.loc.menuPrices.get(flavor.id) ?? BASE_SCOOP_PRICE;
     const priceText = this.add.text(cols.price + 30, y + 15, `$${currentPrice.toFixed(2)}`, {
       fontFamily: 'Arial', fontSize: '16px', color: currentPrice > BASE_SCOOP_PRICE ? '#2ECC71' : currentPrice < BASE_SCOOP_PRICE ? '#E74C3C' : '#FFF',
     }).setOrigin(0.5, 0);
@@ -195,7 +196,7 @@ export class MenuEditorScene extends Phaser.Scene {
     }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
     downBtn.on('pointerdown', () => {
       const newPrice = Math.max(0.50, currentPrice - 0.50);
-      this.gameState.menuPrices.set(flavor.id, newPrice);
+      this.gameState.loc.menuPrices.set(flavor.id, newPrice);
       this.refreshUI();
     });
     this.contentContainer.add(downBtn);
@@ -206,7 +207,7 @@ export class MenuEditorScene extends Phaser.Scene {
     }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
     upBtn.on('pointerdown', () => {
       const newPrice = Math.min(15.00, currentPrice + 0.50);
-      this.gameState.menuPrices.set(flavor.id, newPrice);
+      this.gameState.loc.menuPrices.set(flavor.id, newPrice);
       this.refreshUI();
     });
     this.contentContainer.add(upBtn);

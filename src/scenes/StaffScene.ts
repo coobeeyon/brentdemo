@@ -75,7 +75,8 @@ export class StaffScene extends Phaser.Scene {
     panel.fillRoundedRect(panelX, panelY, panelW, panelH, 15);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, panelY + 25, 'Staff Management', {
+    const titleSuffix = this.gameState.franchiseMode ? ` — ${this.gameState.locationName}` : '';
+    this.add.text(GAME_WIDTH / 2, panelY + 25, `Staff Management${titleSuffix}`, {
       fontFamily: 'Arial', fontSize: '28px', color: '#FFF',
     }).setOrigin(0.5);
 
@@ -113,7 +114,7 @@ export class StaffScene extends Phaser.Scene {
 
     // --- Current Staff Section ---
     this.contentContainer.add(
-      this.add.text(panelX + 20, startY, `Your Staff (${this.gameState.staff.length}/${MAX_STAFF})`, {
+      this.add.text(panelX + 20, startY, `Your Staff (${this.gameState.loc.staff.length}/${MAX_STAFF})`, {
         fontFamily: 'Arial', fontSize: '18px', color: '#FFF', fontStyle: 'bold',
       })
     );
@@ -131,7 +132,7 @@ export class StaffScene extends Phaser.Scene {
     this.contentContainer.add(this.add.text(cols.wage, headerY, 'WAGE', hStyle));
     this.contentContainer.add(this.add.text(cols.status, headerY, 'SHIFT', hStyle));
 
-    if (this.gameState.staff.length === 0) {
+    if (this.gameState.loc.staff.length === 0) {
       this.contentContainer.add(
         this.add.text(GAME_WIDTH / 2, headerY + 30, 'No staff hired yet', {
           fontFamily: 'Arial', fontSize: '14px', color: '#7F8C8D',
@@ -139,12 +140,12 @@ export class StaffScene extends Phaser.Scene {
       );
     }
 
-    this.gameState.staff.forEach((member, i) => {
+    this.gameState.loc.staff.forEach((member, i) => {
       this.createStaffRow(member, i, headerY + 25, cols);
     });
 
     // --- Hire Section ---
-    const hireY = startY + 30 + 25 + Math.max(this.gameState.staff.length, 1) * 40 + 20;
+    const hireY = startY + 30 + 25 + Math.max(this.gameState.loc.staff.length, 1) * 40 + 20;
 
     // Separator
     const sep = this.add.graphics();
@@ -297,7 +298,7 @@ export class StaffScene extends Phaser.Scene {
     }).setInteractive({ useHandCursor: true });
 
     fireBtn.on('pointerdown', () => {
-      this.gameState.staff = this.gameState.staff.filter(s => s.id !== member.id);
+      this.gameState.loc.staff = this.gameState.loc.staff.filter(s => s.id !== member.id);
       this.refreshUI();
     });
     this.contentContainer.add(fireBtn);
@@ -327,7 +328,7 @@ export class StaffScene extends Phaser.Scene {
     this.contentContainer.add(this.add.text(cols.wage, y + 10, `$${m.wage}/d`, vStyle));
 
     // Hire button
-    if (this.gameState.staff.length < MAX_STAFF) {
+    if (this.gameState.loc.staff.length < MAX_STAFF) {
       const hireBtn = this.add.text(cols.action, y + 7, `Hire ($${m.wage * 3} signing)`, {
         fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
         backgroundColor: '#27AE60', padding: { x: 10, y: 4 },
@@ -335,10 +336,10 @@ export class StaffScene extends Phaser.Scene {
 
       hireBtn.on('pointerdown', () => {
         const signingBonus = m.wage * 3;
-        if (this.gameState.money >= signingBonus) {
-          this.gameState.money -= signingBonus;
-          this.gameState.dailyExpenses += signingBonus;
-          this.gameState.staff.push(m);
+        if (this.gameState.loc.money >= signingBonus) {
+          this.gameState.loc.money -= signingBonus;
+          this.gameState.loc.dailyExpenses += signingBonus;
+          this.gameState.loc.staff.push(m);
           this.candidates = this.candidates.filter(c => c !== cand);
           this.refreshUI();
         } else {
@@ -370,8 +371,8 @@ export class StaffScene extends Phaser.Scene {
   }
 
   private updateDisplay(): void {
-    this.moneyText.setText(`Balance: $${this.gameState.money.toFixed(2)}`);
-    const totalWages = this.gameState.staff.reduce((sum, s) => sum + s.wage, 0);
+    this.moneyText.setText(`Balance: $${this.gameState.loc.money.toFixed(2)}`);
+    const totalWages = this.gameState.loc.staff.reduce((sum, s) => sum + s.wage, 0);
     this.wagesText.setText(`Daily wages: $${totalWages}`);
   }
 }
