@@ -1223,11 +1223,10 @@
       "title": "HEAT_WAVE spoilage effect does nothing in franchise mode",
       "description": "applyEndOfDayEffects in EventManager.ts iterates gameState.ingredients (top-level) for the spoilageMult handler, but in franchise mode all ingredient operations go through gameState.loc.ingredients. The top-level array is stale after initFranchiseMode() copies it. The same commit fixed gameState.reputation → gameState.loc.reputation but missed ingredients. Fix: change 'for (const ing of gameState.ingredients)' to 'for (const ing of gameState.loc.ingredients)' at EventManager.ts line 315.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:00:27.456763538Z",
-      "updated_at": "2026-03-10T19:02:01.746140455Z"
+      "updated_at": "2026-03-10T19:02:37.638607102Z"
     },
     "lb-n92t": {
       "id": "lb-n92t",
