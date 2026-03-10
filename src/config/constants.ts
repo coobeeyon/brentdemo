@@ -932,6 +932,7 @@ export const SERVING_STYLE_CATALOG: ServingStyleDef[] = [
   { id: 'sundae', name: 'Sundae', priceMult: 1.4, ingredientMult: 1.2, maxScoops: 3 },
   { id: 'milkshake', name: 'Milkshake', priceMult: 1.6, ingredientMult: 1.5, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
   { id: 'float', name: 'Float', priceMult: 1.5, ingredientMult: 1.3, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
+  { id: 'sandwich', name: 'Ice Cream Sandwich', priceMult: 1.3, ingredientMult: 1.1, maxScoops: 1 },
 ];
 
 // Exterior Signage
