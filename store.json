@@ -169,6 +169,16 @@
       "created_at": "2026-03-10T15:30:58.216953813Z",
       "updated_at": "2026-03-10T15:42:24.099089060Z"
     },
+    "lb-4p2n": {
+      "id": "lb-4p2n",
+      "title": "showChallengeResults reads stale top-level dayReports instead of loc.dayReports",
+      "description": "In GameplayScene.showChallengeResults() (line 1795-1797), totalRevenue/totalServed/totalLost are computed from s.dayReports (the top-level GameState.dayReports field, which is never populated since the franchise refactor). All day reports are pushed to s.loc.dayReports. Result: challenge results always show $0 revenue, 0 stars, and no customers served/lost. Fix: replace s.dayReports with s.loc.dayReports on those three lines.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 1,
+      "created_at": "2026-03-10T18:12:56.425807501Z",
+      "updated_at": "2026-03-10T18:12:56.425807501Z"
+    },
     "lb-4zye": {
       "id": "lb-4zye",
       "title": "Reputation mutations bypass loc in franchise mode",
