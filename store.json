@@ -682,12 +682,12 @@
     "lb-hn1q": {
       "id": "lb-hn1q",
       "title": "reputationGainMult research bonus applied twice (double-counted)",
-      "description": "In GameplayScene.ts ~line 1096-1099, the reputationGainMult bonus is applied by both adding to repChange AND directly mutating reputation. The bonus ends up counted twice.",
+      "description": "NOT A BUG - calculateReputationChange applies base change internally. Lines 1097-1099 add only the research BONUS portion on top. repChange accumulates all deltas for display in the day report. Same pattern for campaign bonus (1104-1106) and signage (1110-1113). Each applies its own incremental bonus once.",
       "item_type": "task",
       "status": "closed",
       "priority": 2,
       "created_at": "2026-03-10T15:54:05.425141673Z",
-      "updated_at": "2026-03-10T15:54:51.622834654Z"
+      "updated_at": "2026-03-10T15:54:51.631916150Z"
     },
     "lb-hu03": {
       "id": "lb-hu03",
