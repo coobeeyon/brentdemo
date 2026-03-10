@@ -209,6 +209,16 @@
       "created_at": "2026-03-09T19:32:51.732707704Z",
       "updated_at": "2026-03-09T19:43:36.315853581Z"
     },
+    "lb-ae53": {
+      "id": "lb-ae53",
+      "title": "Add accessibility settings (colorblind mode, text size)",
+      "description": "Add settings scene accessible from pause menu with colorblind palette toggle and text size scaling options. Persist in localStorage.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T12:39:59.615220349Z",
+      "updated_at": "2026-03-10T12:39:59.615220349Z"
+    },
     "lb-ak2s": {
       "id": "lb-ak2s",
       "title": "Core game state machine and scene management",
@@ -1322,6 +1332,11 @@
     },
     {
       "from_id": "lb-pcny",
+      "to_id": "lb-dxxj",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-ae53",
       "to_id": "lb-dxxj",
       "dep_type": "parent"
     }
