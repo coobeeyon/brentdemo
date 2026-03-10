@@ -45,21 +45,38 @@ export class BootScene extends Phaser.Scene {
   }
 
   private createPlaceholderTextures(): void {
-    // Ice cream scoop
+    // Ice cream scoop textures for all flavors
     const scoopGfx = this.make.graphics({ x: 0, y: 0 });
-    scoopGfx.fillStyle(0xFFF8DC);
-    scoopGfx.fillCircle(16, 16, 14);
-    scoopGfx.generateTexture('scoop_vanilla', 32, 32);
+    const flavorColors: Record<string, number> = {
+      vanilla: 0xFFF8DC,
+      chocolate: 0x8B4513,
+      strawberry: 0xFFB6C1,
+      lemon_sorbet: 0xFFF44F,
+      mint_chip: 0x98FF98,
+      cookies_cream: 0xE8DCC8,
+      mango: 0xFFBE4F,
+      pistachio: 0x93C572,
+      salted_caramel: 0xC68E17,
+      lavender: 0xB57EDC,
+      matcha: 0x7BC67E,
+      rocky_road: 0x6B3A2A,
+      butter_pecan: 0xDEB887,
+      cookie_dough: 0xD2B48C,
+      coffee: 0x6F4E37,
+      coconut: 0xFFFAFA,
+      raspberry: 0xE30B5C,
+      peanut_butter: 0xC19A6B,
+      birthday_cake: 0xFFC1CC,
+      caramel_swirl: 0xDAA520,
+      blueberry: 0x6A5ACD,
+    };
 
-    scoopGfx.clear();
-    scoopGfx.fillStyle(0x8B4513);
-    scoopGfx.fillCircle(16, 16, 14);
-    scoopGfx.generateTexture('scoop_chocolate', 32, 32);
-
-    scoopGfx.clear();
-    scoopGfx.fillStyle(0xFFB6C1);
-    scoopGfx.fillCircle(16, 16, 14);
-    scoopGfx.generateTexture('scoop_strawberry', 32, 32);
+    for (const [id, color] of Object.entries(flavorColors)) {
+      scoopGfx.clear();
+      scoopGfx.fillStyle(color);
+      scoopGfx.fillCircle(16, 16, 14);
+      scoopGfx.generateTexture(`scoop_${id}`, 32, 32);
+    }
 
     // Cone
     scoopGfx.clear();
