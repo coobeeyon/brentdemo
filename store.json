@@ -606,8 +606,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:13:29.305940684Z",
-      "updated_at": "2026-03-10T15:13:29.305940684Z"
+      "updated_at": "2026-03-10T15:14:22.769393610Z"
     },
     "lb-gm7w": {
       "id": "lb-gm7w",
