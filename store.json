@@ -1288,6 +1288,16 @@
       "created_at": "2026-03-10T11:41:30.189469060Z",
       "updated_at": "2026-03-10T11:44:33.617752717Z"
     },
+    "lb-u1sb": {
+      "id": "lb-u1sb",
+      "title": "Trending flavor event doesn't affect customer orders",
+      "description": "The Flavor Trend Alert event picks a trendingFlavorId but CustomerManager never reads it. Customers should strongly prefer the trending flavor when this event is active.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T16:34:12.771528872Z",
+      "updated_at": "2026-03-10T16:34:12.771528872Z"
+    },
     "lb-u8ep": {
       "id": "lb-u8ep",
       "title": "UI/HUD Implementation",
