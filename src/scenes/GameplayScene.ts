@@ -106,7 +106,8 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Launch tutorial for new players on Day 1
-    if (!isLoadingSave && this.gameState.day === 1 && gameMode === 'story') {
+    // Note: startNewDay() already incremented day from 1 to 2, so check day === 2
+    if (!isLoadingSave && this.gameState.day === 2 && gameMode === 'story') {
       const tutorialSeen = this.registry.get('tutorialSeen') as boolean;
       let seenInStorage = false;
       try {
@@ -120,8 +121,8 @@ export class GameplayScene extends Phaser.Scene {
       }
     }
 
-    // Show contextual gameplay tips (skips day 1 to let tutorial play)
-    if (this.gameState.day > 1) {
+    // Show contextual gameplay tips (skips first day to let tutorial play)
+    if (this.gameState.day > 2) {
       this.checkGameplayTips();
     }
 
