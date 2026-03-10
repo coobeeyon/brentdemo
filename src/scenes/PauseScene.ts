@@ -46,6 +46,7 @@ export class PauseScene extends Phaser.Scene {
       { label: '  Signage  ', scene: 'SignageScene' },
       { label: '  Research  ', scene: 'ResearchScene' },
       { label: '  Recipes  ', scene: 'RecipeScene' },
+      { label: '  Settings  ', scene: 'SettingsScene' },
       { label: ' Main Menu ', action: () => { this.scene.stop('GameplayScene'); this.scene.start('MainMenuScene'); } },
     ];
 
