@@ -25,6 +25,7 @@ export class GameplayScene extends Phaser.Scene {
   private serveButton!: Phaser.GameObjects.Text;
   private eventText!: Phaser.GameObjects.Text;
   private weatherText!: Phaser.GameObjects.Text;
+  private dailyRevText!: Phaser.GameObjects.Text;
   private emergencyResupplyBtn!: Phaser.GameObjects.Text;
   private challengeDef: ChallengeDef | null = null;
   private tipManager!: TipManager;
@@ -384,8 +385,12 @@ export class GameplayScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: uiColor(this, 'green'),
     }).setOrigin(1, 0);
 
-    this.reputationText = this.add.text(GAME_WIDTH - 20, 30, '', {
-      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: uiColor(this, 'yellow'),
+    this.dailyRevText = this.add.text(GAME_WIDTH - 20, 30, '', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6',
+    }).setOrigin(1, 0);
+
+    this.reputationText = this.add.text(GAME_WIDTH - 20, 46, '', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: uiColor(this, 'yellow'),
     }).setOrigin(1, 0);
 
     // Active event indicator (below top bar, center)
@@ -692,6 +697,7 @@ export class GameplayScene extends Phaser.Scene {
     this.weatherText.setText(`${weatherDef.icon} ${weatherDef.name}`);
     this.phaseText.setText(s.phase.toUpperCase());
     this.moneyText.setText(`$${s.loc.money.toFixed(2)}`);
+    this.dailyRevText.setText(`Today: $${s.loc.dailyRevenue.toFixed(2)}`);
     this.reputationText.setText('★'.repeat(Math.round(s.loc.reputation)) + '☆'.repeat(5 - Math.round(s.loc.reputation)));
     const activeStaff = s.getActiveStaff().length;
     const totalAssigned = s.loc.staff.filter(st => st.assigned).length;
