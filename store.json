@@ -815,8 +815,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:10:42.974782083Z",
-      "updated_at": "2026-03-10T19:10:42.974782083Z"
+      "updated_at": "2026-03-10T19:15:48.620347540Z"
     },
     "lb-h7lm": {
       "id": "lb-h7lm",
