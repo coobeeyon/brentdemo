@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Customer, CustomerType } from '../entities/Customer';
 import { GameState, CriticReview } from './GameState';
 import { GameEventEffects } from './EventManager';
-import { GAME_WIDTH, MAX_QUEUE_LENGTH, DayPhase } from '../config/constants';
+import { GAME_WIDTH, MAX_QUEUE_LENGTH, DayPhase, BASE_SCOOP_PRICE } from '../config/constants';
 
 const QUEUE_START_X = 240;
 const QUEUE_START_Y = 480;
@@ -98,7 +98,26 @@ export class CustomerManager {
     const loyaltyMult = 1 - loyaltyFx.spawnBonus; // lower = more customers
     // Signage curb appeal: lower = more customers
     const signageMult = this.gameState.getSignageDef().curbAppealMult;
-    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult * weatherMult * loyaltyMult * signageMult / Math.max(wordOfMouth, 0.3);
+    // High prices deter customers: average menu price vs base price
+    const priceMult = this.getPriceSpawnMultiplier();
+    return this.baseSpawnInterval * peakMult * speedMult * staffSpeedMult * eventSpawnMult * campaignSpawnMult * weatherMult * loyaltyMult * signageMult * priceMult / Math.max(wordOfMouth, 0.3);
+  }
+
+  /** Price deterrent: if average menu price exceeds base, spawn interval increases.
+   *  At 2x base price, spawn interval is ~1.5x longer (50% fewer customers).
+   *  Below base price, no bonus (clamped at 1.0). */
+  private getPriceSpawnMultiplier(): number {
+    const unlocked = this.gameState.flavors.filter(f => f.unlocked);
+    if (unlocked.length === 0) return 1.0;
+    let totalPrice = 0;
+    for (const f of unlocked) {
+      totalPrice += this.gameState.menuPrices.get(f.id) ?? BASE_SCOOP_PRICE;
+    }
+    const avgPrice = totalPrice / unlocked.length;
+    const ratio = avgPrice / BASE_SCOOP_PRICE;
+    // No benefit for underpricing; penalty scales linearly above 1.0
+    // ratio 1.0 → mult 1.0, ratio 1.5 → mult 1.25, ratio 2.0 → mult 1.5
+    return Math.max(1.0, 1.0 + (ratio - 1.0) * 0.5);
   }
 
   private spawnCustomer(): void {
