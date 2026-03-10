@@ -764,14 +764,14 @@ export class GameState {
 
   /** Get aggregate franchise stats across all locations */
   getFranchiseStats(): {
-    totalRevenue: number;
+    dailyRevenue: number;
     totalReputation: number;
     locationCount: number;
     totalStaff: number;
   } {
     if (!this.franchiseMode) {
       return {
-        totalRevenue: this.dailyRevenue,
+        dailyRevenue: this.dailyRevenue,
         totalReputation: this.reputation,
         locationCount: 1,
         totalStaff: this.staff.length,
@@ -779,7 +779,7 @@ export class GameState {
     }
 
     return {
-      totalRevenue: this.locations.reduce((sum, loc) => sum + loc.dailyRevenue, 0),
+      dailyRevenue: this.locations.reduce((sum, loc) => sum + loc.dailyRevenue, 0),
       totalReputation: this.locations.reduce((sum, loc) => sum + loc.reputation, 0) / this.locations.length,
       locationCount: this.locations.length,
       totalStaff: this.locations.reduce((sum, loc) => sum + loc.staff.length, 0),
