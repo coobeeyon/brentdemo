@@ -708,9 +708,9 @@ export class GameState {
   /** Add a new franchise location. Returns the new location or null if can't afford. */
   addLocation(name: string, setupCost: number): LocationState | null {
     if (!this.franchiseMode) return null;
-    if (this.money < setupCost) return null;
+    if (this.loc.money < setupCost) return null;
 
-    this.money -= setupCost;
+    this.loc.money -= setupCost;
 
     const loc: LocationState = {
       id: this.locations.length,
