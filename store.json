@@ -1073,11 +1073,10 @@
       "title": "Season results stats only show active location data in franchise mode",
       "description": "showSeasonResults() uses s.loc.dayReports and s.loc.money for the stats summary, but in franchise mode this only shows the active location. Should aggregate customers served/lost and balance across all locations.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:31:44.467741814Z",
-      "updated_at": "2026-03-10T15:31:52.082881377Z"
+      "updated_at": "2026-03-10T15:31:56.262331610Z"
     },
     "lb-s251": {
       "id": "lb-s251",
