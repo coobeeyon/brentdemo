@@ -718,6 +718,16 @@
       "created_at": "2026-03-09T18:53:32.968519942Z",
       "updated_at": "2026-03-09T19:01:55.492043486Z"
     },
+    "lb-th5b": {
+      "id": "lb-th5b",
+      "title": "getFranchiseStats returns dailyRevenue as totalRevenue in non-franchise fallback",
+      "description": "In GameState.getFranchiseStats(), the non-franchise fallback returns totalRevenue: this.dailyRevenue (today's revenue only) instead of a meaningful total. The field name implies cumulative revenue. FranchiseScene uses this value for the stats bar display. While FranchiseScene is only accessible in franchise mode (making the non-franchise path dead code today), the misleading field name is a latent bug if this function is ever called outside franchise mode.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T11:41:35.731720819Z",
+      "updated_at": "2026-03-10T11:41:35.731720819Z"
+    },
     "lb-tp8c": {
       "id": "lb-tp8c",
       "title": "Level one feels tedious and too long",
