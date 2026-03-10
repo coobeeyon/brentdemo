@@ -56,18 +56,52 @@ const TUTORIAL_STEPS: TutorialStep[] = [
       'At closing time, you\'ll see a report of your\n' +
       'revenue, expenses, and customer satisfaction.\n\n' +
       'Then a new day begins — buy more ingredients\n' +
-      'and keep growing your business!\n\n' +
-      'Use the Pause menu (ESC) to access staff,\n' +
-      'equipment, recipes, and more.',
+      'and keep growing your business!',
+  },
+  {
+    title: 'Step 5: Set Your Prices',
+    body:
+      'Press ESC to open the Pause menu, then\n' +
+      'choose "Menu Editor" to set prices.\n\n' +
+      'Each flavor has a "Suggest" button that\n' +
+      'calculates a good price based on your\n' +
+      'reputation and ingredient costs.\n\n' +
+      'Price too high → fewer customers buy.\n' +
+      'Price too low → you lose money per scoop!',
+  },
+  {
+    title: 'Step 6: Reputation Matters',
+    body:
+      'Your star rating (shown in the top bar)\n' +
+      'determines how many customers visit.\n\n' +
+      'Reputation goes UP when you:\n' +
+      '  - Serve customers quickly\n' +
+      '  - Respect dietary restrictions (vegan, nut-free)\n\n' +
+      'Reputation goes DOWN when you:\n' +
+      '  - Let customers leave angry\n' +
+      '  - Run out of ingredients\n' +
+      '  - Fail health inspections',
+  },
+  {
+    title: 'Step 7: Grow Your Business',
+    body:
+      'The Pause menu (ESC) has many tools:\n\n' +
+      '  Staff — hire workers to serve faster\n' +
+      '  Equipment — upgrade machines & repair them\n' +
+      '  Research — unlock new flavors & upgrades\n' +
+      '  Marketing — run campaigns for more customers\n\n' +
+      'Equipment breaks down over time, so check it\n' +
+      'regularly and repair before it fails!',
   },
   {
     title: 'You\'re Ready!',
     body:
-      'That\'s the basics! A few more tips:\n\n' +
-      '  After the tutorial, press SPACE to change game speed\n' +
-      '  Press ESC for the pause menu\n' +
-      '  Keep your reputation up for more customers\n' +
-      '  Upgrade equipment to serve faster\n\n' +
+      'That\'s everything you need to get started!\n\n' +
+      '  SPACE — change game speed\n' +
+      '  ESC — pause menu & management\n' +
+      '  Enter — serve next customer\n\n' +
+      'Watch for daily events like heat waves and\n' +
+      'supply sales — they can help or hurt!\n\n' +
       'Good luck with your ice cream empire!',
   },
 ];
