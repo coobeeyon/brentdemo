@@ -803,11 +803,10 @@
       "title": "Equipment condition degradation system",
       "description": "Equipment has condition field and repair UI but no active degradation. Add daily condition decrease based on equipment tier breakdownChance in startNewDay(). When condition hits 0, set broken=true. Broken equipment should not function during serve phase.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T11:33:01.619880052Z",
-      "updated_at": "2026-03-10T11:34:16.955702289Z"
+      "updated_at": "2026-03-10T11:34:40.125894084Z"
     },
     "lb-xtgt": {
       "id": "lb-xtgt",
