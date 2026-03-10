@@ -948,6 +948,16 @@
       "created_at": "2026-03-09T18:04:16.246377599Z",
       "updated_at": "2026-03-09T18:11:22.546234548Z"
     },
+    "lb-s6g1": {
+      "id": "lb-s6g1",
+      "title": "Tutorial never fires: day===1 check runs after startNewDay() increments day to 2",
+      "description": "In GameplayScene.create(), startNewDay() is called at line 50, which does this.day++. GameState initializes day=1, so after startNewDay() it becomes 2. The tutorial trigger at line 109 checks this.gameState.day === 1, which is always false for new games. Fix: change the check to day === 2 (the first day after increment) or move the check before startNewDay() is called.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T14:00:04.793546870Z",
+      "updated_at": "2026-03-10T14:00:04.793546870Z"
+    },
     "lb-sgoc": {
       "id": "lb-sgoc",
       "title": "Fix build script: tsc not on PATH",
