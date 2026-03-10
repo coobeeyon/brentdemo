@@ -15,11 +15,10 @@
       "title": "Bulk discount not shown in shop price display",
       "description": "In ShopScene, the PRICE column shows the per-batch price without discount, and the Buy button shows no pre-purchase total. The discount is only applied silently at purchase time (ShopScene.ts:248-249). The static hint text requires mental math. Fix: update the priceText or buyBtn label dynamically when qty changes to show the effective per-batch price or total after discount (e.g. 'Buy — .50 → .05 (10% off)').",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T10:35:57.115265783Z",
-      "updated_at": "2026-03-10T10:38:18.966505761Z"
+      "updated_at": "2026-03-10T10:39:16.308412114Z"
     },
     "lb-3l93": {
       "id": "lb-3l93",
