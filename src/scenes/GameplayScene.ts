@@ -7,6 +7,7 @@ import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager'
 import { SaveManager } from '../systems/SaveManager';
 import { TipManager } from '../systems/TipManager';
 import { uiColor, uiColorNum, scaledFontSize } from '../systems/UIUtils';
+import { DAY_LENGTH_MS, DayLengthSetting } from './SettingsScene';
 
 export class GameplayScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -37,6 +38,12 @@ export class GameplayScene extends Phaser.Scene {
     this.customerManager = new CustomerManager(this, this.gameState);
     this.eventManager = new EventManager();
     this.tipManager = new TipManager();
+
+    // Apply day length setting
+    const settings = this.registry.get('gameSettings') as { dayLength?: string } | undefined;
+    if (settings?.dayLength && DAY_LENGTH_MS[settings.dayLength as DayLengthSetting]) {
+      this.gameState.dayDurationMs = DAY_LENGTH_MS[settings.dayLength as DayLengthSetting];
+    }
 
     const isLoadingSave = this.registry.get('loadSave') as boolean;
     const gameMode = this.registry.get('gameMode') as string ?? 'story';
@@ -106,7 +113,8 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Launch tutorial for new players on Day 1
-    if (!isLoadingSave && this.gameState.day === 1 && gameMode === 'story') {
+    // Note: startNewDay() already incremented day from 1 to 2, so check day === 2
+    if (!isLoadingSave && this.gameState.day === 2 && gameMode === 'story') {
       const tutorialSeen = this.registry.get('tutorialSeen') as boolean;
       let seenInStorage = false;
       try {
@@ -120,8 +128,8 @@ export class GameplayScene extends Phaser.Scene {
       }
     }
 
-    // Show contextual gameplay tips (skips day 1 to let tutorial play)
-    if (this.gameState.day > 1) {
+    // Show contextual gameplay tips (skips first day to let tutorial play)
+    if (this.gameState.day > 2) {
       this.checkGameplayTips();
     }
 
@@ -165,7 +173,7 @@ export class GameplayScene extends Phaser.Scene {
       this.gameState.loc.money += result.revenue;
 
       // Show floating revenue text
-      const revenueColor = result.dietaryViolation ? '#E67E22' : uiColor(this, 'green');
+      const revenueColor = (result.dietaryViolation || result.orderError) ? '#E67E22' : uiColor(this, 'green');
       const floatText = this.add.text(GAME_WIDTH / 2, 340, `+$${result.revenue.toFixed(2)}`, {
         fontFamily: 'Arial',
         fontSize: scaledFontSize(this, 22),
@@ -202,6 +210,30 @@ export class GameplayScene extends Phaser.Scene {
           duration: 1500,
           ease: 'Power2',
           onComplete: () => warningText.destroy(),
+        });
+      }
+
+      // Show order error warning
+      if (result.orderError) {
+        const revenueColor2 = '#E67E22';
+        const errorText = this.add.text(
+          GAME_WIDTH / 2, 370,
+          'Wrong order! Customer unhappy (-40% revenue)',
+          {
+            fontFamily: 'Arial',
+            fontSize: scaledFontSize(this, 14),
+            color: revenueColor2,
+            fontStyle: 'bold',
+          }
+        ).setOrigin(0.5);
+
+        this.tweens.add({
+          targets: errorText,
+          y: 310,
+          alpha: 0,
+          duration: 1500,
+          ease: 'Power2',
+          onComplete: () => errorText.destroy(),
         });
       }
 
@@ -786,6 +818,37 @@ export class GameplayScene extends Phaser.Scene {
     });
   }
 
+  private showStaffQuitNotices(): void {
+    const quitList = this.gameState.loc._staffQuit;
+    if (!quitList || quitList.length === 0) return;
+
+    const msg = quitList.length === 1
+      ? `${quitList[0]} quit due to low morale!`
+      : `${quitList.join(', ')} quit due to low morale!`;
+
+    const notice = this.add.text(
+      GAME_WIDTH / 2, 340, msg,
+      {
+        fontFamily: 'Arial',
+        fontSize: scaledFontSize(this, 14),
+        color: '#FF6B6B',
+        fontStyle: 'bold',
+        backgroundColor: '#2C0000',
+        padding: { x: 10, y: 6 },
+      }
+    ).setOrigin(0.5).setDepth(100);
+
+    this.tweens.add({
+      targets: notice,
+      alpha: 0,
+      y: 300,
+      duration: 4000,
+      delay: 2000,
+      ease: 'Power2',
+      onComplete: () => notice.destroy(),
+    });
+  }
+
   private checkGameplayTips(): void {
     const tip = this.tipManager.checkTips(this.gameState);
     if (!tip) return;
@@ -1072,6 +1135,7 @@ export class GameplayScene extends Phaser.Scene {
       satisfactionScore: satisfaction,
       criticReview,
       reputationChange: repChange,
+      waste: s.loc._todayWaste,
     });
 
     // Show end-of-day report
@@ -1158,6 +1222,18 @@ export class GameplayScene extends Phaser.Scene {
       });
       report.add(cateringText);
       y += 25;
+    }
+
+    // Waste log (ingredients that expired overnight)
+    const waste = s.loc._todayWaste;
+    if (waste && waste.length > 0) {
+      const wasteItems = waste.map(w => `${w.name} x${w.quantity}`).join(', ');
+      const wasteText = this.add.text(leftX, y, `🗑 SPOILED: ${wasteItems}`, {
+        fontFamily: 'Arial', fontSize: '13px', color: '#E67E22',
+        wordWrap: { width: panelW - 60 },
+      });
+      report.add(wasteText);
+      y += 22;
     }
 
     // Separator
@@ -1254,6 +1330,8 @@ export class GameplayScene extends Phaser.Scene {
       // Roll for next day's event
       this.rollDailyEvent();
       this.updatePhaseUI();
+      // Notify player if staff quit
+      this.showStaffQuitNotices();
       // Show contextual tips at start of new day
       this.checkGameplayTips();
     });
@@ -1398,6 +1476,7 @@ export class GameplayScene extends Phaser.Scene {
           SaveManager.save(s, 'auto', 'story');
           this.rollDailyEvent();
           this.updatePhaseUI();
+          this.showStaffQuitNotices();
         });
       } else {
         // Game complete! All 5 seasons done
@@ -1443,6 +1522,7 @@ export class GameplayScene extends Phaser.Scene {
         SaveManager.save(s, 'auto', 'story');
         this.rollDailyEvent();
         this.updatePhaseUI();
+        this.showStaffQuitNotices();
       });
 
       const menuBtn = this.add.text(100, panelH / 2 - 45, 'Main Menu', {

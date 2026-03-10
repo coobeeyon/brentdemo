@@ -84,6 +84,7 @@ export interface StaffMember {
   shift: ShiftType;           // scheduled shift
   consecutiveDaysWorked: number; // for fairness tracking
   specialty: StaffSpecialty;  // task-specific bonus
+  lowMoraleDays: number;     // consecutive days with morale < 20
 }
 
 export interface CriticReview {
@@ -113,6 +114,11 @@ export interface LoyalCustomer {
   lastVisitDay: number;
 }
 
+export interface WastedIngredient {
+  name: string;
+  quantity: number;
+}
+
 export interface DayReport {
   day: number;
   revenue: number;
@@ -122,6 +128,7 @@ export interface DayReport {
   satisfactionScore: number;
   criticReview?: CriticReview;
   reputationChange: number;
+  waste?: WastedIngredient[];
 }
 
 /** Catering contract — accepted during prep, fulfilled at end of day */
@@ -200,6 +207,12 @@ export interface LocationState {
 
   // VIP perks
   vipSatisfied: number;
+
+  // Transient: waste from expired ingredients at start of today (not serialized)
+  _todayWaste?: WastedIngredient[];
+
+  // Transient: staff who quit at start of today due to low morale (not serialized)
+  _staffQuit?: string[];
 }
 
 export interface ActiveCampaign {
@@ -466,6 +479,20 @@ export class GameState {
     };
   }
 
+  /** Chance of a wrong order based on staff accuracy (0-1). Low accuracy = more errors. */
+  getOrderErrorChance(): number {
+    const active = this.getActiveStaff();
+    if (active.length === 0) return 0.15; // no staff = 15% error chance
+
+    const avgAccuracy = active.reduce((sum, s) => {
+      const base = this.getEffectiveStat(s, s.accuracy);
+      return sum + base * (1 + this.getSpecialtyBonus(s, 'accuracy'));
+    }, 0) / active.length;
+
+    // Accuracy 10 → 0% error, accuracy 5 → 5%, accuracy 1 → 15%
+    return Math.max(0, 0.15 - avgAccuracy * 0.015);
+  }
+
   /** Update staff morale at end of day */
   updateStaffMorale(): void {
     const brokenCount = this.loc.equipment.filter(e => e.broken).length;
@@ -518,6 +545,36 @@ export class GameState {
 
       member.morale = Math.max(0, Math.min(100, member.morale + moraleChange));
     }
+  }
+
+  /** Check for staff turnover: unhappy staff may quit. Returns names of staff who left. */
+  checkStaffTurnover(): string[] {
+    const loc = this.loc;
+    const quitters: string[] = [];
+
+    for (const member of loc.staff) {
+      if (member.morale < 20) {
+        member.lowMoraleDays = (member.lowMoraleDays ?? 0) + 1;
+      } else {
+        member.lowMoraleDays = 0;
+      }
+
+      // After 3+ consecutive low-morale days, increasing chance to quit
+      // Day 3: 20%, Day 4: 40%, Day 5+: 60%
+      if (member.lowMoraleDays >= 3) {
+        const quitChance = Math.min(0.6, 0.2 * (member.lowMoraleDays - 2));
+        if (Math.random() < quitChance) {
+          quitters.push(member.name);
+        }
+      }
+    }
+
+    // Remove quitters
+    if (quitters.length > 0) {
+      loc.staff = loc.staff.filter(s => !quitters.includes(s.name));
+    }
+
+    return quitters;
   }
 
   /** Train a staff member: improve one random stat by 1 (costs money) */
@@ -1593,11 +1650,18 @@ export class GameState {
       loc.dailyRevenue = 0;
       loc.dailyExpenses = 0;
 
-      // Expire ingredients
-      loc.ingredients = loc.ingredients.map(ing => ({
+      // Expire ingredients and track waste
+      const updatedIngredients = loc.ingredients.map(ing => ({
         ...ing,
         expiresInDays: ing.expiresInDays - 1,
-      })).filter(ing => ing.expiresInDays > 0 && ing.quantity > 0);
+      }));
+      const expiredWaste: WastedIngredient[] = updatedIngredients
+        .filter(ing => ing.expiresInDays <= 0 && ing.quantity > 0)
+        .map(ing => ({ name: ing.name, quantity: ing.quantity }));
+      loc.ingredients = updatedIngredients.filter(ing => ing.expiresInDays > 0 && ing.quantity > 0);
+
+      // Store waste for display in today's end-of-day report
+      loc._todayWaste = expiredWaste;
 
       // Deduct staff wages
       const totalWages = loc.staff.reduce((sum, s) => sum + s.wage, 0);
@@ -1619,6 +1683,9 @@ export class GameState {
 
       // Update staff morale
       this.updateStaffMorale();
+
+      // Check for staff turnover (unhappy staff may quit)
+      loc._staffQuit = this.checkStaffTurnover();
 
       // Tick down campaign durations
       this.updateCampaigns();
