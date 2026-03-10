@@ -110,6 +110,16 @@
       "created_at": "2026-03-09T18:09:39.618264218Z",
       "updated_at": "2026-03-09T18:11:05.551043638Z"
     },
+    "lb-4ar8": {
+      "id": "lb-4ar8",
+      "title": "Replace any types with proper LocationState/DayReport in GameplayScene",
+      "description": "Season results aggregation used any[] and any in reduce callbacks",
+      "item_type": "task",
+      "status": "open",
+      "priority": 4,
+      "created_at": "2026-03-10T18:06:57.172442076Z",
+      "updated_at": "2026-03-10T18:06:57.172442076Z"
+    },
     "lb-4arw": {
       "id": "lb-4arw",
       "title": "HUD improvements: equipment alerts and staff count display",
