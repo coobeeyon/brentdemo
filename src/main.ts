@@ -25,6 +25,8 @@ const config: Phaser.Types.Core.GameConfig = {
   height: GAME_HEIGHT,
   parent: 'game-container',
   backgroundColor: '#87CEEB',
+  roundPixels: true,
+  antialias: true,
   scene: [BootScene, MainMenuScene, GameplayScene, PauseScene, ShopScene, EquipmentScene, StaffScene, MenuEditorScene, MarketingScene, LoanScene, DecorScene, SeatingScene, ResearchScene, RecipeScene, PopUpBoothScene, ChallengeScene, SignageScene, TutorialScene],
   physics: {
     default: 'arcade',

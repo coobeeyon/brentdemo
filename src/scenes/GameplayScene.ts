@@ -223,24 +223,24 @@ export class GameplayScene extends Phaser.Scene {
     topBar.fillStyle(0x2C3E50, 0.9);
     topBar.fillRect(0, 0, GAME_WIDTH, 56);
 
-    this.dayText = this.add.text(20, 8, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
-    });
-
-    this.timeText = this.add.text(20, 30, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFD700',
-    });
-
-    this.weatherText = this.add.text(140, 8, '', {
+    this.dayText = this.add.text(12, 8, '', {
       fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
     });
 
-    this.phaseText = this.add.text(240, 8, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#7FDBFF',
+    this.timeText = this.add.text(12, 30, '', {
+      fontFamily: 'Arial', fontSize: '14px', color: '#FFD700',
     });
 
-    this.speedText = this.add.text(240, 30, '', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6',
+    this.weatherText = this.add.text(160, 8, '', {
+      fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+    });
+
+    this.phaseText = this.add.text(160, 30, '', {
+      fontFamily: 'Arial', fontSize: '14px', color: '#7FDBFF',
+    });
+
+    this.speedText = this.add.text(280, 30, '', {
+      fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
     });
 
     this.queueText = this.add.text(GAME_WIDTH / 2, 14, '', {
