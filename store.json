@@ -135,11 +135,10 @@
       "title": "Sandbox unlimited funds broken in franchise mode",
       "description": "In GameplayScene, sandbox mode refills money using 'this.gameState.money = 99999'. In non-franchise mode this works because loc returns 'this as any', making loc.money === this.money. But in franchise mode (Season 5), loc returns locations[currentLocationId], so loc.money is a separate per-location field. ShopScene deducts from loc.money, but the sandbox refill only writes to top-level this.gameState.money — the location's money never gets refilled. Fix: use this.gameState.loc.money = 99999 in both the init block (GameplayScene.ts ~line 44) and the day-start handler (~line 1114).",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:31:52.645321698Z",
-      "updated_at": "2026-03-10T12:33:24.991896016Z"
+      "updated_at": "2026-03-10T12:34:23.724320843Z"
     },
     "lb-8ln2": {
       "id": "lb-8ln2",
