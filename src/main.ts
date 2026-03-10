@@ -43,6 +43,20 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
+  input: {
+    activePointers: 3,
+    touch: {
+      capture: true,
+    },
+  },
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+// Prevent default touch gestures on the game canvas to avoid scroll/zoom interference
+game.events.once('ready', () => {
+  const canvas = game.canvas;
+  canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+  canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+});
