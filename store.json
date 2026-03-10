@@ -44,11 +44,10 @@
       "title": "Wire CharityDriveScene to GameplayScene prep phase",
       "description": "Add Participate button during prep when Charity Drive event is active. Register scene in main.ts. Update event effects to be interactive instead of auto-applied.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:44:23.584174552Z",
-      "updated_at": "2026-03-10T19:45:26.087403427Z"
+      "updated_at": "2026-03-10T19:46:05.977081217Z"
     },
     "lb-0n2d": {
       "id": "lb-0n2d",
