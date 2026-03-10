@@ -823,11 +823,10 @@
       "title": "Fullscreen button in PauseScene is off-screen",
       "description": "PauseScene has 15 buttons starting at y=120 with 44px spacing. Last button (Main Menu) is at y=736, and the fullscreen button is placed at y=790 — both beyond GAME_HEIGHT=720. The fullscreen button is never visible. Fix: either make the panel scrollable, reduce spacing, use a 2-column layout for secondary buttons, or move the fullscreen toggle to an overlay corner that doesn't depend on button list position.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T18:35:33.471744726Z",
-      "updated_at": "2026-03-10T18:36:50.796514974Z"
+      "updated_at": "2026-03-10T18:38:05.422081132Z"
     },
     "lb-hu03": {
       "id": "lb-hu03",
