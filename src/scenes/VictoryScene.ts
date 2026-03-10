@@ -145,11 +145,11 @@ export class VictoryScene extends Phaser.Scene {
     const btnY = GAME_HEIGHT - 55;
     const menuBtn = this.add.text(GAME_WIDTH / 2, btnY, 'Return to Main Menu', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF',
-      backgroundColor: '#2980B9', padding: { x: 28, y: 10 },
+      backgroundColor: '#B8860B', padding: { x: 28, y: 10 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    menuBtn.on('pointerover', () => menuBtn.setStyle({ backgroundColor: '#3498DB' }));
-    menuBtn.on('pointerout', () => menuBtn.setStyle({ backgroundColor: '#2980B9' }));
+    menuBtn.on('pointerover', () => menuBtn.setStyle({ backgroundColor: '#DAA520' }));
+    menuBtn.on('pointerout', () => menuBtn.setStyle({ backgroundColor: '#B8860B' }));
     menuBtn.on('pointerdown', () => {
       this.scene.start('MainMenuScene');
     });

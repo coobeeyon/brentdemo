@@ -1493,7 +1493,7 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Next day button
-    const nextBtn = this.add.text(0, panelH / 2 - 40, 'Next Day →', {
+    const nextBtn = this.add.text(0, panelH / 2 - 45, 'Next Day →', {
       fontFamily: 'Arial',
       fontSize: scaledFontSize(this, 22),
       color: '#FFF',

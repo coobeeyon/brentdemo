@@ -219,7 +219,13 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private close(): void {
+    const returnScene = this.registry.get('settingsReturnScene') || 'PauseScene';
+    this.registry.remove('settingsReturnScene');
     this.scene.stop();
-    this.scene.launch('PauseScene');
+    if (returnScene === 'MainMenuScene') {
+      this.scene.start('MainMenuScene');
+    } else {
+      this.scene.launch(returnScene);
+    }
   }
 }

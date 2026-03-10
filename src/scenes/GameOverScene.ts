@@ -105,9 +105,9 @@ export class GameOverScene extends Phaser.Scene {
 
     if (seasonDef) {
       this.add.text(leftX, y, 'Revenue Target:', labelStyle);
-      this.add.text(leftX + 130, y, `$${seasonDef.revenueTarget}`, { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#555' });
+      this.add.text(leftX + 130, y, `$${seasonDef.revenueTarget}`, { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#999' });
       this.add.text(rightX, y, 'Rep Target:', labelStyle);
-      this.add.text(rightX + 140, y, `${seasonDef.reputationTarget}★`, { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#555' });
+      this.add.text(rightX + 140, y, `${seasonDef.reputationTarget}★`, { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#999' });
     }
 
     // Buttons
