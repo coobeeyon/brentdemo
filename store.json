@@ -439,6 +439,16 @@
       "created_at": "2026-03-09T19:14:08.534306144Z",
       "updated_at": "2026-03-09T19:29:14.291974380Z"
     },
+    "lb-fv5s": {
+      "id": "lb-fv5s",
+      "title": "Remaining loc bypasses in GameState recipes/loyalty, GameplayScene HUD, RecipeScene, CustomerManager",
+      "description": "Multiple location-scoped fields still accessed directly instead of through loc: GameState recipe methods (lines 1007-1047), loyalty methods (1051-1119); GameplayScene weather/staff/campaigns/loans/equipment display; RecipeScene recipe reads; CustomerManager recipe matching.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T13:20:58.058565171Z",
+      "updated_at": "2026-03-10T13:20:58.058565171Z"
+    },
     "lb-g435": {
       "id": "lb-g435",
       "title": "Customer spawning, ordering, patience, and serving flow",
