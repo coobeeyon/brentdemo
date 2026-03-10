@@ -1004,8 +1004,8 @@ export class GameState {
 
   /** Create a new recipe */
   createRecipe(name: string, flavorId: string, toppings: string[], style: string, price: number): Recipe | null {
-    if (!name.trim() || this.recipes.length >= 10) return null;
-    if (this.recipes.some(r => r.name.toLowerCase() === name.toLowerCase())) return null;
+    if (!name.trim() || this.loc.recipes.length >= 10) return null;
+    if (this.loc.recipes.some(r => r.name.toLowerCase() === name.toLowerCase())) return null;
 
     const recipe: Recipe = {
       id: `recipe_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
@@ -1017,21 +1017,21 @@ export class GameState {
       timesSold: 0,
       totalRating: 0,
     };
-    this.recipes.push(recipe);
+    this.loc.recipes.push(recipe);
     return recipe;
   }
 
   /** Delete a recipe by id */
   deleteRecipe(recipeId: string): boolean {
-    const idx = this.recipes.findIndex(r => r.id === recipeId);
+    const idx = this.loc.recipes.findIndex(r => r.id === recipeId);
     if (idx === -1) return false;
-    this.recipes.splice(idx, 1);
+    this.loc.recipes.splice(idx, 1);
     return true;
   }
 
   /** Record a sale of a recipe with satisfaction score */
   recordRecipeSale(recipeId: string, satisfaction: number): void {
-    const recipe = this.recipes.find(r => r.id === recipeId);
+    const recipe = this.loc.recipes.find(r => r.id === recipeId);
     if (!recipe) return;
     recipe.timesSold++;
     recipe.totalRating += satisfaction;
@@ -1044,19 +1044,19 @@ export class GameState {
 
   /** Get popular recipes (sold 3+ times with good ratings), used for customer ordering */
   getPopularRecipes(): Recipe[] {
-    return this.recipes.filter(r => r.timesSold >= 3 && this.getRecipeRating(r) > 0.5);
+    return this.loc.recipes.filter(r => r.timesSold >= 3 && this.getRecipeRating(r) > 0.5);
   }
 
   /** Register or update a loyal customer after being served */
   registerLoyalCustomer(favoriteFlavor: string): LoyalCustomer | null {
     // Chance to register: 15% base, doubled if loyalty card campaign active
-    const loyaltyCampaignActive = this.activeCampaigns.some(c => c.id === CampaignId.LOYALTY_CARDS);
+    const loyaltyCampaignActive = this.loc.activeCampaigns.some(c => c.id === CampaignId.LOYALTY_CARDS);
     const chance = loyaltyCampaignActive ? 0.30 : 0.15;
     if (Math.random() > chance) return null;
 
     // Check if an existing loyal customer is "returning"
     // Pick a random existing loyal customer who hasn't visited today
-    const returningPool = this.loyalCustomers.filter(lc => lc.lastVisitDay < this.day);
+    const returningPool = this.loc.loyalCustomers.filter(lc => lc.lastVisitDay < this.day);
     if (returningPool.length > 0 && Math.random() < 0.5) {
       const returning = returningPool[Math.floor(Math.random() * returningPool.length)];
       returning.visits++;
@@ -1067,17 +1067,17 @@ export class GameState {
     }
 
     // Create new loyal customer (max 20 tracked)
-    if (this.loyalCustomers.length >= 20) {
+    if (this.loc.loyalCustomers.length >= 20) {
       // Remove least active
-      this.loyalCustomers.sort((a, b) => b.visits - a.visits);
-      this.loyalCustomers.pop();
+      this.loc.loyalCustomers.sort((a, b) => b.visits - a.visits);
+      this.loc.loyalCustomers.pop();
     }
 
     const names = ['Alex', 'Sam', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Quinn', 'Avery', 'Dakota',
       'Jamie', 'Drew', 'Reese', 'Skyler', 'Peyton', 'Hayden', 'Finley', 'Emery', 'Sage', 'Rowan'];
-    const usedNames = new Set(this.loyalCustomers.map(lc => lc.name));
+    const usedNames = new Set(this.loc.loyalCustomers.map(lc => lc.name));
     const available = names.filter(n => !usedNames.has(n));
-    const name = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : `Customer #${this.loyalCustomers.length + 1}`;
+    const name = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : `Customer #${this.loc.loyalCustomers.length + 1}`;
 
     const newCustomer: LoyalCustomer = {
       id: `loyal_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
@@ -1087,19 +1087,19 @@ export class GameState {
       favoriteFlavor,
       lastVisitDay: this.day,
     };
-    this.loyalCustomers.push(newCustomer);
+    this.loc.loyalCustomers.push(newCustomer);
     return newCustomer;
   }
 
   /** Get top loyal customers sorted by visits */
   getTopCustomers(count: number = 10): LoyalCustomer[] {
-    return [...this.loyalCustomers].sort((a, b) => b.visits - a.visits).slice(0, count);
+    return [...this.loc.loyalCustomers].sort((a, b) => b.visits - a.visits).slice(0, count);
   }
 
   /** Try to redeem loyalty points for a returning customer. Returns discount multiplier (0.75 if redeemed, 1.0 if not). */
   tryLoyaltyRedemption(): { redeemed: boolean; discount: number; customerName: string | null } {
     // Find a loyal customer with enough points who visited today
-    const eligible = this.loyalCustomers.find(
+    const eligible = this.loc.loyalCustomers.find(
       lc => lc.lastVisitDay === this.day && lc.points >= LOYALTY_REDEMPTION_COST
     );
     if (!eligible) return { redeemed: false, discount: 1.0, customerName: null };
@@ -1110,7 +1110,7 @@ export class GameState {
 
   /** Get loyalty bonus: more loyal customers = slight patience/tip boost */
   getLoyaltyEffects(): { patienceBonus: number; tipBonus: number; spawnBonus: number } {
-    const activeLoyal = this.loyalCustomers.filter(lc => lc.visits >= 3).length;
+    const activeLoyal = this.loc.loyalCustomers.filter(lc => lc.visits >= 3).length;
     return {
       patienceBonus: Math.min(activeLoyal * 500, 3000),  // up to +3s
       tipBonus: Math.min(activeLoyal * 0.01, 0.10),       // up to +10%

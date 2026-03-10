@@ -36,7 +36,7 @@ export class RecipeScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '26px', color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
-    this.add.text(GAME_WIDTH / 2, panelY + 52, `${this.gameState.recipes.length}/10 recipes`, {
+    this.add.text(GAME_WIDTH / 2, panelY + 52, `${this.gameState.loc.recipes.length}/10 recipes`, {
       fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6',
     }).setOrigin(0.5, 0);
 
@@ -45,7 +45,7 @@ export class RecipeScene extends Phaser.Scene {
     this.renderRecipes(panelX, panelY, panelW);
 
     // New Recipe button
-    if (this.gameState.recipes.length < 10) {
+    if (this.gameState.loc.recipes.length < 10) {
       const newBtn = this.add.text(GAME_WIDTH / 2 - 80, panelY + panelH - 75, '+ New Recipe', {
         fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
         backgroundColor: '#27AE60', padding: { x: 14, y: 6 },
@@ -83,7 +83,7 @@ export class RecipeScene extends Phaser.Scene {
   private renderRecipes(panelX: number, panelY: number, panelW: number): void {
     this.contentContainer.removeAll(true);
 
-    if (this.gameState.recipes.length === 0) {
+    if (this.gameState.loc.recipes.length === 0) {
       const hint = this.add.text(GAME_WIDTH / 2, panelY + 100, 'No recipes yet. Create signature recipes\nto attract customers and charge premium prices!', {
         fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6', align: 'center',
       }).setOrigin(0.5, 0);
@@ -92,7 +92,7 @@ export class RecipeScene extends Phaser.Scene {
     }
 
     let y = panelY + 78;
-    for (const recipe of this.gameState.recipes) {
+    for (const recipe of this.gameState.loc.recipes) {
       const cardBg = this.add.graphics();
       cardBg.fillStyle(0x34495E, 1);
       cardBg.fillRoundedRect(panelX + 20, y, panelW - 40, 70, 8);

@@ -60,7 +60,7 @@ export class GameplayScene extends Phaser.Scene {
         rainy: WeatherType.RAINY, hot: WeatherType.HOT, stormy: WeatherType.STORMY,
       };
       const wt = weatherMap[this.challengeDef.constraints.forcedWeather];
-      if (wt !== undefined) this.gameState.weather = wt;
+      if (wt !== undefined) this.gameState.loc.weather = wt;
     }
 
     // Apply challenge patience constraint via customer manager
@@ -540,32 +540,32 @@ export class GameplayScene extends Phaser.Scene {
       }
 
       // Daily costs summary
-      const totalWages = this.gameState.staff.reduce((sum, st) => sum + st.wage, 0);
+      const totalWages = this.gameState.loc.staff.reduce((sum, st) => sum + st.wage, 0);
       const maintenance = this.gameState.getMaintenanceCost();
-      const assignedCount = this.gameState.staff.filter(st => st.assigned).length;
+      const assignedCount = this.gameState.loc.staff.filter(st => st.assigned).length;
       const costLines = [
         'Daily Costs:',
-        `  Staff (${assignedCount}/${this.gameState.staff.length}): $${totalWages}`,
+        `  Staff (${assignedCount}/${this.gameState.loc.staff.length}): $${totalWages}`,
         `  Maintenance: $${maintenance}`,
         `  Total: $${totalWages + maintenance}/day`,
       ];
 
       // Add active campaigns
-      if (this.gameState.activeCampaigns.length > 0) {
+      if (this.gameState.loc.activeCampaigns.length > 0) {
         costLines.push('');
         costLines.push('Active Campaigns:');
-        for (const campaign of this.gameState.activeCampaigns) {
+        for (const campaign of this.gameState.loc.activeCampaigns) {
           const def = CAMPAIGN_CATALOG.find(c => c.id === campaign.id);
           costLines.push(`  ${def?.icon ?? ''} ${def?.name ?? campaign.id} (${campaign.daysRemaining}d)`);
         }
       }
 
       // Loan status
-      if (this.gameState.loanAmount > 0) {
-        const isOverdue = this.gameState.loanDaysRemaining <= 0;
+      if (this.gameState.loc.loanAmount > 0) {
+        const isOverdue = this.gameState.loc.loanDaysRemaining <= 0;
         costLines.push('');
-        costLines.push(`🏦 Loan: $${this.gameState.loanAmount.toFixed(0)} owed`);
-        costLines.push(`  ${isOverdue ? '⚠ OVERDUE!' : `${this.gameState.loanDaysRemaining}d remaining`}`);
+        costLines.push(`🏦 Loan: $${this.gameState.loc.loanAmount.toFixed(0)} owed`);
+        costLines.push(`  ${isOverdue ? '⚠ OVERDUE!' : `${this.gameState.loc.loanDaysRemaining}d remaining`}`);
       }
 
       // Health inspection status
@@ -579,7 +579,7 @@ export class GameplayScene extends Phaser.Scene {
       }
 
       // Add broken equipment warnings
-      const brokenEquip = this.gameState.equipment.filter(e => e.broken);
+      const brokenEquip = this.gameState.loc.equipment.filter(e => e.broken);
       if (brokenEquip.length > 0) {
         costLines.push('');
         costLines.push('Broken Equipment:');

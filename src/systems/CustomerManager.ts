@@ -223,7 +223,7 @@ export class CustomerManager {
       revenue *= (1 + loyaltyFx.tipBonus);
     }
     // Check if order matches a recipe — record sale and apply recipe premium
-    const matchedRecipe = this.gameState.recipes.find(r => {
+    const matchedRecipe = this.gameState.loc.recipes.find(r => {
       const firstItem = customer.order.items[0];
       if (!firstItem) return false;
       return r.flavorId === firstItem.flavorId && r.style === firstItem.style;
