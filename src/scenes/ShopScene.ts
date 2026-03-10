@@ -87,7 +87,7 @@ export class ShopScene extends Phaser.Scene {
     const titleLabel = this.isEmergency ? '🚚 Emergency Resupply (1.5x prices!)' : '🛒 Ingredient Shop';
     this.add.text(GAME_WIDTH / 2, panelY + 25, titleLabel, {
       fontFamily: 'Arial',
-      fontSize: this.isEmergency ? '24px' : '28px',
+      fontSize: this.isEmergency ? scaledFontSize(this, 24) : scaledFontSize(this, 28),
       color: this.isEmergency ? '#E74C3C' : '#FFF',
     }).setOrigin(0.5);
 
@@ -102,7 +102,7 @@ export class ShopScene extends Phaser.Scene {
       const isActive = supplier.id === this.currentSupplier.id;
       const tab = this.add.text(tabX, supplierY, `${supplier.icon} ${supplier.name}`, {
         fontFamily: 'Arial',
-        fontSize: '13px',
+        fontSize: scaledFontSize(this, 13),
         color: isActive ? '#FFF' : '#95A5A6',
         backgroundColor: isActive ? '#2980B9' : '#1A252F',
         padding: { x: 8, y: 4 },
@@ -125,26 +125,26 @@ export class ShopScene extends Phaser.Scene {
       ? `${this.currentSupplier.description} (+${Math.round(this.currentSupplier.qualityBonus * 100)}% quality)`
       : this.currentSupplier.description;
     this.add.text(GAME_WIDTH / 2, supplierY + 18, descText, {
-      fontFamily: 'Arial', fontSize: '11px', color: '#7F8C8D',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7F8C8D',
     }).setOrigin(0.5);
 
     // Balance display
     this.moneyText = this.add.text(GAME_WIDTH / 2, panelY + 82, '', {
       fontFamily: 'Arial',
-      fontSize: '20px',
+      fontSize: scaledFontSize(this, 20),
       color: uiColor(this, 'green'),
     }).setOrigin(0.5);
 
     // Bulk discount info
     this.add.text(GAME_WIDTH / 2, panelY + 102, 'Bulk: 3+ batches → 10% off  |  5+ batches → 20% off', {
-      fontFamily: 'Arial', fontSize: '11px', color: uiColor(this, 'yellow'),
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: uiColor(this, 'yellow'),
     }).setOrigin(0.5);
 
     // Column headers
     const headerY = panelY + 118;
     const colX = { name: panelX + 20, stock: panelX + 180, price: panelX + 280, qty: panelX + 380, buy: panelX + 500 };
 
-    const headerStyle = { fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6' };
+    const headerStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#95A5A6' };
     this.add.text(colX.name, headerY, 'INGREDIENT', headerStyle);
     this.add.text(colX.stock, headerY, 'IN STOCK', headerStyle);
     this.add.text(colX.price, headerY, 'PRICE', headerStyle);
@@ -154,7 +154,7 @@ export class ShopScene extends Phaser.Scene {
     // Location indicator in franchise mode
     if (this.gameState.franchiseMode) {
       this.add.text(GAME_WIDTH / 2, panelY + 42, `📍 ${this.gameState.locationName}`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#F1C40F',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#F1C40F',
       }).setOrigin(0.5);
     }
 
@@ -165,7 +165,7 @@ export class ShopScene extends Phaser.Scene {
     if (this.gameState.day <= 3 || totalStock < 30) {
       this.add.text(GAME_WIDTH / 2, panelY + 138, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
         fontFamily: 'Arial',
-        fontSize: '12px',
+        fontSize: scaledFontSize(this, 12),
         color: '#F1C40F',
       }).setOrigin(0.5);
       itemsOffsetY = 158;
@@ -183,7 +183,7 @@ export class ShopScene extends Phaser.Scene {
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 35, '← Back to Store', {
       fontFamily: 'Arial',
-      fontSize: '20px',
+      fontSize: scaledFontSize(this, 20),
       color: '#FFF',
       backgroundColor: '#E74C3C',
       padding: { x: 20, y: 8 },
@@ -222,7 +222,7 @@ export class ShopScene extends Phaser.Scene {
 
     // Name with expiry hint
     const nameText = this.add.text(colX.name, y + 8, `${item.name} (${item.expiresInDays}d)`, {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
     });
     row.add(nameText);
 
@@ -234,7 +234,7 @@ export class ShopScene extends Phaser.Scene {
     const stockLabel = isLow ? `${currentQty} ⚠` : `${currentQty}`;
     const stockColor = isLow ? uiColor(this, 'red') : '#FFF';
     const stockText = this.add.text(colX.stock, y + 8, stockLabel, {
-      fontFamily: 'Arial', fontSize: '14px', color: stockColor,
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: stockColor,
     });
     row.add(stockText);
 
@@ -243,21 +243,21 @@ export class ShopScene extends Phaser.Scene {
     const actualPrice = Math.round(item.basePrice * priceMult * 100) / 100;
     const priceColor = priceMult > 1.1 ? uiColor(this, 'red') : priceMult < 0.9 ? uiColor(this, 'green') : '#FFF';
     const priceText = this.add.text(colX.price, y + 8, `$${actualPrice.toFixed(2)}/${item.bulkSize}`, {
-      fontFamily: 'Arial', fontSize: '14px', color: priceColor,
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: priceColor,
     });
     row.add(priceText);
 
     // Quantity selector
     let qty = 1;
     const qtyText = this.add.text(colX.qty + 25, y + 10, '1', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF',
     }).setOrigin(0.5);
     row.add(qtyText);
 
     // Buy button (declared early so updateBuyLabel can reference it)
     const buyBtn = this.add.text(colX.buy, y + 10, 'Buy', {
       fontFamily: 'Arial',
-      fontSize: '16px',
+      fontSize: scaledFontSize(this, 16),
       color: '#FFF',
       backgroundColor: '#27AE60',
       padding: { x: 12, y: 4 },
@@ -275,7 +275,7 @@ export class ShopScene extends Phaser.Scene {
     updateBuyLabel();
 
     const minusBtn = this.add.text(colX.qty, y + 10, '−', {
-      fontFamily: 'Arial', fontSize: '18px', color: uiColor(this, 'red'),
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: uiColor(this, 'red'),
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     minusBtn.on('pointerdown', () => {
       if (qty > 1) { qty--; qtyText.setText(`${qty}`); updateBuyLabel(); }
@@ -283,7 +283,7 @@ export class ShopScene extends Phaser.Scene {
     row.add(minusBtn);
 
     const plusBtn = this.add.text(colX.qty + 50, y + 10, '+', {
-      fontFamily: 'Arial', fontSize: '18px', color: uiColor(this, 'green'),
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: uiColor(this, 'green'),
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     plusBtn.on('pointerdown', () => {
       if (qty < 10) { qty++; qtyText.setText(`${qty}`); updateBuyLabel(); }

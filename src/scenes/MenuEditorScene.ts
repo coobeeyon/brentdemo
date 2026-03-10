@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, BASE_SCOOP_PRICE } from '../config/constants';
 import { GameState, getGameState, Flavor } from '../systems/GameState';
-import { uiColor } from '../systems/UIUtils';
+import { uiColor, scaledFontSize } from '../systems/UIUtils';
 
 export class MenuEditorScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -32,11 +32,11 @@ export class MenuEditorScene extends Phaser.Scene {
     // Title
     const titleSuffix = this.gameState.franchiseMode ? ` — ${this.gameState.locationName}` : '';
     this.add.text(GAME_WIDTH / 2, panelY + 25, `Menu Editor${titleSuffix}`, {
-      fontFamily: 'Arial', fontSize: '28px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 28), color: '#FFF',
     }).setOrigin(0.5);
 
     this.add.text(GAME_WIDTH / 2, panelY + 55, 'Set prices and choose which flavors to offer today', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
     }).setOrigin(0.5);
 
     this.contentContainer = this.add.container(0, 0);
@@ -44,7 +44,7 @@ export class MenuEditorScene extends Phaser.Scene {
 
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 35, '← Back', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#E74C3C', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -59,7 +59,7 @@ export class MenuEditorScene extends Phaser.Scene {
 
   private buildFlavorList(panelX: number, startY: number): void {
     // Column headers
-    const hStyle = { fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6' };
+    const hStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6' };
     const cols = {
       toggle: panelX + 20,
       name: panelX + 60,
@@ -90,13 +90,13 @@ export class MenuEditorScene extends Phaser.Scene {
     const activeFlavors = this.gameState.loc.flavors.filter(f => f.unlocked).length;
     this.contentContainer.add(
       this.add.text(GAME_WIDTH / 2, summaryY + 15, `${activeFlavors} flavor${activeFlavors !== 1 ? 's' : ''} active on menu`, {
-        fontFamily: 'Arial', fontSize: '15px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF',
       }).setOrigin(0.5)
     );
 
     // Reset prices button
     const resetBtn = this.add.text(GAME_WIDTH / 2, summaryY + 50, 'Reset All Prices to Default', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
       backgroundColor: '#7F8C8D', padding: { x: 12, y: 5 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -123,7 +123,7 @@ export class MenuEditorScene extends Phaser.Scene {
 
     // Toggle on/off
     const toggleBtn = this.add.text(cols.toggle, y + 15, flavor.unlocked ? 'ON' : 'OFF', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
       backgroundColor: flavor.unlocked ? '#27AE60' : '#95A5A6',
       padding: { x: 6, y: 4 },
     }).setInteractive({ useHandCursor: true });
@@ -142,7 +142,7 @@ export class MenuEditorScene extends Phaser.Scene {
 
     this.contentContainer.add(
       this.add.text(cols.name, y + 5, flavor.name, {
-        fontFamily: 'Arial', fontSize: '17px', color: flavor.unlocked ? '#FFF' : '#7F8C8D',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 17), color: flavor.unlocked ? '#FFF' : '#7F8C8D',
         fontStyle: 'bold',
       })
     );
@@ -154,7 +154,7 @@ export class MenuEditorScene extends Phaser.Scene {
     }).join(', ');
     this.contentContainer.add(
       this.add.text(cols.name, y + 28, ingNames, {
-        fontFamily: 'Arial', fontSize: '10px', color: '#7F8C8D',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 10), color: '#7F8C8D',
       })
     );
 
@@ -173,27 +173,27 @@ export class MenuEditorScene extends Phaser.Scene {
 
     this.contentContainer.add(
       this.add.text(cols.popularity + popW + 5, y + 15, `${Math.round(flavor.popularity * 100)}%`, {
-        fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6',
       })
     );
 
     // Base price
     this.contentContainer.add(
       this.add.text(cols.basePrice, y + 15, `$${BASE_SCOOP_PRICE.toFixed(2)}`, {
-        fontFamily: 'Arial', fontSize: '15px', color: '#7F8C8D',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#7F8C8D',
       })
     );
 
     // Custom price controls
     const currentPrice = this.gameState.loc.menuPrices.get(flavor.id) ?? BASE_SCOOP_PRICE;
     const priceText = this.add.text(cols.price + 30, y + 15, `$${currentPrice.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '16px', color: currentPrice > BASE_SCOOP_PRICE ? uiColor(this, 'green') : currentPrice < BASE_SCOOP_PRICE ? uiColor(this, 'red') : '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: currentPrice > BASE_SCOOP_PRICE ? uiColor(this, 'green') : currentPrice < BASE_SCOOP_PRICE ? uiColor(this, 'red') : '#FFF',
     }).setOrigin(0.5, 0);
     this.contentContainer.add(priceText);
 
     // Price down
     const downBtn = this.add.text(cols.price - 5, y + 15, '−', {
-      fontFamily: 'Arial', fontSize: '20px', color: uiColor(this, 'red'),
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: uiColor(this, 'red'),
     }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
     downBtn.on('pointerdown', () => {
       const newPrice = Math.max(0.50, currentPrice - 0.50);
@@ -204,7 +204,7 @@ export class MenuEditorScene extends Phaser.Scene {
 
     // Price up
     const upBtn = this.add.text(cols.price + 65, y + 15, '+', {
-      fontFamily: 'Arial', fontSize: '20px', color: uiColor(this, 'green'),
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: uiColor(this, 'green'),
     }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
     upBtn.on('pointerdown', () => {
       const newPrice = Math.min(15.00, currentPrice + 0.50);
@@ -216,7 +216,7 @@ export class MenuEditorScene extends Phaser.Scene {
     // Suggested price button
     const suggested = this.getSuggestedPrice(flavor);
     const suggestBtn = this.add.text(cols.ingredients, y + 15, `Suggest $${suggested.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '11px', color: '#3498DB',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#3498DB',
       padding: { x: 4, y: 2 },
     }).setInteractive({ useHandCursor: true });
     suggestBtn.on('pointerdown', () => {

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
+import { scaledFontSize } from '../systems/UIUtils';
 
 const SETTINGS_KEY = 'icecream_settings';
 
@@ -78,25 +79,25 @@ export class SettingsScene extends Phaser.Scene {
 
     // Title
     this.add.text(GAME_WIDTH / 2, panelY + 30, 'Settings', {
-      fontFamily: 'Arial', fontSize: '28px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 28), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     // Close button
     const closeBtn = this.add.text(panelX + panelW - 35, panelY + 10, 'X', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#E74C3C', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#E74C3C', fontStyle: 'bold',
     }).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => this.close());
 
     let y = panelY + 80;
-    const labelStyle = { fontFamily: 'Arial', fontSize: '18px', color: '#ECF0F1' };
-    const descStyle = { fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6' };
+    const labelStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#ECF0F1' };
+    const descStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6' };
 
     // --- Colorblind Mode ---
     this.add.text(panelX + 30, y, 'Colorblind Mode', labelStyle);
     this.add.text(panelX + 30, y + 24, 'Uses distinct colors for better visibility', descStyle);
 
     const cbToggle = this.add.text(panelX + panelW - 60, y + 5, this.settings.colorblindMode ? 'ON' : 'OFF', {
-      fontFamily: 'Arial', fontSize: '18px', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), fontStyle: 'bold',
       color: this.settings.colorblindMode ? '#2ECC71' : '#95A5A6',
       backgroundColor: '#34495E',
       padding: { x: 12, y: 4 },
@@ -122,7 +123,7 @@ export class SettingsScene extends Phaser.Scene {
     for (const size of sizes) {
       const isActive = this.settings.textSize === size;
       const sizeBtn = this.add.text(sx, y + 5, sizeLabels[size], {
-        fontFamily: 'Arial', fontSize: '18px', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), fontStyle: 'bold',
         color: isActive ? '#2ECC71' : '#BDC3C7',
         backgroundColor: isActive ? '#1A5276' : '#34495E',
         padding: { x: 12, y: 4 },
@@ -149,7 +150,7 @@ export class SettingsScene extends Phaser.Scene {
     for (const dl of dayLengths) {
       const isActive = this.settings.dayLength === dl;
       const dlBtn = this.add.text(dx, y + 5, dayLengthLabels[dl], {
-        fontFamily: 'Arial', fontSize: '16px', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), fontStyle: 'bold',
         color: isActive ? '#2ECC71' : '#BDC3C7',
         backgroundColor: isActive ? '#1A5276' : '#34495E',
         padding: { x: 10, y: 4 },
@@ -182,29 +183,29 @@ export class SettingsScene extends Phaser.Scene {
       const bx = panelX + 30;
       cbPreview.fillStyle(COLORBLIND_PALETTE.green, 1);
       cbPreview.fillRect(bx, y, 30, 20);
-      this.add.text(bx + 35, y + 2, 'Good', { fontFamily: 'Arial', fontSize: '14px', color: '#ECF0F1' });
+      this.add.text(bx + 35, y + 2, 'Good', { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#ECF0F1' });
 
       cbPreview.fillStyle(COLORBLIND_PALETTE.red, 1);
       cbPreview.fillRect(bx + 100, y, 30, 20);
-      this.add.text(bx + 135, y + 2, 'Warning', { fontFamily: 'Arial', fontSize: '14px', color: '#ECF0F1' });
+      this.add.text(bx + 135, y + 2, 'Warning', { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#ECF0F1' });
 
       cbPreview.fillStyle(COLORBLIND_PALETTE.yellow, 1);
       cbPreview.fillRect(bx + 220, y, 30, 20);
-      this.add.text(bx + 255, y + 2, 'Caution', { fontFamily: 'Arial', fontSize: '14px', color: '#ECF0F1' });
+      this.add.text(bx + 255, y + 2, 'Caution', { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#ECF0F1' });
     } else {
       const normPreview = this.add.graphics();
       const bx = panelX + 30;
       normPreview.fillStyle(0x2ECC71, 1);
       normPreview.fillRect(bx, y, 30, 20);
-      this.add.text(bx + 35, y + 2, 'Good', { fontFamily: 'Arial', fontSize: '14px', color: '#ECF0F1' });
+      this.add.text(bx + 35, y + 2, 'Good', { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#ECF0F1' });
 
       normPreview.fillStyle(0xE74C3C, 1);
       normPreview.fillRect(bx + 100, y, 30, 20);
-      this.add.text(bx + 135, y + 2, 'Warning', { fontFamily: 'Arial', fontSize: '14px', color: '#ECF0F1' });
+      this.add.text(bx + 135, y + 2, 'Warning', { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#ECF0F1' });
 
       normPreview.fillStyle(0xF1C40F, 1);
       normPreview.fillRect(bx + 220, y, 30, 20);
-      this.add.text(bx + 255, y + 2, 'Caution', { fontFamily: 'Arial', fontSize: '14px', color: '#ECF0F1' });
+      this.add.text(bx + 255, y + 2, 'Caution', { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#ECF0F1' });
     }
 
     // ESC to close

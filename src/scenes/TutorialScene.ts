@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
+import { scaledFontSize } from '../systems/UIUtils';
 
 interface TutorialStep {
   title: string;
@@ -135,7 +136,7 @@ export class TutorialScene extends Phaser.Scene {
     // Title
     this.titleText = this.add.text(GAME_WIDTH / 2, 0, '', {
       fontFamily: 'Arial',
-      fontSize: '26px',
+      fontSize: scaledFontSize(this, 26),
       color: '#FFF',
       fontStyle: 'bold',
     }).setOrigin(0.5);
@@ -143,7 +144,7 @@ export class TutorialScene extends Phaser.Scene {
     // Body
     this.bodyText = this.add.text(GAME_WIDTH / 2, 0, '', {
       fontFamily: 'Arial',
-      fontSize: '16px',
+      fontSize: scaledFontSize(this, 16),
       color: '#ECF0F1',
       lineSpacing: 4,
       align: 'left',
@@ -153,7 +154,7 @@ export class TutorialScene extends Phaser.Scene {
     // Next button
     this.nextBtn = this.add.text(GAME_WIDTH / 2 + 60, 0, 'Next →', {
       fontFamily: 'Arial',
-      fontSize: '20px',
+      fontSize: scaledFontSize(this, 20),
       color: '#FFF',
       backgroundColor: '#27AE60',
       padding: { x: 20, y: 8 },
@@ -166,7 +167,7 @@ export class TutorialScene extends Phaser.Scene {
     // Skip button
     this.skipBtn = this.add.text(GAME_WIDTH / 2 - 60, 0, 'Skip Tutorial', {
       fontFamily: 'Arial',
-      fontSize: '16px',
+      fontSize: scaledFontSize(this, 16),
       color: '#95A5A6',
       padding: { x: 12, y: 10 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -178,7 +179,7 @@ export class TutorialScene extends Phaser.Scene {
     // Step indicator
     this.stepIndicator = this.add.text(GAME_WIDTH / 2, 0, '', {
       fontFamily: 'Arial',
-      fontSize: '13px',
+      fontSize: scaledFontSize(this, 13),
       color: '#7F8C8D',
     }).setOrigin(0.5);
 

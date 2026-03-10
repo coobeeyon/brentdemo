@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, RESEARCH_CATALOG, ResearchCategory, MILESTONE_CATALOG } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
+import { scaledFontSize } from '../systems/UIUtils';
 
 const CATEGORY_LABELS: Record<ResearchCategory, string> = {
   [ResearchCategory.FLAVORS]: 'Flavors',
@@ -50,19 +51,19 @@ export class ResearchScene extends Phaser.Scene {
 
     // Title
     this.add.text(GAME_WIDTH / 2, panelY + 20, 'Research Tree', {
-      fontFamily: 'Arial', fontSize: '26px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 26), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
     // Research points display
     this.add.text(GAME_WIDTH / 2, panelY + 52, `Research Points: ${this.gameState.researchPoints}`, {
-      fontFamily: 'Arial', fontSize: '16px', color: '#F1C40F',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#F1C40F',
     }).setOrigin(0.5, 0);
 
     // Milestones summary
     const completed = this.gameState.completedMilestones.size;
     const total = MILESTONE_CATALOG.length;
     this.add.text(GAME_WIDTH / 2, panelY + 72, `Milestones: ${completed}/${total}`, {
-      fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
     }).setOrigin(0.5, 0);
 
     // Category tabs
@@ -87,7 +88,7 @@ export class ResearchScene extends Phaser.Scene {
 
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 35, 'Close', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -116,7 +117,7 @@ export class ResearchScene extends Phaser.Scene {
       tabBg.fillRoundedRect(x, tabY, tabW - 4, 28, 5);
 
       const label = this.add.text(x + tabW / 2 - 2, tabY + 14, CATEGORY_LABELS[cat], {
-        fontFamily: 'Arial', fontSize: '13px', color: isActive ? '#FFF' : '#95A5A6', fontStyle: isActive ? 'bold' : 'normal',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: isActive ? '#FFF' : '#95A5A6', fontStyle: isActive ? 'bold' : 'normal',
       }).setOrigin(0.5);
 
       // Make clickable
@@ -156,7 +157,7 @@ export class ResearchScene extends Phaser.Scene {
       const icon = isUnlocked ? '[OK]' : prereqsMet ? '' : '[locked]';
       const nameColor = isUnlocked ? '#2ECC71' : canResearch ? '#FFF' : '#7F8C8D';
       const nameText = this.add.text(panelX + 35, y + 8, `${icon} ${node.name}`, {
-        fontFamily: 'Arial', fontSize: '16px', color: nameColor, fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: nameColor, fontStyle: 'bold',
       });
       this.contentContainer.add(nameText);
 
@@ -164,13 +165,13 @@ export class ResearchScene extends Phaser.Scene {
       const costColor = isUnlocked ? '#2ECC71' : canResearch ? '#F1C40F' : '#7F8C8D';
       const costLabel = isUnlocked ? 'Unlocked' : `Cost: ${node.cost} RP`;
       const costText = this.add.text(panelX + panelW - 45, y + 10, costLabel, {
-        fontFamily: 'Arial', fontSize: '13px', color: costColor,
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: costColor,
       }).setOrigin(1, 0);
       this.contentContainer.add(costText);
 
       // Description
       const descText = this.add.text(panelX + 35, y + 30, node.description, {
-        fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#BDC3C7',
         wordWrap: { width: panelW - 120 },
       });
       this.contentContainer.add(descText);
@@ -183,7 +184,7 @@ export class ResearchScene extends Phaser.Scene {
           return `${done ? '[done]' : '[need]'} ${pn?.name ?? pid}`;
         }).join(', ');
         const prereqText = this.add.text(panelX + 35, y + 55, `Requires: ${prereqNames}`, {
-          fontFamily: 'Arial', fontSize: '11px', color: prereqsMet ? '#2ECC71' : '#E74C3C',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: prereqsMet ? '#2ECC71' : '#E74C3C',
         });
         this.contentContainer.add(prereqText);
       }
@@ -191,7 +192,7 @@ export class ResearchScene extends Phaser.Scene {
       // Research button
       if (!isUnlocked && canResearch) {
         const btn = this.add.text(panelX + panelW - 45, y + 55, 'Research', {
-          fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
           backgroundColor: '#3498DB', padding: { x: 10, y: 4 },
         }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 

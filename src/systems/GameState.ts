@@ -997,7 +997,7 @@ export class GameState {
     // Include current day's revenue that hasn't been accumulated yet
     const allLocs: LocationState[] = this.franchiseMode && this.locations.length > 0
       ? this.locations
-      : [this as any];
+      : [this.loc];
     const pendingRevenue = allLocs.reduce((sum, loc) => sum + loc.dailyRevenue, 0);
     const effectiveRevenue = this.seasonRevenue + pendingRevenue;
 
@@ -1635,7 +1635,7 @@ export class GameState {
     // Process ALL locations (in franchise mode) or just the single location
     const allLocs: LocationState[] = this.franchiseMode && this.locations.length > 0
       ? this.locations
-      : [this as any];
+      : [this.loc];
 
     const savedLocationId = this.currentLocationId;
 
@@ -1702,6 +1702,13 @@ export class GameState {
       if (this.getVipPerks().wordOfMouth) {
         loc.reputation = Math.min(5, loc.reputation + 0.1);
       }
+
+      // Generate catering offers for today (per-location)
+      loc.cateringContracts = [];
+      const offer = this.generateCateringOffer();
+      if (offer) {
+        loc.cateringContracts.push(offer);
+      }
     }
 
     // Restore active location
@@ -1718,13 +1725,6 @@ export class GameState {
 
     // Roll weather for the day
     this.rollWeather();
-
-    // Generate catering offers for today
-    this.loc.cateringContracts = [];
-    const offer = this.generateCateringOffer();
-    if (offer) {
-      this.loc.cateringContracts.push(offer);
-    }
   }
 }
 

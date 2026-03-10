@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { SaveManager } from '../systems/SaveManager';
 import { getGameState } from '../systems/GameState';
+import { scaledFontSize } from '../systems/UIUtils';
 
 export class MainMenuScene extends Phaser.Scene {
   private loadPanel: Phaser.GameObjects.Container | null = null;
@@ -21,7 +22,7 @@ export class MainMenuScene extends Phaser.Scene {
     // Title
     this.add.text(GAME_WIDTH / 2, 120, '🍦 Ice Cream Store', {
       fontFamily: 'Arial',
-      fontSize: '64px',
+      fontSize: scaledFontSize(this, 64),
       color: '#FFFFFF',
       stroke: '#FF6B9D',
       strokeThickness: 6,
@@ -29,7 +30,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.add.text(GAME_WIDTH / 2, 190, 'Simulator', {
       fontFamily: 'Arial',
-      fontSize: '48px',
+      fontSize: scaledFontSize(this, 48),
       color: '#FFFFFF',
       stroke: '#FF6B9D',
       strokeThickness: 4,
@@ -37,7 +38,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     const buttonStyle = {
       fontFamily: 'Arial',
-      fontSize: '28px',
+      fontSize: scaledFontSize(this, 28),
       color: '#FFFFFF',
       backgroundColor: '#FF6B9D',
       padding: { x: 30, y: 12 },
@@ -61,7 +62,7 @@ export class MainMenuScene extends Phaser.Scene {
         const date = new Date(saveData.timestamp);
         this.add.text(GAME_WIDTH / 2, nextY + 28, `Day ${saveData.state.day} · ${date.toLocaleDateString()}`, {
           fontFamily: 'Arial',
-          fontSize: '13px',
+          fontSize: scaledFontSize(this, 13),
           color: '#FFFFFFAA',
         }).setOrigin(0.5);
       }
@@ -96,7 +97,7 @@ export class MainMenuScene extends Phaser.Scene {
     if (hasAnySave) {
       const loadBtn = this.add.text(GAME_WIDTH / 2, nextY, '  Load Game  ', {
         ...buttonStyle,
-        fontSize: '24px',
+        fontSize: scaledFontSize(this, 24),
         backgroundColor: '#8E44AD',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -108,7 +109,7 @@ export class MainMenuScene extends Phaser.Scene {
     // Version text
     this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, 'v0.1.0', {
       fontFamily: 'Arial',
-      fontSize: '14px',
+      fontSize: scaledFontSize(this, 14),
       color: '#FFFFFF88',
     }).setOrigin(1, 1);
   }
@@ -153,7 +154,7 @@ export class MainMenuScene extends Phaser.Scene {
     container.add(panel);
 
     container.add(this.add.text(0, -panelH / 2 + 18, 'Load Game', {
-      fontFamily: 'Arial', fontSize: '22px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5));
 
     const saves = SaveManager.listSaves();
@@ -173,16 +174,16 @@ export class MainMenuScene extends Phaser.Scene {
       container.add(slotBg);
 
       container.add(this.add.text(-panelW / 2 + 25, slotY + 6, slotLabel, {
-        fontFamily: 'Arial', fontSize: '15px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF', fontStyle: 'bold',
       }));
 
       container.add(this.add.text(-panelW / 2 + 25, slotY + 26, detail, {
-        fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6',
       }));
 
       if (save.data) {
         const loadBtn = this.add.text(panelW / 2 - 25, slotY + 24, 'Load', {
-          fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
           backgroundColor: '#8E44AD', padding: { x: 10, y: 4 },
         }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
         loadBtn.on('pointerdown', () => {
@@ -196,7 +197,7 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     const closeBtn = this.add.text(0, panelH / 2 - 20, 'Cancel', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#BDC3C7',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => {
       container.destroy();

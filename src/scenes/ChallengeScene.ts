@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { getGameState } from '../systems/GameState';
+import { scaledFontSize } from '../systems/UIUtils';
 
 export interface ChallengeDef {
   id: string;
@@ -131,11 +132,11 @@ export class ChallengeScene extends Phaser.Scene {
     bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
     this.add.text(GAME_WIDTH / 2, 40, '🏆 Challenge Mode', {
-      fontFamily: 'Arial', fontSize: '32px', color: '#FFD700', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 32), color: '#FFD700', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     this.add.text(GAME_WIDTH / 2, 80, 'Pick a scenario and earn up to 3 stars!', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#95A5A6',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#95A5A6',
     }).setOrigin(0.5);
 
     // Challenge cards in a grid
@@ -166,18 +167,18 @@ export class ChallengeScene extends Phaser.Scene {
       card.add(cardBg);
 
       const title = this.add.text(15, 12, `${ch.icon} ${ch.name}`, {
-        fontFamily: 'Arial', fontSize: '18px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF', fontStyle: 'bold',
       });
       card.add(title);
 
       const desc = this.add.text(15, 38, ch.description, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#BDC3C7',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#BDC3C7',
         wordWrap: { width: cardW - 30 }, lineSpacing: 2,
       });
       card.add(desc);
 
       const meta = this.add.text(15, cardH - 28, `${ch.days} days · $${ch.startingMoney} start · ★ $${ch.revenueTargets[0]}/$${ch.revenueTargets[1]}/$${ch.revenueTargets[2]}`, {
-        fontFamily: 'Arial', fontSize: '11px', color: '#7F8C8D',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7F8C8D',
       });
       card.add(meta);
 
@@ -188,7 +189,7 @@ export class ChallengeScene extends Phaser.Scene {
         const stars = bestScore >= ch.revenueTargets[2] ? 3 : bestScore >= ch.revenueTargets[1] ? 2 : 1;
         const starText = '★'.repeat(stars) + '☆'.repeat(3 - stars);
         const bestText = this.add.text(cardW - 15, 12, starText, {
-          fontFamily: 'Arial', fontSize: '16px', color: '#FFD700',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFD700',
         }).setOrigin(1, 0);
         card.add(bestText);
       }
@@ -225,7 +226,7 @@ export class ChallengeScene extends Phaser.Scene {
 
     // Leaderboard button
     const lbBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, '🏆 Leaderboard', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#FFD700',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFD700',
       backgroundColor: '#2C3E5088', padding: { x: 12, y: 6 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -235,7 +236,7 @@ export class ChallengeScene extends Phaser.Scene {
 
     // Back button
     const backBtn = this.add.text(20, GAME_HEIGHT - 40, '← Back to Menu', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#E74C3C',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#E74C3C',
       backgroundColor: '#2C3E5088', padding: { x: 12, y: 6 },
     }).setInteractive({ useHandCursor: true });
 
@@ -266,11 +267,11 @@ export class ChallengeScene extends Phaser.Scene {
     overlay.add(panel);
 
     overlay.add(this.add.text(cx, cy - panelH / 2 + 25, `${ch.icon} ${ch.name}`, {
-      fontFamily: 'Arial', fontSize: '24px', color: '#FFD700', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 24), color: '#FFD700', fontStyle: 'bold',
     }).setOrigin(0.5));
 
     overlay.add(this.add.text(cx, cy - panelH / 2 + 60, ch.description, {
-      fontFamily: 'Arial', fontSize: '15px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#BDC3C7',
       wordWrap: { width: panelW - 60 },
     }).setOrigin(0.5));
 
@@ -288,32 +289,32 @@ export class ChallengeScene extends Phaser.Scene {
 
     let y = cy - 20;
     overlay.add(this.add.text(cx - panelW / 2 + 30, y, 'Constraints:', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#F39C12', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#F39C12', fontStyle: 'bold',
     }));
     y += 22;
 
     for (const line of constraintLines) {
       overlay.add(this.add.text(cx - panelW / 2 + 40, y, `• ${line}`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
       }));
       y += 18;
     }
 
     if (constraintLines.length === 0) {
       overlay.add(this.add.text(cx - panelW / 2 + 40, y, '• No special constraints', {
-        fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
       }));
     }
 
     // Star targets
     y = cy + panelH / 2 - 100;
     overlay.add(this.add.text(cx, y, `★ $${ch.revenueTargets[0]}  ★★ $${ch.revenueTargets[1]}  ★★★ $${ch.revenueTargets[2]}`, {
-      fontFamily: 'Arial', fontSize: '15px', color: '#FFD700',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFD700',
     }).setOrigin(0.5));
 
     // Start button
     const startBtn = this.add.text(cx - 80, cy + panelH / 2 - 50, 'Start Challenge', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#27AE60', padding: { x: 16, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     overlay.add(startBtn);
@@ -325,7 +326,7 @@ export class ChallengeScene extends Phaser.Scene {
 
     // Cancel button
     const cancelBtn = this.add.text(cx + 80, cy + panelH / 2 - 50, 'Cancel', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#7F8C8D', padding: { x: 16, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     overlay.add(cancelBtn);

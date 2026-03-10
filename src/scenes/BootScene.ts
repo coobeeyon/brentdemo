@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { loadSettings } from './SettingsScene';
+import { scaledFontSize } from '../systems/UIUtils';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -18,7 +19,7 @@ export class BootScene extends Phaser.Scene {
 
     const loadingText = this.add.text(width / 2, height / 2 - 50, 'Loading...', {
       fontFamily: 'Arial',
-      fontSize: '20px',
+      fontSize: scaledFontSize(this, 20),
       color: '#ffffff',
     }).setOrigin(0.5);
 

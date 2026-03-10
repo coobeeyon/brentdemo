@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, ShiftType, StaffSpecialty, SPECIALTY_LABELS, SPECIALTY_ICONS } from '../config/constants';
 import { GameState, getGameState, StaffMember } from '../systems/GameState';
-import { uiColor, uiColorNum } from '../systems/UIUtils';
+import { uiColor, uiColorNum, scaledFontSize } from '../systems/UIUtils';
 
 // Random name pools
 const FIRST_NAMES = [
@@ -84,15 +84,15 @@ export class StaffScene extends Phaser.Scene {
     // Title
     const titleSuffix = this.gameState.franchiseMode ? ` — ${this.gameState.locationName}` : '';
     this.add.text(GAME_WIDTH / 2, panelY + 25, `Staff Management${titleSuffix}`, {
-      fontFamily: 'Arial', fontSize: '28px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 28), color: '#FFF',
     }).setOrigin(0.5);
 
     // Balance + wages
     this.moneyText = this.add.text(panelX + 20, panelY + 60, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: uiColor(this, 'green'),
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: uiColor(this, 'green'),
     });
     this.wagesText = this.add.text(panelX + panelW - 20, panelY + 60, '', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#E67E22',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#E67E22',
     }).setOrigin(1, 0);
 
     // Content area
@@ -101,7 +101,7 @@ export class StaffScene extends Phaser.Scene {
 
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 35, '← Back', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#E74C3C', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -122,13 +122,13 @@ export class StaffScene extends Phaser.Scene {
     // --- Current Staff Section ---
     this.contentContainer.add(
       this.add.text(panelX + 20, startY, `Your Staff (${this.gameState.loc.staff.length}/${MAX_STAFF})`, {
-        fontFamily: 'Arial', fontSize: '18px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF', fontStyle: 'bold',
       })
     );
 
     // Column headers
     const headerY = startY + 28;
-    const hStyle = { fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6' };
+    const hStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6' };
     const cols = { name: panelX + 25, spec: panelX + 120, spd: panelX + 190, acc: panelX + 235, fri: panelX + 280, morale: panelX + 340, wage: panelX + 420, status: panelX + 500, action: panelX + 570 };
 
     this.contentContainer.add(this.add.text(cols.name, headerY, 'NAME', hStyle));
@@ -143,7 +143,7 @@ export class StaffScene extends Phaser.Scene {
     if (this.gameState.loc.staff.length === 0) {
       this.contentContainer.add(
         this.add.text(GAME_WIDTH / 2, headerY + 30, 'No staff hired yet', {
-          fontFamily: 'Arial', fontSize: '14px', color: '#7F8C8D',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#7F8C8D',
         }).setOrigin(0.5, 0)
       );
     }
@@ -163,13 +163,13 @@ export class StaffScene extends Phaser.Scene {
 
     this.contentContainer.add(
       this.add.text(panelX + 20, hireY + 10, 'Available Candidates', {
-        fontFamily: 'Arial', fontSize: '18px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF', fontStyle: 'bold',
       })
     );
 
     this.contentContainer.add(
       this.add.text(panelX + 260, hireY + 14, '(New candidates each day)', {
-        fontFamily: 'Arial', fontSize: '12px', color: '#7F8C8D',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#7F8C8D',
       })
     );
 
@@ -201,12 +201,12 @@ export class StaffScene extends Phaser.Scene {
     bg.fillRect(cols.name - 5, y - 2, 680, 36);
     this.contentContainer.add(bg);
 
-    const vStyle = { fontFamily: 'Arial', fontSize: '15px', color: '#FFF' };
+    const vStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF' };
 
     this.contentContainer.add(this.add.text(cols.name, y + 8, member.name, vStyle));
     const spec = member.specialty ?? StaffSpecialty.NONE;
     const specLabel = `${SPECIALTY_ICONS[spec]} ${SPECIALTY_LABELS[spec]}`.trim();
-    this.contentContainer.add(this.add.text(cols.spec, y + 8, specLabel, { ...vStyle, fontSize: '13px', color: spec === StaffSpecialty.NONE ? '#7F8C8D' : '#F1C40F' }));
+    this.contentContainer.add(this.add.text(cols.spec, y + 8, specLabel, { ...vStyle, fontSize: scaledFontSize(this, 13), color: spec === StaffSpecialty.NONE ? '#7F8C8D' : '#F1C40F' }));
     this.contentContainer.add(this.add.text(cols.spd, y + 8, `${member.speed}`, { ...vStyle, color: this.statColor(member.speed) }));
     this.contentContainer.add(this.add.text(cols.acc, y + 8, `${member.accuracy}`, { ...vStyle, color: this.statColor(member.accuracy) }));
     this.contentContainer.add(this.add.text(cols.fri, y + 8, `${member.friendliness}`, { ...vStyle, color: this.statColor(member.friendliness) }));
@@ -227,7 +227,7 @@ export class StaffScene extends Phaser.Scene {
 
     // Morale warning for low morale
     if (member.morale < 30) {
-      this.contentContainer.add(this.add.text(cols.morale + moraleW + 4, y + 6, '😞', { fontSize: '12px' }));
+      this.contentContainer.add(this.add.text(cols.morale + moraleW + 4, y + 6, '😞', { fontSize: scaledFontSize(this, 12) }));
     }
 
     this.contentContainer.add(this.add.text(cols.wage, y + 8, `$${member.wage}/d`, vStyle));
@@ -251,14 +251,14 @@ export class StaffScene extends Phaser.Scene {
     // Consecutive days indicator
     const daysWorked = member.consecutiveDaysWorked ?? 0;
     if (daysWorked >= 5) {
-      this.contentContainer.add(this.add.text(cols.status + 40, y + 8, '😩', { fontSize: '12px' }));
+      this.contentContainer.add(this.add.text(cols.status + 40, y + 8, '😩', { fontSize: scaledFontSize(this, 12) }));
     }
 
     // Shift cycle button
     const shifts: ShiftType[] = [ShiftType.OFF, ShiftType.MORNING, ShiftType.AFTERNOON, ShiftType.FULL_DAY];
     const nextShift = shifts[(shifts.indexOf(currentShift) + 1) % shifts.length];
     const toggleBtn = this.add.text(cols.action, y + 5, `→ ${shiftLabels[nextShift]}`, {
-      fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
       backgroundColor: '#3498DB',
       padding: { x: 8, y: 4 },
     }).setInteractive({ useHandCursor: true });
@@ -275,7 +275,7 @@ export class StaffScene extends Phaser.Scene {
     const trainCost = Math.round(20 + avgStat * 10);
     const allMaxed = member.speed >= 10 && member.accuracy >= 10 && member.friendliness >= 10;
     const trainBtn = this.add.text(cols.action + 65, y + 5, allMaxed ? 'Maxed' : `Train $${trainCost}`, {
-      fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
       backgroundColor: allMaxed ? '#7F8C8D' : '#8E44AD', padding: { x: 6, y: 4 },
     }).setInteractive({ useHandCursor: true });
 
@@ -285,7 +285,7 @@ export class StaffScene extends Phaser.Scene {
         if (result.success) {
           // Show feedback
           const feedback = this.add.text(cols.action + 80, y - 10, `+1 ${result.stat!}!`, {
-            fontFamily: 'Arial', fontSize: '12px', color: '#2ECC71', fontStyle: 'bold',
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#2ECC71', fontStyle: 'bold',
           }).setOrigin(0.5, 0);
           this.tweens.add({
             targets: feedback,
@@ -305,7 +305,7 @@ export class StaffScene extends Phaser.Scene {
 
     // Fire button (moved further right to fit train button)
     const fireBtn = this.add.text(cols.action + 155, y + 5, 'Fire', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
       backgroundColor: '#E74C3C', padding: { x: 8, y: 4 },
     }).setInteractive({ useHandCursor: true });
 
@@ -331,12 +331,12 @@ export class StaffScene extends Phaser.Scene {
     bg.fillRect(cols.name - 5, y - 2, 680, 40);
     this.contentContainer.add(bg);
 
-    const vStyle = { fontFamily: 'Arial', fontSize: '15px', color: '#FFF' };
+    const vStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF' };
 
     this.contentContainer.add(this.add.text(cols.name, y + 10, m.name, vStyle));
     const spec = m.specialty ?? StaffSpecialty.NONE;
     const specLabel = `${SPECIALTY_ICONS[spec]} ${SPECIALTY_LABELS[spec]}`.trim();
-    this.contentContainer.add(this.add.text(cols.spec, y + 10, specLabel, { ...vStyle, fontSize: '13px', color: spec === StaffSpecialty.NONE ? '#7F8C8D' : '#F1C40F' }));
+    this.contentContainer.add(this.add.text(cols.spec, y + 10, specLabel, { ...vStyle, fontSize: scaledFontSize(this, 13), color: spec === StaffSpecialty.NONE ? '#7F8C8D' : '#F1C40F' }));
     this.contentContainer.add(this.add.text(cols.spd, y + 10, `${m.speed}`, { ...vStyle, color: this.statColor(m.speed) }));
     this.contentContainer.add(this.add.text(cols.acc, y + 10, `${m.accuracy}`, { ...vStyle, color: this.statColor(m.accuracy) }));
     this.contentContainer.add(this.add.text(cols.fri, y + 10, `${m.friendliness}`, { ...vStyle, color: this.statColor(m.friendliness) }));
@@ -345,7 +345,7 @@ export class StaffScene extends Phaser.Scene {
     // Hire button
     if (this.gameState.loc.staff.length < MAX_STAFF) {
       const hireBtn = this.add.text(cols.action, y + 7, `Hire ($${m.wage * 3} signing)`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
         backgroundColor: '#27AE60', padding: { x: 10, y: 4 },
       }).setInteractive({ useHandCursor: true });
 
@@ -366,7 +366,7 @@ export class StaffScene extends Phaser.Scene {
     } else {
       this.contentContainer.add(
         this.add.text(cols.action, y + 10, 'Staff full', {
-          fontFamily: 'Arial', fontSize: '13px', color: '#7F8C8D',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#7F8C8D',
         })
       );
     }

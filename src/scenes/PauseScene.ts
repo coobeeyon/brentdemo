@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { getGameState } from '../systems/GameState';
 import { SaveManager } from '../systems/SaveManager';
+import { scaledFontSize } from '../systems/UIUtils';
 
 export class PauseScene extends Phaser.Scene {
   private slotPanel: Phaser.GameObjects.Container | null = null;
@@ -25,13 +26,13 @@ export class PauseScene extends Phaser.Scene {
 
     this.add.text(GAME_WIDTH / 2, 80, 'PAUSED', {
       fontFamily: 'Arial',
-      fontSize: '32px',
+      fontSize: scaledFontSize(this, 32),
       color: '#FFF',
     }).setOrigin(0.5);
 
     const btnStyle = {
       fontFamily: 'Arial',
-      fontSize: '20px',
+      fontSize: scaledFontSize(this, 20),
       color: '#FFF',
       backgroundColor: '#34495E',
       padding: { x: 20, y: 6 },
@@ -106,7 +107,7 @@ export class PauseScene extends Phaser.Scene {
 
     const title = mode === 'save' ? 'Save Game' : 'Load Game';
     container.add(this.add.text(0, -panelH / 2 + 18, title, {
-      fontFamily: 'Arial', fontSize: '22px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5));
 
     const saves = SaveManager.listSaves();
@@ -128,17 +129,17 @@ export class PauseScene extends Phaser.Scene {
       container.add(slotBg);
 
       container.add(this.add.text(-panelW / 2 + 25, slotY + 6, slotLabel, {
-        fontFamily: 'Arial', fontSize: '15px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF', fontStyle: 'bold',
       }));
 
       container.add(this.add.text(-panelW / 2 + 25, slotY + 26, detail, {
-        fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6',
       }));
 
       // Action button
       if (mode === 'save' && save.slot !== 'auto') {
         const saveBtn = this.add.text(panelW / 2 - 25, slotY + 24, 'Save', {
-          fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
           backgroundColor: '#27AE60', padding: { x: 10, y: 4 },
         }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
         saveBtn.on('pointerdown', () => {
@@ -148,7 +149,7 @@ export class PauseScene extends Phaser.Scene {
         container.add(saveBtn);
       } else if (mode === 'load' && save.data) {
         const loadBtn = this.add.text(panelW / 2 - 25, slotY + 24, 'Load', {
-          fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
           backgroundColor: '#3498DB', padding: { x: 10, y: 4 },
         }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
         loadBtn.on('pointerdown', () => {
@@ -169,7 +170,7 @@ export class PauseScene extends Phaser.Scene {
 
     // Close button
     const closeBtn = this.add.text(0, panelH / 2 - 20, 'Cancel', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#BDC3C7',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => {
       container.destroy();
