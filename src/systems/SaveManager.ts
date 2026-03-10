@@ -1,4 +1,4 @@
-import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign, LoyalCustomer, Recipe } from './GameState';
+import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign, LoyalCustomer, Recipe, LocationState } from './GameState';
 import { WeatherType, HealthInspectionResult, DecorThemeId, SeatingId, SignageId } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
@@ -50,9 +50,47 @@ interface SerializedGameState {
   totalRevenue: number;
   loyalCustomers: LoyalCustomer[];
   recipes: Recipe[];
+
+  // Multi-location franchise (v9+)
+  franchiseMode?: boolean;
+  currentLocationId?: number;
+  locations?: SerializedLocationState[];
 }
 
-const SAVE_VERSION = 8;
+interface SerializedLocationState {
+  id: number;
+  name: string;
+  money: number;
+  dailyRevenue: number;
+  dailyExpenses: number;
+  reputation: number;
+  reputationMomentum: number;
+  criticReviews: CriticReview[];
+  ingredients: Ingredient[];
+  flavors: Flavor[];
+  staff: StaffMember[];
+  menuPrices: [string, number][];
+  dayReports: DayReport[];
+  equipment: OwnedEquipment[];
+  activeCampaigns: ActiveCampaign[];
+  currentDecor: string;
+  unlockedDecor: string[];
+  currentSeating: string;
+  unlockedSeating: string[];
+  currentSignage: string;
+  unlockedSignage: string[];
+  loanAmount: number;
+  loanInterestRate: number;
+  loanDaysRemaining: number;
+  lastInspectionDay: number;
+  closureDaysRemaining: number;
+  inspectionHistory: HealthInspectionResult[];
+  recipes: Recipe[];
+  loyalCustomers: LoyalCustomer[];
+  weather: WeatherType;
+}
+
+const SAVE_VERSION = 9;
 
 export class SaveManager {
   static save(gameState: GameState, slot: string = 'auto', gameMode: string = 'story'): boolean {
@@ -99,6 +137,42 @@ export class SaveManager {
           totalRevenue: gameState.totalRevenue,
           loyalCustomers: gameState.loyalCustomers,
           recipes: gameState.recipes,
+          franchiseMode: gameState.franchiseMode,
+          currentLocationId: gameState.currentLocationId,
+          locations: gameState.franchiseMode
+            ? gameState.locations.map(loc => ({
+                id: loc.id,
+                name: loc.name,
+                money: loc.money,
+                dailyRevenue: loc.dailyRevenue,
+                dailyExpenses: loc.dailyExpenses,
+                reputation: loc.reputation,
+                reputationMomentum: loc.reputationMomentum,
+                criticReviews: loc.criticReviews,
+                ingredients: loc.ingredients,
+                flavors: loc.flavors,
+                staff: loc.staff,
+                menuPrices: Array.from(loc.menuPrices.entries()),
+                dayReports: loc.dayReports,
+                equipment: loc.equipment,
+                activeCampaigns: loc.activeCampaigns,
+                currentDecor: loc.currentDecor,
+                unlockedDecor: loc.unlockedDecor,
+                currentSeating: loc.currentSeating,
+                unlockedSeating: loc.unlockedSeating,
+                currentSignage: loc.currentSignage,
+                unlockedSignage: loc.unlockedSignage,
+                loanAmount: loc.loanAmount,
+                loanInterestRate: loc.loanInterestRate,
+                loanDaysRemaining: loc.loanDaysRemaining,
+                lastInspectionDay: loc.lastInspectionDay,
+                closureDaysRemaining: loc.closureDaysRemaining,
+                inspectionHistory: loc.inspectionHistory,
+                recipes: loc.recipes,
+                loyalCustomers: loc.loyalCustomers,
+                weather: loc.weather,
+              }))
+            : undefined,
         },
       };
 
@@ -163,6 +237,50 @@ export class SaveManager {
       gameState.totalRevenue = s.totalRevenue ?? 0;
       gameState.loyalCustomers = s.loyalCustomers ?? [];
       gameState.recipes = s.recipes ?? [];
+
+      // Multi-location franchise (v9+)
+      gameState.franchiseMode = s.franchiseMode ?? false;
+      gameState.currentLocationId = s.currentLocationId ?? 0;
+      if (s.locations && s.locations.length > 0) {
+        gameState.locations = s.locations.map(loc => ({
+          id: loc.id,
+          name: loc.name,
+          money: loc.money,
+          dailyRevenue: loc.dailyRevenue,
+          dailyExpenses: loc.dailyExpenses,
+          reputation: loc.reputation,
+          reputationMomentum: loc.reputationMomentum,
+          criticReviews: loc.criticReviews ?? [],
+          ingredients: loc.ingredients,
+          flavors: loc.flavors,
+          staff: loc.staff.map(member => ({
+            ...member,
+            shift: member.shift ?? (member.assigned ? 'full_day' : 'off'),
+            consecutiveDaysWorked: member.consecutiveDaysWorked ?? 0,
+          })),
+          menuPrices: new Map(loc.menuPrices),
+          dayReports: loc.dayReports,
+          equipment: loc.equipment ?? [],
+          activeCampaigns: loc.activeCampaigns ?? [],
+          currentDecor: loc.currentDecor as DecorThemeId,
+          unlockedDecor: loc.unlockedDecor as DecorThemeId[],
+          currentSeating: loc.currentSeating as SeatingId,
+          unlockedSeating: loc.unlockedSeating as SeatingId[],
+          currentSignage: loc.currentSignage as SignageId,
+          unlockedSignage: loc.unlockedSignage as SignageId[],
+          loanAmount: loc.loanAmount ?? 0,
+          loanInterestRate: loc.loanInterestRate ?? 0,
+          loanDaysRemaining: loc.loanDaysRemaining ?? 0,
+          lastInspectionDay: loc.lastInspectionDay ?? 0,
+          closureDaysRemaining: loc.closureDaysRemaining ?? 0,
+          inspectionHistory: loc.inspectionHistory ?? [],
+          recipes: loc.recipes ?? [],
+          loyalCustomers: loc.loyalCustomers ?? [],
+          weather: loc.weather ?? 'sunny' as WeatherType,
+        }));
+      } else {
+        gameState.locations = [];
+      }
 
       return true;
     } catch {
