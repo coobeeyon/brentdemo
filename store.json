@@ -734,11 +734,10 @@
       "title": "Catering offers only generated for active location in franchise mode",
       "description": "startNewDay() only generates catering offers for this.loc (active location). Other franchise locations never receive catering opportunities.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 4,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:56:01.249480677Z",
-      "updated_at": "2026-03-10T15:57:41.520705004Z"
+      "updated_at": "2026-03-10T15:58:30.304104814Z"
     },
     "lb-jl24": {
       "id": "lb-jl24",
