@@ -354,10 +354,10 @@
       "title": "Gameplay polish and missing features",
       "description": "Implement remaining spec features: staff specialties, loyalty point redemption, accessibility settings, and other gaps",
       "item_type": "epic",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
       "created_at": "2026-03-10T12:39:51.961477758Z",
-      "updated_at": "2026-03-10T12:39:51.961477758Z"
+      "updated_at": "2026-03-10T13:04:25.675956405Z"
     },
     "lb-e0m1": {
       "id": "lb-e0m1",
