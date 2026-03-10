@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD, VIP_PERK_THRESHOLDS } from '../config/constants';
 import { ChallengeDef } from './ChallengeScene';
-import { GameState, getGameState, CriticReview } from '../systems/GameState';
+import { GameState, getGameState, CriticReview, LocationState, DayReport } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager';
 import { SaveManager } from '../systems/SaveManager';
@@ -1493,7 +1493,7 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Next day button
-    const nextBtn = this.add.text(0, panelH / 2 - 40, 'Next Day →', {
+    const nextBtn = this.add.text(0, panelH / 2 - 45, 'Next Day →', {
       fontFamily: 'Arial',
       fontSize: scaledFontSize(this, 22),
       color: '#FFF',
@@ -1636,15 +1636,15 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Season stats summary — aggregate all locations in franchise mode
-    const allLocs: any[] = s.franchiseMode && s.locations.length > 0
+    const allLocs: LocationState[] = s.franchiseMode && s.locations.length > 0
       ? s.locations : [s.loc];
     let totalServed = 0;
     let totalLost = 0;
     let aggregateBalance = 0;
     for (const loc of allLocs) {
       const locReports = (loc.dayReports ?? []).slice(-seasonDef.daysPerSeason);
-      totalServed += locReports.reduce((sum: number, r: any) => sum + r.customersServed, 0);
-      totalLost += locReports.reduce((sum: number, r: any) => sum + r.customersLost, 0);
+      totalServed += locReports.reduce((sum: number, r: DayReport) => sum + r.customersServed, 0);
+      totalLost += locReports.reduce((sum: number, r: DayReport) => sum + r.customersLost, 0);
       aggregateBalance += loc.money;
     }
 
@@ -1792,9 +1792,9 @@ export class GameplayScene extends Phaser.Scene {
     if (!ch) return;
 
     const s = this.gameState;
-    const totalRevenue = s.dayReports.reduce((sum, r) => sum + r.revenue, 0);
-    const totalServed = s.dayReports.reduce((sum, r) => sum + r.customersServed, 0);
-    const totalLost = s.dayReports.reduce((sum, r) => sum + r.customersLost, 0);
+    const totalRevenue = s.loc.dayReports.reduce((sum, r) => sum + r.revenue, 0);
+    const totalServed = s.loc.dayReports.reduce((sum, r) => sum + r.customersServed, 0);
+    const totalLost = s.loc.dayReports.reduce((sum, r) => sum + r.customersLost, 0);
 
     // Calculate stars
     const stars = totalRevenue >= ch.revenueTargets[2] ? 3
@@ -1864,9 +1864,9 @@ export class GameplayScene extends Phaser.Scene {
     addLine(`Final Reputation: ${'★'.repeat(Math.round(s.loc.reputation))}${'☆'.repeat(5 - Math.round(s.loc.reputation))}`, '#FFDC00');
 
     // Buttons
-    const retryBtn = this.add.text(-120, panelH / 2 - 45, 'Retry', {
-      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
-      backgroundColor: '#F39C12', padding: { x: 20, y: 8 },
+    const retryBtn = this.add.text(-150, panelH / 2 - 45, 'Retry Challenge', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
+      backgroundColor: '#F39C12', padding: { x: 14, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     container.add(retryBtn);
 
@@ -1876,8 +1876,8 @@ export class GameplayScene extends Phaser.Scene {
     });
 
     const lbBtn = this.add.text(0, panelH / 2 - 45, '🏆 Leaderboard', {
-      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
-      backgroundColor: '#1A5276', padding: { x: 16, y: 8 },
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
+      backgroundColor: '#1A5276', padding: { x: 14, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     container.add(lbBtn);
 
@@ -1885,7 +1885,7 @@ export class GameplayScene extends Phaser.Scene {
       this.scene.start('LeaderboardScene');
     });
 
-    const menuBtn = this.add.text(120, panelH / 2 - 45, 'Menu', {
+    const menuBtn = this.add.text(140, panelH / 2 - 45, 'Menu', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });

@@ -141,15 +141,17 @@ export class VictoryScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7',
     }).setOrigin(0.5);
 
-    // Main menu button
+    // Main menu button — gold for full victory, silver for partial
     const btnY = GAME_HEIGHT - 55;
+    const btnColor = partial ? '#6E7B8B' : '#B8860B';
+    const btnHover = partial ? '#8B9DAF' : '#DAA520';
     const menuBtn = this.add.text(GAME_WIDTH / 2, btnY, 'Return to Main Menu', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF',
-      backgroundColor: '#2980B9', padding: { x: 28, y: 10 },
+      backgroundColor: btnColor, padding: { x: 28, y: 10 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    menuBtn.on('pointerover', () => menuBtn.setStyle({ backgroundColor: '#3498DB' }));
-    menuBtn.on('pointerout', () => menuBtn.setStyle({ backgroundColor: '#2980B9' }));
+    menuBtn.on('pointerover', () => menuBtn.setStyle({ backgroundColor: btnHover }));
+    menuBtn.on('pointerout', () => menuBtn.setStyle({ backgroundColor: btnColor }));
     menuBtn.on('pointerdown', () => {
       this.scene.start('MainMenuScene');
     });

@@ -91,6 +91,21 @@ export class MainMenuScene extends Phaser.Scene {
     sandboxBtn.on('pointerdown', () => this.startGame('sandbox'));
     challengeBtn.on('pointerdown', () => this.scene.start('ChallengeScene'));
 
+    // Settings button
+    const settingsBtn = this.add.text(GAME_WIDTH / 2, nextY, '   Settings   ', {
+      ...buttonStyle,
+      fontSize: scaledFontSize(this, 24),
+      backgroundColor: '#7F8C8D',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    settingsBtn.on('pointerover', () => settingsBtn.setStyle({ backgroundColor: '#95A5A6' }));
+    settingsBtn.on('pointerout', () => settingsBtn.setStyle({ backgroundColor: '#7F8C8D' }));
+    settingsBtn.on('pointerdown', () => {
+      this.registry.set('settingsReturnScene', 'MainMenuScene');
+      this.scene.start('SettingsScene');
+    });
+    nextY += 60;
+
     // Load Game button (if any save exists)
     const saves = SaveManager.listSaves();
     const hasAnySave = saves.some(s => s.data !== null);
@@ -107,7 +122,7 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     // Version text
-    this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, 'v0.1.0', {
+    this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, 'v1.0.0', {
       fontFamily: 'Arial',
       fontSize: scaledFontSize(this, 14),
       color: '#FFFFFF88',

@@ -1,6 +1,6 @@
 {
   "name": "ice-cream-store-simulator",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Ice Cream Store Simulator - a store management game",
   "type": "module",
   "scripts": {
