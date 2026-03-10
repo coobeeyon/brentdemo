@@ -428,6 +428,16 @@
       "created_at": "2026-03-09T18:04:26.564299764Z",
       "updated_at": "2026-03-09T18:11:17.690700913Z"
     },
+    "lb-alzl": {
+      "id": "lb-alzl",
+      "title": "Add fullscreen toggle button for mobile browsers",
+      "description": "Add a fullscreen toggle accessible from the main menu and pause menu that uses the Fullscreen API",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T18:22:23.646426022Z",
+      "updated_at": "2026-03-10T18:22:23.646426022Z"
+    },
     "lb-aqtx": {
       "id": "lb-aqtx",
       "title": "Fix build: correct tsc invocation and type errors",
@@ -2121,6 +2131,11 @@
     },
     {
       "from_id": "lb-ijsx",
+      "to_id": "lb-occl",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-alzl",
       "to_id": "lb-occl",
       "dep_type": "parent"
     }
