@@ -597,6 +597,8 @@ export class GameplayScene extends Phaser.Scene {
       if (owned.broken) {
         equipWarnings.push(`🔧 ${name}: BROKEN`);
       } else if (owned.condition < 30) {
+        equipWarnings.push(`⚠ ${name}: ${Math.round(owned.condition)}% — repair soon!`);
+      } else if (owned.condition < 50) {
         equipWarnings.push(`⚠ ${name}: ${Math.round(owned.condition)}%`);
       }
     }
