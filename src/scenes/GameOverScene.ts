@@ -62,10 +62,14 @@ export class GameOverScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#E74C3C', fontStyle: 'bold',
     }).setOrigin(0.5);
 
-    const allReports = gameState.loc.dayReports;
+    const allReports = gameState.franchiseMode && gameState.locations.length > 0
+      ? gameState.locations.flatMap(loc => loc.dayReports)
+      : gameState.loc.dayReports;
     const totalServed = allReports.reduce((sum, r) => sum + r.customersServed, 0);
     const totalLost = allReports.reduce((sum, r) => sum + r.customersLost, 0);
-    const totalDays = allReports.length;
+    const totalDays = gameState.franchiseMode && gameState.locations.length > 0
+      ? Math.max(...gameState.locations.map(loc => loc.dayReports.length))
+      : gameState.loc.dayReports.length;
     const finalBalance = gameState.franchiseMode && gameState.locations.length > 0
       ? gameState.locations.reduce((sum, loc) => sum + loc.money, 0)
       : gameState.loc.money;
@@ -92,8 +96,11 @@ export class GameOverScene extends Phaser.Scene {
 
     this.add.text(leftX, y, 'Final Balance:', labelStyle);
     this.add.text(leftX + 130, y, `$${finalBalance.toFixed(2)}`, redValueStyle);
+    const avgReputation = gameState.franchiseMode && gameState.locations.length > 0
+      ? gameState.locations.reduce((sum, loc) => sum + loc.reputation, 0) / gameState.locations.length
+      : gameState.loc.reputation;
     this.add.text(rightX, y, 'Reputation:', labelStyle);
-    this.add.text(rightX + 140, y, `${gameState.loc.reputation.toFixed(1)}★`, valueStyle);
+    this.add.text(rightX + 140, y, `${avgReputation.toFixed(1)}★`, valueStyle);
     y += lineH;
 
     if (seasonDef) {

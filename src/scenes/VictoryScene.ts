@@ -93,17 +93,24 @@ export class VictoryScene extends Phaser.Scene {
     statsBg.lineStyle(1, 0xFFD700, 0.3);
     statsBg.strokeRoundedRect(80, statsY, GAME_WIDTH - 160, 70, 8);
 
-    // Gather aggregate stats from day reports
-    const allReports = gameState.loc.dayReports;
+    // Gather aggregate stats from day reports (all locations in franchise mode)
+    const allReports = gameState.franchiseMode && gameState.locations.length > 0
+      ? gameState.locations.flatMap(loc => loc.dayReports)
+      : gameState.loc.dayReports;
     const totalServed = allReports.reduce((sum, r) => sum + r.customersServed, 0);
     const totalLost = allReports.reduce((sum, r) => sum + r.customersLost, 0);
-    const totalDays = allReports.length;
+    const totalDays = gameState.franchiseMode && gameState.locations.length > 0
+      ? Math.max(...gameState.locations.map(loc => loc.dayReports.length))
+      : gameState.loc.dayReports.length;
     const finalBalance = gameState.franchiseMode && gameState.locations.length > 0
       ? gameState.locations.reduce((sum, loc) => sum + loc.money, 0)
       : gameState.loc.money;
 
     const statsLine1 = `Days Played: ${totalDays}    |    Customers Served: ${totalServed}    |    Customers Lost: ${totalLost}`;
-    const statsLine2 = `Final Balance: $${finalBalance.toFixed(2)}    |    Locations: ${gameState.franchiseMode ? gameState.locations.length : 1}    |    Final Reputation: ${gameState.loc.reputation.toFixed(1)}★`;
+    const avgReputation = gameState.franchiseMode && gameState.locations.length > 0
+      ? gameState.locations.reduce((sum, loc) => sum + loc.reputation, 0) / gameState.locations.length
+      : gameState.loc.reputation;
+    const statsLine2 = `Final Balance: $${finalBalance.toFixed(2)}    |    Locations: ${gameState.franchiseMode ? gameState.locations.length : 1}    |    Final Reputation: ${avgReputation.toFixed(1)}★`;
 
     this.add.text(GAME_WIDTH / 2, statsY + 22, statsLine1, {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7',
