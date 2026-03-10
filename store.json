@@ -1508,6 +1508,16 @@
       "created_at": "2026-03-10T10:40:45.608242592Z",
       "updated_at": "2026-03-10T10:58:08.551251600Z"
     },
+    "lb-xw7k": {
+      "id": "lb-xw7k",
+      "title": "Customer preferences influence order generation",
+      "description": "Customers have likedFlavors/dislikedFlavors but order generation ignores them. Should weight liked flavors 2x and avoid disliked flavors.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T16:44:48.588448864Z",
+      "updated_at": "2026-03-10T16:44:48.588448864Z"
+    },
     "lb-y184": {
       "id": "lb-y184",
       "title": "Challenge mode with daily scenarios",
