@@ -1458,16 +1458,24 @@ export class GameplayScene extends Phaser.Scene {
       y += 55;
     }
 
-    // Season stats summary
-    const seasonReports = s.loc.dayReports.slice(-seasonDef.daysPerSeason);
-    const totalServed = seasonReports.reduce((sum, r) => sum + r.customersServed, 0);
-    const totalLost = seasonReports.reduce((sum, r) => sum + r.customersLost, 0);
+    // Season stats summary — aggregate all locations in franchise mode
+    const allLocs: any[] = s.franchiseMode && s.locations.length > 0
+      ? s.locations : [s.loc];
+    let totalServed = 0;
+    let totalLost = 0;
+    let aggregateBalance = 0;
+    for (const loc of allLocs) {
+      const locReports = (loc.dayReports ?? []).slice(-seasonDef.daysPerSeason);
+      totalServed += locReports.reduce((sum: number, r: any) => sum + r.customersServed, 0);
+      totalLost += locReports.reduce((sum: number, r: any) => sum + r.customersLost, 0);
+      aggregateBalance += loc.money;
+    }
 
     const statsText = this.add.text(leftX, y, [
       `Days Played: ${seasonDef.daysPerSeason}`,
       `Customers Served: ${totalServed}`,
       `Customers Lost: ${totalLost}`,
-      `Final Balance: $${s.loc.money.toFixed(2)}`,
+      `Final Balance: $${aggregateBalance.toFixed(2)}`,
     ].join('\n'), {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7', lineSpacing: 4,
     });
