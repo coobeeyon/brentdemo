@@ -65,11 +65,10 @@
       "title": "Add Settings button to MainMenuScene",
       "description": "Settings (colorblind mode, text size, day length) is only accessible during gameplay via PauseScene. Add a Settings button to the main menu for convenience.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T18:04:35.923248670Z",
-      "updated_at": "2026-03-10T18:05:06.660906919Z"
+      "updated_at": "2026-03-10T18:06:02.598598033Z"
     },
     "lb-38is": {
       "id": "lb-38is",
