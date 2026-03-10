@@ -1390,12 +1390,12 @@ export class GameplayScene extends Phaser.Scene {
     const resultIcons = { win: '🎉', soft_fail: '😔', hard_fail: '💀' };
 
     const title = this.add.text(0, -panelH / 2 + 25, `${resultIcons[result]} ${resultLabels[result]}`, {
-      fontFamily: 'Arial', fontSize: '24px', color: resultColors[result], fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 24), color: resultColors[result], fontStyle: 'bold',
     }).setOrigin(0.5, 0);
     container.add(title);
 
     const seasonName = this.add.text(0, -panelH / 2 + 60, `Season ${seasonDef.season}: ${seasonDef.name}`, {
-      fontFamily: 'Arial', fontSize: '18px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#BDC3C7',
     }).setOrigin(0.5, 0);
     container.add(seasonName);
 
@@ -1405,12 +1405,12 @@ export class GameplayScene extends Phaser.Scene {
 
     const addTarget = (yPos: number, label: string, actual: string, target: string, met: boolean) => {
       const l = this.add.text(leftX, yPos, label, {
-        fontFamily: 'Arial', fontSize: '15px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#95A5A6',
       });
       container.add(l);
       const check = met ? '✅' : '❌';
       const v = this.add.text(leftX, yPos + 20, `${check} ${actual}  (target: ${target})`, {
-        fontFamily: 'Arial', fontSize: '16px', color: met ? uiColor(this, 'green') : uiColor(this, 'red'),
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: met ? uiColor(this, 'green') : uiColor(this, 'red'),
       });
       container.add(v);
     };
@@ -1447,7 +1447,7 @@ export class GameplayScene extends Phaser.Scene {
       `Customers Lost: ${totalLost}`,
       `Final Balance: $${s.loc.money.toFixed(2)}`,
     ].join('\n'), {
-      fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7', lineSpacing: 4,
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7', lineSpacing: 4,
     });
     container.add(statsText);
 
@@ -1459,18 +1459,18 @@ export class GameplayScene extends Phaser.Scene {
       if (nextSeasonDef) {
         // Preview next season
         const preview = this.add.text(0, y, `Next: Season ${nextSeasonDef.season} — ${nextSeasonDef.name}`, {
-          fontFamily: 'Arial', fontSize: '14px', color: '#7FDBFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#7FDBFF',
         }).setOrigin(0.5, 0);
         container.add(preview);
 
         const previewDesc = this.add.text(0, y + 22, nextSeasonDef.description, {
-          fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6',
           wordWrap: { width: panelW - 80 },
         }).setOrigin(0.5, 0);
         container.add(previewDesc);
 
         const nextBtn = this.add.text(0, panelH / 2 - 45, 'Next Season →', {
-          fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF',
           backgroundColor: '#27AE60', padding: { x: 20, y: 8 },
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
         container.add(nextBtn);
@@ -1487,7 +1487,7 @@ export class GameplayScene extends Phaser.Scene {
       } else {
         // Game complete! All 5 seasons done — transition to VictoryScene
         const victoryBtn = this.add.text(0, panelH / 2 - 45, '🏆 View Victory!', {
-          fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF',
           backgroundColor: '#D4AC0D', padding: { x: 20, y: 8 },
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
         container.add(victoryBtn);
@@ -1499,7 +1499,7 @@ export class GameplayScene extends Phaser.Scene {
     } else if (result === 'soft_fail') {
       // Retry or continue options
       const retryBtn = this.add.text(-80, panelH / 2 - 45, 'Retry Season', {
-        fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
         backgroundColor: '#F39C12', padding: { x: 16, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       container.add(retryBtn);
@@ -1526,7 +1526,7 @@ export class GameplayScene extends Phaser.Scene {
       });
 
       const menuBtn = this.add.text(100, panelH / 2 - 45, 'Main Menu', {
-        fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
         backgroundColor: '#34495E', padding: { x: 16, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       container.add(menuBtn);
@@ -1537,7 +1537,7 @@ export class GameplayScene extends Phaser.Scene {
     } else {
       // Hard fail — transition to GameOverScene
       const gameOverBtn = this.add.text(0, panelH / 2 - 45, 'Continue', {
-        fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF',
         backgroundColor: '#E74C3C', padding: { x: 20, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       container.add(gameOverBtn);
