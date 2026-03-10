@@ -142,8 +142,8 @@ export class GameplayScene extends Phaser.Scene {
 
     const revenue = this.customerManager.serveFirstCustomer();
     if (revenue !== null) {
-      this.gameState.dailyRevenue += revenue;
-      this.gameState.money += revenue;
+      this.gameState.loc.dailyRevenue += revenue;
+      this.gameState.loc.money += revenue;
 
       // Show floating revenue text
       const floatText = this.add.text(GAME_WIDTH / 2, 340, `+$${revenue.toFixed(2)}`, {
@@ -505,8 +505,8 @@ export class GameplayScene extends Phaser.Scene {
     const weatherDef = s.getWeatherDef();
     this.weatherText.setText(`${weatherDef.icon} ${weatherDef.name}`);
     this.phaseText.setText(s.phase.toUpperCase());
-    this.moneyText.setText(`$${s.money.toFixed(2)}`);
-    this.reputationText.setText('★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation)));
+    this.moneyText.setText(`$${s.loc.money.toFixed(2)}`);
+    this.reputationText.setText('★'.repeat(Math.round(s.loc.reputation)) + '☆'.repeat(5 - Math.round(s.loc.reputation)));
     const activeStaff = s.getActiveStaff().length;
     const totalAssigned = s.staff.filter(st => st.assigned).length;
     const staffLabel = totalAssigned > 0 ? ` | Staff: ${activeStaff}/${totalAssigned}` : '';
@@ -844,10 +844,10 @@ export class GameplayScene extends Phaser.Scene {
     // Record day report with full stats
     const s = this.gameState;
     const satisfaction = total > 0 ? Math.round((served / total) * 100) : 0;
-    s.dayReports.push({
+    s.loc.dayReports.push({
       day: s.day,
-      revenue: s.dailyRevenue,
-      expenses: s.dailyExpenses,
+      revenue: s.loc.dailyRevenue,
+      expenses: s.loc.dailyExpenses,
       customersServed: served,
       customersLost: lost,
       satisfactionScore: satisfaction,
@@ -936,11 +936,11 @@ export class GameplayScene extends Phaser.Scene {
     report.add(sep);
     y += 10;
 
-    addStat(leftX, y, 'REVENUE', `$${s.dailyRevenue.toFixed(2)}`, '#2ECC40');
-    addStat(rightX, y, 'EXPENSES', `$${s.dailyExpenses.toFixed(2)}`, '#E74C3C');
+    addStat(leftX, y, 'REVENUE', `$${s.loc.dailyRevenue.toFixed(2)}`, '#2ECC40');
+    addStat(rightX, y, 'EXPENSES', `$${s.loc.dailyExpenses.toFixed(2)}`, '#E74C3C');
     y += 45;
     addStat(leftX, y, 'PROFIT', `$${s.profit.toFixed(2)}`, profitColor);
-    addStat(rightX, y, 'BALANCE', `$${s.money.toFixed(2)}`);
+    addStat(rightX, y, 'BALANCE', `$${s.loc.money.toFixed(2)}`);
     y += 50;
 
     // Mini revenue chart (last 7 days)
@@ -1027,7 +1027,7 @@ export class GameplayScene extends Phaser.Scene {
     if (!seasonDef) return;
 
     // Include today's revenue in the total
-    const totalRevenue = s.seasonRevenue + s.dailyRevenue;
+    const totalRevenue = s.seasonRevenue + s.loc.dailyRevenue;
     const result = s.getSeasonResult();
 
     const container = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2);

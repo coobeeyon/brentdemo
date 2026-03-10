@@ -1309,7 +1309,7 @@ export class GameState {
   }
 
   get profit(): number {
-    return this.dailyRevenue - this.dailyExpenses;
+    return this.loc.dailyRevenue - this.loc.dailyExpenses;
   }
 
   get currentTimeString(): string {
@@ -1329,21 +1329,17 @@ export class GameState {
 
   startNewDay(): void {
     // Track cumulative stats from previous day before resetting
-    this.seasonRevenue += this.dailyRevenue;
-    this.totalRevenue += this.dailyRevenue;
+    this.seasonRevenue += this.loc.dailyRevenue;
+    this.totalRevenue += this.loc.dailyRevenue;
 
     this.day++;
     this.seasonDay++;
     this.currentHour = STORE_OPEN_HOUR;
     this.phase = DayPhase.PREPARE;
-    this.dailyRevenue = 0;
-    this.dailyExpenses = 0;
 
-    // Also reset location-scoped daily counters in franchise mode
-    if (this.franchiseMode && this.currentLocation) {
-      this.currentLocation.dailyRevenue = 0;
-      this.currentLocation.dailyExpenses = 0;
-    }
+    // Reset daily counters on the location-scoped source
+    this.loc.dailyRevenue = 0;
+    this.loc.dailyExpenses = 0;
 
     // Expire ingredients
     const loc = this.loc;
