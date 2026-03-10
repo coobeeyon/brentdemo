@@ -35,7 +35,7 @@ export class ShopScene extends Phaser.Scene {
   private moneyText!: Phaser.GameObjects.Text;
   private itemRows: Phaser.GameObjects.Container[] = [];
   private isEmergency = false;
-  private currentSupplier: SupplierDef = SUPPLIER_CATALOG[1]; // default: Main Street
+  private currentSupplier: SupplierDef = SUPPLIER_CATALOG[1]; // default: Main Street (restored from registry in create)
 
   constructor() {
     super({ key: 'ShopScene' });
@@ -44,6 +44,13 @@ export class ShopScene extends Phaser.Scene {
   create(): void {
     this.gameState = getGameState(this);
     this.itemRows = [];
+
+    // Restore selected supplier from registry (persists across scene.restart())
+    const savedSupplierId = this.registry.get('selectedSupplier');
+    if (savedSupplierId !== undefined) {
+      const saved = SUPPLIER_CATALOG.find(s => s.id === savedSupplierId);
+      if (saved) this.currentSupplier = saved;
+    }
 
     // Check if this is an emergency resupply (during serve phase)
     this.isEmergency = this.registry.get('emergencyResupply') === true;
@@ -97,6 +104,7 @@ export class ShopScene extends Phaser.Scene {
 
       tab.on('pointerdown', () => {
         this.currentSupplier = supplier;
+        this.registry.set('selectedSupplier', supplier.id);
         if (this.isEmergency) {
           this.registry.set('emergencyResupply', true);
         }
@@ -174,11 +182,13 @@ export class ShopScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     closeBtn.on('pointerdown', () => {
+      this.registry.remove('selectedSupplier');
       this.scene.resume('GameplayScene');
       this.scene.stop();
     });
 
     this.input.keyboard!.on('keydown-ESC', () => {
+      this.registry.remove('selectedSupplier');
       this.scene.resume('GameplayScene');
       this.scene.stop();
     });
