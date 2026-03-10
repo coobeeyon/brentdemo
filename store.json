@@ -525,8 +525,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 1,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:10:42.951708011Z",
-      "updated_at": "2026-03-10T19:10:42.951708011Z"
+      "updated_at": "2026-03-10T19:10:47.958828547Z"
     },
     "lb-c6a6": {
       "id": "lb-c6a6",
