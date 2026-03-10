@@ -353,6 +353,30 @@ export const CAMPAIGN_CATALOG: CampaignDef[] = [
   },
 ];
 
+// Staff Specialties
+export enum StaffSpecialty {
+  NONE = 'none',
+  SCOOPING = 'scooping',     // bonus to speed
+  BLENDING = 'blending',     // bonus to accuracy (milkshakes/smoothies)
+  CASHIERING = 'cashiering', // bonus to friendliness (tips)
+}
+
+export const SPECIALTY_BONUS = 0.15; // 15% bonus to the matching stat
+
+export const SPECIALTY_LABELS: Record<StaffSpecialty, string> = {
+  [StaffSpecialty.NONE]: '—',
+  [StaffSpecialty.SCOOPING]: 'Scooper',
+  [StaffSpecialty.BLENDING]: 'Blender',
+  [StaffSpecialty.CASHIERING]: 'Cashier',
+};
+
+export const SPECIALTY_ICONS: Record<StaffSpecialty, string> = {
+  [StaffSpecialty.NONE]: '',
+  [StaffSpecialty.SCOOPING]: '🍨',
+  [StaffSpecialty.BLENDING]: '🥤',
+  [StaffSpecialty.CASHIERING]: '💰',
+};
+
 // Staff Scheduling
 export enum ShiftType {
   OFF = 'off',

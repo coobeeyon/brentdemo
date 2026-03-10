@@ -24,6 +24,8 @@ import {
   LOAN_CATALOG,
   ShiftType,
   SHIFT_HOURS,
+  StaffSpecialty,
+  SPECIALTY_BONUS,
   DecorThemeId,
   DECOR_CATALOG,
   DecorThemeDef,
@@ -72,6 +74,7 @@ export interface StaffMember {
   assigned: boolean;
   shift: ShiftType;           // scheduled shift
   consecutiveDaysWorked: number; // for fairness tracking
+  specialty: StaffSpecialty;  // task-specific bonus
 }
 
 export interface CriticReview {
@@ -382,18 +385,45 @@ export class GameState {
     });
   }
 
+  /** Get effective stat with specialty bonus applied */
+  getSpecialtyBonus(member: StaffMember, statKey: 'speed' | 'accuracy' | 'friendliness'): number {
+    const spec = member.specialty ?? StaffSpecialty.NONE;
+    if (
+      (statKey === 'speed' && spec === StaffSpecialty.SCOOPING) ||
+      (statKey === 'accuracy' && spec === StaffSpecialty.BLENDING) ||
+      (statKey === 'friendliness' && spec === StaffSpecialty.CASHIERING)
+    ) {
+      return SPECIALTY_BONUS;
+    }
+    return 0;
+  }
+
   /** Get staff bonuses from staff currently on shift */
-  getStaffEffects(): { speedBonus: number; tipBonus: number } {
+  getStaffEffects(): { speedBonus: number; tipBonus: number; accuracyBonus: number } {
     const active = this.getActiveStaff();
-    if (active.length === 0) return { speedBonus: 0, tipBonus: 0 };
+    if (active.length === 0) return { speedBonus: 0, tipBonus: 0, accuracyBonus: 0 };
 
     // Average effective speed of active staff: each point above 5 gives 3% speed bonus
-    const avgSpeed = active.reduce((sum, s) => sum + this.getEffectiveStat(s, s.speed), 0) / active.length;
+    // Specialty bonus adds a flat multiplier on top
+    const avgSpeed = active.reduce((sum, s) => {
+      const base = this.getEffectiveStat(s, s.speed);
+      return sum + base * (1 + this.getSpecialtyBonus(s, 'speed'));
+    }, 0) / active.length;
     const speedBonus = (avgSpeed - 5) * 0.03; // can be negative if staff is slow
 
     // Average effective friendliness: each point above 5 gives 2% tip bonus
-    const avgFriendliness = active.reduce((sum, s) => sum + this.getEffectiveStat(s, s.friendliness), 0) / active.length;
+    const avgFriendliness = active.reduce((sum, s) => {
+      const base = this.getEffectiveStat(s, s.friendliness);
+      return sum + base * (1 + this.getSpecialtyBonus(s, 'friendliness'));
+    }, 0) / active.length;
     const tipBonus = (avgFriendliness - 5) * 0.02;
+
+    // Average effective accuracy: each point above 5 gives 2% quality bonus
+    const avgAccuracy = active.reduce((sum, s) => {
+      const base = this.getEffectiveStat(s, s.accuracy);
+      return sum + base * (1 + this.getSpecialtyBonus(s, 'accuracy'));
+    }, 0) / active.length;
+    const accuracyBonus = (avgAccuracy - 5) * 0.02;
 
     // More staff = faster service (diminishing returns)
     const staffCountBonus = Math.min(active.length * 0.05, 0.2); // up to 20%
@@ -401,6 +431,7 @@ export class GameState {
     return {
       speedBonus: speedBonus + staffCountBonus,
       tipBonus: Math.max(0, tipBonus),
+      accuracyBonus: Math.max(0, accuracyBonus),
     };
   }
 

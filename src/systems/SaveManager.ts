@@ -210,6 +210,7 @@ export class SaveManager {
         ...member,
         shift: member.shift ?? (member.assigned ? 'full_day' : 'off'),
         consecutiveDaysWorked: member.consecutiveDaysWorked ?? 0,
+        specialty: member.specialty ?? 'none',
       }));
       gameState.menuPrices = new Map(s.menuPrices);
       gameState.dayReports = s.dayReports;
@@ -257,6 +258,7 @@ export class SaveManager {
             ...member,
             shift: member.shift ?? (member.assigned ? 'full_day' : 'off'),
             consecutiveDaysWorked: member.consecutiveDaysWorked ?? 0,
+            specialty: member.specialty ?? 'none',
           })),
           menuPrices: new Map(loc.menuPrices),
           dayReports: loc.dayReports,

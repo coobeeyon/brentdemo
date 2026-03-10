@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, ShiftType } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, ShiftType, StaffSpecialty, SPECIALTY_LABELS, SPECIALTY_ICONS } from '../config/constants';
 import { GameState, getGameState, StaffMember } from '../systems/GameState';
 
 // Random name pools
@@ -16,14 +16,18 @@ interface HireCandidate {
   member: StaffMember;
 }
 
+const SPECIALTIES = [StaffSpecialty.NONE, StaffSpecialty.SCOOPING, StaffSpecialty.BLENDING, StaffSpecialty.CASHIERING];
+
 function generateStaffMember(): StaffMember {
   const name = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
   const speed = Math.ceil(Math.random() * 7) + 1;       // 2-8
   const accuracy = Math.ceil(Math.random() * 7) + 1;    // 2-8
   const friendliness = Math.ceil(Math.random() * 7) + 1; // 2-8
   const avgStat = (speed + accuracy + friendliness) / 3;
-  // Wage scales with stats: base 15 + stat bonus
-  const wage = Math.round(15 + avgStat * 3);
+  // Specialists cost 10% more in wages
+  const specialty = SPECIALTIES[Math.floor(Math.random() * SPECIALTIES.length)];
+  const specialtyMult = specialty === StaffSpecialty.NONE ? 1.0 : 1.1;
+  const wage = Math.round((15 + avgStat * 3) * specialtyMult);
 
   return {
     id: `staff_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
@@ -36,6 +40,7 @@ function generateStaffMember(): StaffMember {
     assigned: false,
     shift: ShiftType.OFF,
     consecutiveDaysWorked: 0,
+    specialty,
   };
 }
 
@@ -122,9 +127,10 @@ export class StaffScene extends Phaser.Scene {
     // Column headers
     const headerY = startY + 28;
     const hStyle = { fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6' };
-    const cols = { name: panelX + 25, spd: panelX + 140, acc: panelX + 200, fri: panelX + 260, morale: panelX + 340, wage: panelX + 420, status: panelX + 500, action: panelX + 600 };
+    const cols = { name: panelX + 25, spec: panelX + 120, spd: panelX + 190, acc: panelX + 235, fri: panelX + 280, morale: panelX + 340, wage: panelX + 420, status: panelX + 500, action: panelX + 570 };
 
     this.contentContainer.add(this.add.text(cols.name, headerY, 'NAME', hStyle));
+    this.contentContainer.add(this.add.text(cols.spec, headerY, 'SPEC', hStyle));
     this.contentContainer.add(this.add.text(cols.spd, headerY, 'SPD', hStyle));
     this.contentContainer.add(this.add.text(cols.acc, headerY, 'ACC', hStyle));
     this.contentContainer.add(this.add.text(cols.fri, headerY, 'FRI', hStyle));
@@ -168,6 +174,7 @@ export class StaffScene extends Phaser.Scene {
     // Candidate headers
     const candHeaderY = hireY + 38;
     this.contentContainer.add(this.add.text(cols.name, candHeaderY, 'NAME', hStyle));
+    this.contentContainer.add(this.add.text(cols.spec, candHeaderY, 'SPEC', hStyle));
     this.contentContainer.add(this.add.text(cols.spd, candHeaderY, 'SPD', hStyle));
     this.contentContainer.add(this.add.text(cols.acc, candHeaderY, 'ACC', hStyle));
     this.contentContainer.add(this.add.text(cols.fri, candHeaderY, 'FRI', hStyle));
@@ -195,6 +202,9 @@ export class StaffScene extends Phaser.Scene {
     const vStyle = { fontFamily: 'Arial', fontSize: '15px', color: '#FFF' };
 
     this.contentContainer.add(this.add.text(cols.name, y + 8, member.name, vStyle));
+    const spec = member.specialty ?? StaffSpecialty.NONE;
+    const specLabel = `${SPECIALTY_ICONS[spec]} ${SPECIALTY_LABELS[spec]}`.trim();
+    this.contentContainer.add(this.add.text(cols.spec, y + 8, specLabel, { ...vStyle, fontSize: '13px', color: spec === StaffSpecialty.NONE ? '#7F8C8D' : '#F1C40F' }));
     this.contentContainer.add(this.add.text(cols.spd, y + 8, `${member.speed}`, { ...vStyle, color: this.statColor(member.speed) }));
     this.contentContainer.add(this.add.text(cols.acc, y + 8, `${member.accuracy}`, { ...vStyle, color: this.statColor(member.accuracy) }));
     this.contentContainer.add(this.add.text(cols.fri, y + 8, `${member.friendliness}`, { ...vStyle, color: this.statColor(member.friendliness) }));
@@ -322,6 +332,9 @@ export class StaffScene extends Phaser.Scene {
     const vStyle = { fontFamily: 'Arial', fontSize: '15px', color: '#FFF' };
 
     this.contentContainer.add(this.add.text(cols.name, y + 10, m.name, vStyle));
+    const spec = m.specialty ?? StaffSpecialty.NONE;
+    const specLabel = `${SPECIALTY_ICONS[spec]} ${SPECIALTY_LABELS[spec]}`.trim();
+    this.contentContainer.add(this.add.text(cols.spec, y + 10, specLabel, { ...vStyle, fontSize: '13px', color: spec === StaffSpecialty.NONE ? '#7F8C8D' : '#F1C40F' }));
     this.contentContainer.add(this.add.text(cols.spd, y + 10, `${m.speed}`, { ...vStyle, color: this.statColor(m.speed) }));
     this.contentContainer.add(this.add.text(cols.acc, y + 10, `${m.accuracy}`, { ...vStyle, color: this.statColor(m.accuracy) }));
     this.contentContainer.add(this.add.text(cols.fri, y + 10, `${m.friendliness}`, { ...vStyle, color: this.statColor(m.friendliness) }));
