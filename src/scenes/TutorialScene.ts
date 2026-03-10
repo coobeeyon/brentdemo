@@ -46,8 +46,8 @@ const TUTORIAL_STEPS: TutorialStep[] = [
       'Customers arrive with patience meters.\n' +
       'Press Enter or click "Serve Next" to\n' +
       'fulfill orders before they leave!\n\n' +
-      'Tip: You CANNOT resupply during the day,\n' +
-      'so make sure you buy enough beforehand.',
+      'Tip: Buy enough beforehand! Emergency resupply\n' +
+      'IS available during the day, but costs 1.5x.',
     highlight: { x: GAME_WIDTH / 2 - 110, y: GAME_HEIGHT - 85, w: 220, h: 50 },
   },
   {
@@ -76,6 +76,9 @@ export class TutorialScene extends Phaser.Scene {
   private currentStep = 0;
   private overlay!: Phaser.GameObjects.Graphics;
   private panel!: Phaser.GameObjects.Graphics;
+  private highlightBorder?: Phaser.GameObjects.Graphics;
+  private spotlightMaskShape?: Phaser.GameObjects.Graphics;
+  private spotlightMask?: Phaser.Display.Masks.GeometryMask;
   private titleText!: Phaser.GameObjects.Text;
   private bodyText!: Phaser.GameObjects.Text;
   private nextBtn!: Phaser.GameObjects.Text;
@@ -166,6 +169,20 @@ export class TutorialScene extends Phaser.Scene {
     const step = TUTORIAL_STEPS[this.currentStep];
     const isLast = this.currentStep === TUTORIAL_STEPS.length - 1;
 
+    // Clean up previous highlight border and mask
+    if (this.highlightBorder) {
+      this.highlightBorder.destroy();
+      this.highlightBorder = undefined;
+    }
+    if (this.spotlightMask) {
+      this.overlay.clearMask(true);
+      this.spotlightMask = undefined;
+    }
+    if (this.spotlightMaskShape) {
+      this.spotlightMaskShape.destroy();
+      this.spotlightMaskShape = undefined;
+    }
+
     // Draw overlay with optional spotlight cutout
     this.overlay.clear();
     this.overlay.fillStyle(0x000000, 0.7);
@@ -173,24 +190,22 @@ export class TutorialScene extends Phaser.Scene {
 
     if (step.highlight) {
       const { x, y, w, h } = step.highlight;
-      // Cut out the highlighted area
-      this.overlay.fillStyle(0x000000, 0); // transparent
-      // Draw a bright border around the highlight
-      const border = this.add.graphics();
-      border.lineStyle(3, 0xF1C40F, 1);
-      border.strokeRoundedRect(x - 4, y - 4, w + 8, h + 8, 6);
-      // This will be cleaned up when step changes
-      border.setName('highlightBorder');
-    }
 
-    // Clean up previous highlight border
-    const oldBorder = this.children.getByName('highlightBorder');
-    // Keep the current one, remove old ones
-    this.children.each((child: Phaser.GameObjects.GameObject) => {
-      if (child.name === 'highlightBorder' && child !== this.children.getByName('highlightBorder')) {
-        child.destroy();
-      }
-    });
+      // Create a geometry mask to cut out the highlighted area.
+      // With invertAlpha the overlay is visible where the mask has NO pixels,
+      // so we draw only the cutout rectangle — the overlay hides everywhere else.
+      this.spotlightMaskShape = this.make.graphics();
+      this.spotlightMaskShape.fillStyle(0xffffff, 1);
+      this.spotlightMaskShape.fillRect(x, y, w, h);
+      this.spotlightMask = new Phaser.Display.Masks.GeometryMask(this, this.spotlightMaskShape);
+      this.spotlightMask.setInvertAlpha(true);
+      this.overlay.setMask(this.spotlightMask);
+
+      // Draw a bright border around the highlight
+      this.highlightBorder = this.add.graphics();
+      this.highlightBorder.lineStyle(3, 0xF1C40F, 1);
+      this.highlightBorder.strokeRoundedRect(x - 4, y - 4, w + 8, h + 8, 6);
+    }
 
     // Panel dimensions
     const panelW = 500;
@@ -233,12 +248,19 @@ export class TutorialScene extends Phaser.Scene {
       // localStorage may not be available
     }
 
-    // Clean up highlight borders
-    this.children.each((child: Phaser.GameObjects.GameObject) => {
-      if (child.name === 'highlightBorder') {
-        child.destroy();
-      }
-    });
+    // Clean up highlight border and mask
+    if (this.highlightBorder) {
+      this.highlightBorder.destroy();
+      this.highlightBorder = undefined;
+    }
+    if (this.spotlightMask) {
+      this.overlay.clearMask(true);
+      this.spotlightMask = undefined;
+    }
+    if (this.spotlightMaskShape) {
+      this.spotlightMaskShape.destroy();
+      this.spotlightMaskShape = undefined;
+    }
 
     // Resume the gameplay scene
     this.scene.resume('GameplayScene');
