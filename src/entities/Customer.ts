@@ -111,6 +111,18 @@ export class Customer {
     return true;
   }
 
+  /** Check if the current order violates this customer's dietary restriction */
+  orderViolatesRestriction(): boolean {
+    if (this.dietaryRestriction === DietaryRestriction.NONE) return false;
+    for (const item of this.order.items) {
+      if (!this.flavorAllowed(item.flavorId)) return true;
+      for (const toppingId of item.toppings) {
+        if (!this.toppingAllowed(toppingId)) return true;
+      }
+    }
+    return false;
+  }
+
   /** Check if a topping is compatible with this customer's dietary restriction */
   private toppingAllowed(toppingIngredientId: string): boolean {
     if (this.dietaryRestriction === DietaryRestriction.VEGAN) {
@@ -330,6 +342,10 @@ export class Customer {
 
     // Calculate tip based on remaining patience + equipment quality bonus
     const patienceRatio = this.patience / this.maxPatience;
+    // Dietary restriction violation: no tip
+    if (this.orderViolatesRestriction()) {
+      return this.order.totalPrice;
+    }
     const tip = this.order.totalPrice * (0.1 + qualityBonus) * patienceRatio * this.tipMultiplier;
     return this.order.totalPrice + tip;
   }

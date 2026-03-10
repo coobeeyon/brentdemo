@@ -233,7 +233,9 @@ export class CustomerManager {
 
     this.queue.shift();
     this.customersServed++;
-    this.satisfactionSum += patienceRatio;
+    // Dietary restriction violation: halve satisfaction (affects reputation)
+    const satisfactionPenalty = customer.orderViolatesRestriction() ? 0.5 : 1.0;
+    this.satisfactionSum += patienceRatio * satisfactionPenalty;
     this.repositionQueue();
 
     // Register loyalty (regular customers only, with good patience)
