@@ -174,11 +174,10 @@
       "title": "Data model: LocationState and multi-location GameState refactor",
       "description": "Add LocationState interface containing per-location data (money pool, reputation, equipment, staff, inventory, recipes). Refactor GameState to hold locations[] array and currentLocationId. All existing single-location properties that become per-location should be nested inside LocationState. Add franchise-level aggregates (totalFranchiseRevenue, overallReputation). Ensure backwards compat: when locations[] is empty/missing, treat current flat state as location 0.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T10:40:41.716976785Z",
-      "updated_at": "2026-03-10T10:41:18.229951947Z"
+      "updated_at": "2026-03-10T10:42:46.341828788Z"
     },
     "lb-be71": {
       "id": "lb-be71",
