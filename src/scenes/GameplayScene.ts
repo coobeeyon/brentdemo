@@ -29,6 +29,11 @@ export class GameplayScene extends Phaser.Scene {
   private emergencyResupplyBtn!: Phaser.GameObjects.Text;
   private challengeDef: ChallengeDef | null = null;
   private tipManager!: TipManager;
+  private sidePanelLeft!: Phaser.GameObjects.Container;
+  private sidePanelRight!: Phaser.GameObjects.Container;
+  private sidePanelLeftOpen: boolean = false;
+  private sidePanelRightOpen: boolean = false;
+  private sidePanelUpdateTimer: number = 0;
 
   constructor() {
     super({ key: 'GameplayScene' });
@@ -88,6 +93,7 @@ export class GameplayScene extends Phaser.Scene {
     this.createStoreView();
     this.createHUD();
     this.createPhaseUI();
+    this.createSidePanels();
 
     // Show notification when a critic leaves a review
     this.customerManager.onCriticReview = (review: CriticReview) => {
@@ -163,6 +169,7 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     this.updateHUD();
+    this.updateSidePanels();
   }
 
   private serveNextCustomer(): void {
@@ -429,6 +436,165 @@ export class GameplayScene extends Phaser.Scene {
     });
     this.emergencyResupplyBtn.on('pointerover', () => this.emergencyResupplyBtn.setStyle({ backgroundColor: '#E74C3C' }));
     this.emergencyResupplyBtn.on('pointerout', () => this.emergencyResupplyBtn.setStyle({ backgroundColor: '#C0392B' }));
+  }
+
+  private createSidePanels(): void {
+    const panelW = 180;
+    const panelH = 320;
+    const topY = 64;
+
+    // Left panel: Inventory
+    this.sidePanelLeft = this.add.container(-panelW, topY).setDepth(50);
+    const leftBg = this.add.graphics();
+    leftBg.fillStyle(0x1A252F, 0.92);
+    leftBg.fillRoundedRect(0, 0, panelW, panelH, { tl: 0, tr: 10, br: 10, bl: 0 });
+    this.sidePanelLeft.add(leftBg);
+
+    // Left tab (toggle button)
+    const leftTab = this.add.text(panelW, 0, '📦', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16),
+      backgroundColor: '#1A252FE8', padding: { x: 4, y: 8 },
+    }).setInteractive({ useHandCursor: true });
+    this.sidePanelLeft.add(leftTab);
+    leftTab.on('pointerdown', () => {
+      this.sidePanelLeftOpen = !this.sidePanelLeftOpen;
+      this.tweens.add({
+        targets: this.sidePanelLeft,
+        x: this.sidePanelLeftOpen ? 0 : -panelW,
+        duration: 200, ease: 'Power2',
+      });
+    });
+
+    // Right panel: Orders & Staff
+    this.sidePanelRight = this.add.container(GAME_WIDTH, topY).setDepth(50);
+    const rightBg = this.add.graphics();
+    rightBg.fillStyle(0x1A252F, 0.92);
+    rightBg.fillRoundedRect(0, 0, panelW, panelH, { tl: 10, tr: 0, br: 0, bl: 10 });
+    this.sidePanelRight.add(rightBg);
+
+    // Right tab (toggle button)
+    const rightTab = this.add.text(-28, 0, '👥', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16),
+      backgroundColor: '#1A252FE8', padding: { x: 4, y: 8 },
+    }).setInteractive({ useHandCursor: true });
+    this.sidePanelRight.add(rightTab);
+    rightTab.on('pointerdown', () => {
+      this.sidePanelRightOpen = !this.sidePanelRightOpen;
+      this.tweens.add({
+        targets: this.sidePanelRight,
+        x: this.sidePanelRightOpen ? GAME_WIDTH - panelW : GAME_WIDTH,
+        duration: 200, ease: 'Power2',
+      });
+    });
+  }
+
+  private updateSidePanels(): void {
+    const s = this.gameState;
+    const isServe = s.phase === DayPhase.SERVE;
+
+    // Only show side panels during serve phase
+    this.sidePanelLeft.setVisible(isServe);
+    this.sidePanelRight.setVisible(isServe);
+    if (!isServe) return;
+
+    // Throttle updates to every 500ms to avoid excessive object creation
+    this.sidePanelUpdateTimer -= this.game.loop.delta;
+    if (this.sidePanelUpdateTimer > 0) return;
+    this.sidePanelUpdateTimer = 500;
+
+    // Remove previous dynamic content (keep bg at index 0 and tab at index 1)
+    while (this.sidePanelLeft.length > 2) {
+      this.sidePanelLeft.removeAt(2, true);
+    }
+    while (this.sidePanelRight.length > 2) {
+      this.sidePanelRight.removeAt(2, true);
+    }
+
+    // -- Left: Inventory --
+    let ly = 8;
+    const invTitle = this.add.text(10, ly, 'Inventory', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFD700', fontStyle: 'bold',
+    });
+    this.sidePanelLeft.add(invTitle);
+    ly += 20;
+
+    for (const ing of s.loc.ingredients) {
+      if (ing.quantity <= 0 && !s.flavors.some(f => f.unlocked && f.ingredients.includes(ing.id))) continue;
+      const color = ing.quantity === 0 ? '#E74C3C' : ing.quantity <= LOW_STOCK_THRESHOLD ? '#F39C12' : '#BDC3C7';
+      const ingText = this.add.text(10, ly, `${ing.name}: ${ing.quantity}`, {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color,
+      });
+      this.sidePanelLeft.add(ingText);
+      ly += 15;
+      if (ly > 300) break;
+    }
+
+    // -- Right: Queue & Staff --
+    let ry = 8;
+    const qTitle = this.add.text(10, ry, 'Queue', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFD700', fontStyle: 'bold',
+    });
+    this.sidePanelRight.add(qTitle);
+    ry += 20;
+
+    const queue = this.customerManager.getQueue();
+    if (queue.length === 0) {
+      const noQ = this.add.text(10, ry, 'No customers', {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7F8C8D',
+      });
+      this.sidePanelRight.add(noQ);
+      ry += 15;
+    } else {
+      const typeIcons: Record<string, string> = {
+        regular: '', tourist: '📷', child: '🧒', critic: '📝', vip: '⭐',
+      };
+      for (let i = 0; i < Math.min(queue.length, 8); i++) {
+        const c = queue[i];
+        const pct = Math.round((c.patience / c.maxPatience) * 100);
+        const pColor = pct > 50 ? '#2ECC71' : pct > 25 ? '#F39C12' : '#E74C3C';
+        const icon = typeIcons[c.type] ?? '';
+        const items = c.order.items.map(it => it.flavorId.slice(0, 6)).join('+');
+        const line = this.add.text(10, ry, `${icon}${items} ${pct}%`, {
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 10), color: pColor,
+        });
+        this.sidePanelRight.add(line);
+        ry += 14;
+      }
+      if (queue.length > 8) {
+        const more = this.add.text(10, ry, `+${queue.length - 8} more...`, {
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 10), color: '#7F8C8D',
+        });
+        this.sidePanelRight.add(more);
+        ry += 14;
+      }
+    }
+
+    // Staff section
+    ry += 8;
+    const staffTitle = this.add.text(10, ry, 'Staff', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFD700', fontStyle: 'bold',
+    });
+    this.sidePanelRight.add(staffTitle);
+    ry += 20;
+
+    const activeStaff = s.getActiveStaff();
+    if (activeStaff.length === 0) {
+      const noStaff = this.add.text(10, ry, 'No active staff', {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7F8C8D',
+      });
+      this.sidePanelRight.add(noStaff);
+    } else {
+      for (const staff of activeStaff) {
+        if (ry > 300) break;
+        const moraleColor = staff.morale > 60 ? '#2ECC71' : staff.morale > 30 ? '#F39C12' : '#E74C3C';
+        const specLabel = staff.specialty !== 'none' ? ` [${staff.specialty.slice(0, 4)}]` : '';
+        const staffLine = this.add.text(10, ry, `${staff.name}${specLabel}`, {
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 10), color: moraleColor,
+        });
+        this.sidePanelRight.add(staffLine);
+        ry += 14;
+      }
+    }
   }
 
   private createPhaseUI(): void {
@@ -774,6 +940,9 @@ export class GameplayScene extends Phaser.Scene {
     this.eventManager.rollForEvent(this.gameState);
     // Pass event effects to customer manager
     this.customerManager.eventEffects = this.eventManager.getEffects();
+    // Pass trending flavor to customer manager
+    const activeEvent = this.eventManager.getActiveEvent();
+    this.customerManager.trendingFlavorId = activeEvent?.trendingFlavorId;
     // Store ingredient price multiplier in registry for ShopScene access
     const effects = this.eventManager.getEffects();
     this.registry.set('eventIngredientPriceMult', effects.ingredientPriceMult ?? 1.0);
@@ -781,9 +950,11 @@ export class GameplayScene extends Phaser.Scene {
 
   private showEventNotification(event: ActiveEvent): void {
     const notif = this.add.container(GAME_WIDTH / 2, 140);
-    const text = event.trendingFlavorId
-      ? `${event.def.description.replace('A flavor', `"${event.trendingFlavorId}"`)}`
-      : event.def.description;
+    let text = event.def.description;
+    if (event.trendingFlavorId) {
+      const flavorName = this.gameState.flavors.find(f => f.id === event.trendingFlavorId)?.name ?? event.trendingFlavorId;
+      text = event.def.description.replace('A flavor', `"${flavorName}"`);
+    }
 
     const bg = this.add.graphics();
     bg.fillStyle(0x34495E, 0.95);

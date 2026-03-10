@@ -207,9 +207,9 @@ export class StaffScene extends Phaser.Scene {
     const spec = member.specialty ?? StaffSpecialty.NONE;
     const specLabel = `${SPECIALTY_ICONS[spec]} ${SPECIALTY_LABELS[spec]}`.trim();
     this.contentContainer.add(this.add.text(cols.spec, y + 8, specLabel, { ...vStyle, fontSize: scaledFontSize(this, 13), color: spec === StaffSpecialty.NONE ? '#7F8C8D' : '#F1C40F' }));
-    this.contentContainer.add(this.add.text(cols.spd, y + 8, `${member.speed}`, { ...vStyle, color: this.statColor(member.speed) }));
-    this.contentContainer.add(this.add.text(cols.acc, y + 8, `${member.accuracy}`, { ...vStyle, color: this.statColor(member.accuracy) }));
-    this.contentContainer.add(this.add.text(cols.fri, y + 8, `${member.friendliness}`, { ...vStyle, color: this.statColor(member.friendliness) }));
+    this.addStatWithBar(cols.spd, y, member.speed);
+    this.addStatWithBar(cols.acc, y, member.accuracy);
+    this.addStatWithBar(cols.fri, y, member.friendliness);
 
     // Morale bar
     const moraleW = 60;
@@ -337,9 +337,9 @@ export class StaffScene extends Phaser.Scene {
     const spec = m.specialty ?? StaffSpecialty.NONE;
     const specLabel = `${SPECIALTY_ICONS[spec]} ${SPECIALTY_LABELS[spec]}`.trim();
     this.contentContainer.add(this.add.text(cols.spec, y + 10, specLabel, { ...vStyle, fontSize: scaledFontSize(this, 13), color: spec === StaffSpecialty.NONE ? '#7F8C8D' : '#F1C40F' }));
-    this.contentContainer.add(this.add.text(cols.spd, y + 10, `${m.speed}`, { ...vStyle, color: this.statColor(m.speed) }));
-    this.contentContainer.add(this.add.text(cols.acc, y + 10, `${m.accuracy}`, { ...vStyle, color: this.statColor(m.accuracy) }));
-    this.contentContainer.add(this.add.text(cols.fri, y + 10, `${m.friendliness}`, { ...vStyle, color: this.statColor(m.friendliness) }));
+    this.addStatWithBar(cols.spd, y, m.speed);
+    this.addStatWithBar(cols.acc, y, m.accuracy);
+    this.addStatWithBar(cols.fri, y, m.friendliness);
     this.contentContainer.add(this.add.text(cols.wage, y + 10, `$${m.wage}/d`, vStyle));
 
     // Hire button
@@ -370,6 +370,27 @@ export class StaffScene extends Phaser.Scene {
         })
       );
     }
+  }
+
+  /** Draw a stat number with a small progress bar underneath */
+  private addStatWithBar(x: number, rowY: number, stat: number): void {
+    const vStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: this.statColor(stat) };
+    this.contentContainer.add(this.add.text(x, rowY + 3, `${stat}`, vStyle));
+
+    const barW = 30;
+    const barH = 4;
+    const barY = rowY + 24;
+    const barBg = this.add.graphics();
+    barBg.fillStyle(0x1A252F, 1);
+    barBg.fillRoundedRect(x, barY, barW, barH, 2);
+    this.contentContainer.add(barBg);
+
+    const ratio = stat / 10;
+    const color = stat >= 7 ? uiColorNum(this, 'green') : stat >= 4 ? uiColorNum(this, 'yellow') : uiColorNum(this, 'red');
+    const barFill = this.add.graphics();
+    barFill.fillStyle(color, 1);
+    barFill.fillRoundedRect(x, barY, barW * ratio, barH, 2);
+    this.contentContainer.add(barFill);
   }
 
   private statColor(stat: number): string {
