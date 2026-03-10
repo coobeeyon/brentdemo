@@ -116,6 +116,22 @@ export const CHALLENGE_CATALOG: ChallengeDef[] = [
   },
 ];
 
+/**
+ * Get the index of today's daily challenge, rotating deterministically by date.
+ * All players get the same daily challenge on the same day.
+ */
+export function getDailyChallengeIndex(): number {
+  const now = new Date();
+  // Use days since epoch as a simple deterministic seed
+  const daysSinceEpoch = Math.floor(now.getTime() / (1000 * 60 * 60 * 24));
+  return daysSinceEpoch % CHALLENGE_CATALOG.length;
+}
+
+/** Get today's daily challenge */
+export function getDailyChallenge(): ChallengeDef {
+  return CHALLENGE_CATALOG[getDailyChallengeIndex()];
+}
+
 export class ChallengeScene extends Phaser.Scene {
   private selectedChallenge: ChallengeDef | null = null;
 
@@ -125,18 +141,29 @@ export class ChallengeScene extends Phaser.Scene {
 
   create(): void {
     this.selectedChallenge = null;
+    const dailyChallenge = getDailyChallenge();
 
     // Background
     const bg = this.add.graphics();
     bg.fillGradientStyle(0x2C3E50, 0x2C3E50, 0x1A252F, 0x1A252F, 1);
     bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    this.add.text(GAME_WIDTH / 2, 40, '🏆 Challenge Mode', {
+    this.add.text(GAME_WIDTH / 2, 30, '🏆 Challenge Mode', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 32), color: '#FFD700', fontStyle: 'bold',
     }).setOrigin(0.5);
 
-    this.add.text(GAME_WIDTH / 2, 80, 'Pick a scenario and earn up to 3 stars!', {
-      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#95A5A6',
+    // Daily challenge banner
+    const bannerY = 65;
+    const bannerH = 44;
+    const bannerG = this.add.graphics();
+    bannerG.fillStyle(0xF39C12, 0.15);
+    bannerG.fillRoundedRect(40, bannerY, GAME_WIDTH - 80, bannerH, 8);
+    bannerG.lineStyle(2, 0xF1C40F, 0.6);
+    bannerG.strokeRoundedRect(40, bannerY, GAME_WIDTH - 80, bannerH, 8);
+
+    this.add.text(GAME_WIDTH / 2, bannerY + bannerH / 2,
+      `📅 Daily Challenge: ${dailyChallenge.icon} ${dailyChallenge.name} — play it for bonus bragging rights!`, {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#F1C40F',
     }).setOrigin(0.5);
 
     // Challenge cards in a grid
@@ -146,12 +173,10 @@ export class ChallengeScene extends Phaser.Scene {
     const gapX = 20;
     const gapY = 20;
     const startX = (GAME_WIDTH - (cols * cardW + (cols - 1) * gapX)) / 2;
-    const startY = 120;
-
-    // Detail panel (right side, shown when a card is clicked)
-    const detailContainer = this.add.container(0, 0).setVisible(false);
+    const startY = 130;
 
     CHALLENGE_CATALOG.forEach((ch, i) => {
+      const isDaily = ch.id === dailyChallenge.id;
       const col = i % cols;
       const row = Math.floor(i / cols);
       const x = startX + col * (cardW + gapX);
@@ -160,14 +185,17 @@ export class ChallengeScene extends Phaser.Scene {
       const card = this.add.container(x, y);
 
       const cardBg = this.add.graphics();
-      cardBg.fillStyle(0x34495E, 1);
+      const bgColor = isDaily ? 0x3D4F2F : 0x34495E;
+      const borderColor = isDaily ? 0xF1C40F : 0x7F8C8D;
+      cardBg.fillStyle(bgColor, 1);
       cardBg.fillRoundedRect(0, 0, cardW, cardH, 10);
-      cardBg.lineStyle(2, 0x7F8C8D);
+      cardBg.lineStyle(isDaily ? 3 : 2, borderColor);
       cardBg.strokeRoundedRect(0, 0, cardW, cardH, 10);
       card.add(cardBg);
 
-      const title = this.add.text(15, 12, `${ch.icon} ${ch.name}`, {
-        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF', fontStyle: 'bold',
+      const titlePrefix = isDaily ? '📅 ' : '';
+      const title = this.add.text(15, 12, `${titlePrefix}${ch.icon} ${ch.name}`, {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: isDaily ? '#F1C40F' : '#FFF', fontStyle: 'bold',
       });
       card.add(title);
 
@@ -202,18 +230,18 @@ export class ChallengeScene extends Phaser.Scene {
 
       hitArea.on('pointerover', () => {
         cardBg.clear();
-        cardBg.fillStyle(0x3D566E, 1);
+        cardBg.fillStyle(isDaily ? 0x4A6038 : 0x3D566E, 1);
         cardBg.fillRoundedRect(0, 0, cardW, cardH, 10);
-        cardBg.lineStyle(2, 0xF1C40F);
+        cardBg.lineStyle(isDaily ? 3 : 2, 0xF1C40F);
         cardBg.strokeRoundedRect(0, 0, cardW, cardH, 10);
       });
 
       hitArea.on('pointerout', () => {
         if (this.selectedChallenge?.id !== ch.id) {
           cardBg.clear();
-          cardBg.fillStyle(0x34495E, 1);
+          cardBg.fillStyle(bgColor, 1);
           cardBg.fillRoundedRect(0, 0, cardW, cardH, 10);
-          cardBg.lineStyle(2, 0x7F8C8D);
+          cardBg.lineStyle(isDaily ? 3 : 2, borderColor);
           cardBg.strokeRoundedRect(0, 0, cardW, cardH, 10);
         }
       });
