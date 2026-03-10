@@ -953,11 +953,10 @@
       "title": "Tutorial never fires: day===1 check runs after startNewDay() increments day to 2",
       "description": "In GameplayScene.create(), startNewDay() is called at line 50, which does this.day++. GameState initializes day=1, so after startNewDay() it becomes 2. The tutorial trigger at line 109 checks this.gameState.day === 1, which is always false for new games. Fix: change the check to day === 2 (the first day after increment) or move the check before startNewDay() is called.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T14:00:04.793546870Z",
-      "updated_at": "2026-03-10T14:00:52.435773737Z"
+      "updated_at": "2026-03-10T14:02:48.004909023Z"
     },
     "lb-sgoc": {
       "id": "lb-sgoc",
