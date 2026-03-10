@@ -1183,11 +1183,10 @@
       "title": "Add ingredient waste tracking and waste log in end-of-day report",
       "description": "Spec says end-of-day report should include a 'waste log'. Currently ingredients expire silently in startNewDay. Track expired ingredient quantities and display waste summary in the daily report.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T13:53:50.597223433Z",
-      "updated_at": "2026-03-10T13:53:55.574174943Z"
+      "updated_at": "2026-03-10T13:55:45.845142203Z"
     },
     "lb-yx8r": {
       "id": "lb-yx8r",
