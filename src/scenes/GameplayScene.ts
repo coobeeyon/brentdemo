@@ -1579,6 +1579,18 @@ export class GameplayScene extends Phaser.Scene {
           this.updatePhaseUI();
           this.showStaffQuitNotices();
         });
+      } else {
+        // Final season soft-fail — allow accepting partial completion
+        const acceptBtn = this.add.text(0, panelH / 2 - 45, 'Accept Result', {
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
+          backgroundColor: '#8E44AD', padding: { x: 12, y: 8 },
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        container.add(acceptBtn);
+
+        acceptBtn.on('pointerdown', () => {
+          this.registry.set('partialVictory', true);
+          this.scene.start('VictoryScene');
+        });
       }
 
       const menuBtn = this.add.text(130, panelH / 2 - 45, 'Main Menu', {
