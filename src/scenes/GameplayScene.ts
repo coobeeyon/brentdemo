@@ -70,6 +70,13 @@ export class GameplayScene extends Phaser.Scene {
       this.registry.set('challengePatienceMult', 1.0);
     }
 
+    // Apply forced customer type constraint (e.g. VIP Reception challenge)
+    if (this.challengeDef?.constraints.forcedCustomerType) {
+      this.registry.set('forcedCustomerType', this.challengeDef.constraints.forcedCustomerType);
+    } else {
+      this.registry.set('forcedCustomerType', '');
+    }
+
     this.createStoreView();
     this.createHUD();
     this.createPhaseUI();

@@ -121,7 +121,11 @@ export class CustomerManager {
 
     const availableToppings = this.gameState.getAvailableToppings();
     const availableStyles = this.gameState.getAvailableStyles();
-    const customer = new Customer(this.scene, x, y, weightedFlavors, this.gameState.menuPrices, availableToppings, availableStyles);
+    // Check for forced customer type (e.g. VIP Reception challenge)
+    const forcedTypeStr = this.scene.registry.get('forcedCustomerType') as string;
+    const forcedType = forcedTypeStr ? (forcedTypeStr as CustomerType) : undefined;
+
+    const customer = new Customer(this.scene, x, y, weightedFlavors, this.gameState.menuPrices, availableToppings, availableStyles, forcedType);
 
     // Apply weather patience modifier
     const weatherPatienceMult = this.gameState.getWeatherDef().patienceMult;
