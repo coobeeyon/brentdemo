@@ -1178,6 +1178,16 @@
       "created_at": "2026-03-10T11:49:57.800292289Z",
       "updated_at": "2026-03-10T11:51:45.312941969Z"
     },
+    "lb-mn2a": {
+      "id": "lb-mn2a",
+      "title": "breakdownMult event handler is dead code — no event sets this effect",
+      "description": "EventManager.ts lines 323-332 add a handler for effects.breakdownMult, but no event in EVENT_CATALOG sets breakdownMult. The GameEventEffects interface defines the field but neither the pre-existing nor the new season-specific events use it. Either: (a) remove the dead handler, or (b) add breakdownMult to a relevant event (e.g. POWER_OUTAGE could set breakdownMult: 2.0 to risk equipment damage during outages, per the spec's 'Equipment breaks down over time' clause).",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T19:00:33.013513662Z",
+      "updated_at": "2026-03-10T19:00:33.013513662Z"
+    },
     "lb-mqxc": {
       "id": "lb-mqxc",
       "title": "Dynamic ingredient price fluctuations",
