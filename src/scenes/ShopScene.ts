@@ -57,9 +57,14 @@ export class ShopScene extends Phaser.Scene {
     this.registry.set('emergencyResupply', false);
 
     // Reset supplier quality bonus at start of each prepare phase
-    // so it only applies for the day the player buys from that supplier
-    if (!this.isEmergency) {
-      this.registry.set('supplierQualityBonus', 0);
+    // so it only applies for the day the player buys from that supplier.
+    // Only reset on fresh open, not on tab-switch restarts (scene.restart()).
+    const shopJustOpened = this.registry.get('shopJustOpened') === true;
+    if (shopJustOpened) {
+      this.registry.set('shopJustOpened', false);
+      if (!this.isEmergency) {
+        this.registry.set('supplierQualityBonus', 0);
+      }
     }
 
     // Overlay background

@@ -286,6 +286,7 @@ export class GameplayScene extends Phaser.Scene {
 
     this.emergencyResupplyBtn.on('pointerdown', () => {
       this.registry.set('emergencyResupply', true);
+      this.registry.set('shopJustOpened', true);
       this.scene.launch('ShopScene');
       this.scene.pause();
     });
@@ -332,6 +333,7 @@ export class GameplayScene extends Phaser.Scene {
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
       shopBtn.on('pointerdown', () => {
+        this.registry.set('shopJustOpened', true);
         this.scene.launch('ShopScene');
         this.scene.pause();
       });
