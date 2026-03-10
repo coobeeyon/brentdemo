@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, CAMPAIGN_CATALOG, CampaignId, LOYALTY_REDEMPTION_COST, LOYALTY_DISCOUNT_PERCENT } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
+import { uiColor } from '../systems/UIUtils';
 
 export class MarketingScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -34,7 +35,7 @@ export class MarketingScene extends Phaser.Scene {
 
     // Balance
     this.add.text(GAME_WIDTH / 2, panelY + 60, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '16px', color: '#2ECC40',
+      fontFamily: 'Arial', fontSize: '16px', color: uiColor(this, 'green'),
     }).setOrigin(0.5, 0);
 
     // Campaign cards
@@ -68,7 +69,7 @@ export class MarketingScene extends Phaser.Scene {
   private renderLoyaltySection(x: number, y: number, width: number): void {
     // Section header
     this.add.text(x, y, 'Loyal Customers', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#F1C40F', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: '18px', color: uiColor(this, 'yellow'), fontStyle: 'bold',
     });
 
     const topCustomers = this.gameState.getTopCustomers(5);
@@ -93,7 +94,7 @@ export class MarketingScene extends Phaser.Scene {
 
       // Redemption info
       this.add.text(x, y + 40, `Customers redeem ${LOYALTY_REDEMPTION_COST} pts for a ${Math.round(LOYALTY_DISCOUNT_PERCENT * 100)}% discount`, {
-        fontFamily: 'Arial', fontSize: '11px', color: '#F1C40F',
+        fontFamily: 'Arial', fontSize: '11px', color: uiColor(this, 'yellow'),
       });
 
       // Top customers list
@@ -164,7 +165,7 @@ export class MarketingScene extends Phaser.Scene {
     // Right side: cost/status + button
     if (isActive) {
       this.add.text(x + width - 15, y + 15, 'ACTIVE', {
-        fontFamily: 'Arial', fontSize: '14px', color: '#2ECC71', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: '14px', color: uiColor(this, 'green'), fontStyle: 'bold',
       }).setOrigin(1, 0);
 
       this.add.text(x + width - 15, y + 40, `${active!.daysRemaining} days left`, {

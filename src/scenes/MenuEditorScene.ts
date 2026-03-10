@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, BASE_SCOOP_PRICE } from '../config/constants';
 import { GameState, getGameState, Flavor } from '../systems/GameState';
+import { uiColor } from '../systems/UIUtils';
 
 export class MenuEditorScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -186,13 +187,13 @@ export class MenuEditorScene extends Phaser.Scene {
     // Custom price controls
     const currentPrice = this.gameState.loc.menuPrices.get(flavor.id) ?? BASE_SCOOP_PRICE;
     const priceText = this.add.text(cols.price + 30, y + 15, `$${currentPrice.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '16px', color: currentPrice > BASE_SCOOP_PRICE ? '#2ECC71' : currentPrice < BASE_SCOOP_PRICE ? '#E74C3C' : '#FFF',
+      fontFamily: 'Arial', fontSize: '16px', color: currentPrice > BASE_SCOOP_PRICE ? uiColor(this, 'green') : currentPrice < BASE_SCOOP_PRICE ? uiColor(this, 'red') : '#FFF',
     }).setOrigin(0.5, 0);
     this.contentContainer.add(priceText);
 
     // Price down
     const downBtn = this.add.text(cols.price - 5, y + 15, '−', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#E74C3C',
+      fontFamily: 'Arial', fontSize: '20px', color: uiColor(this, 'red'),
     }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
     downBtn.on('pointerdown', () => {
       const newPrice = Math.max(0.50, currentPrice - 0.50);
@@ -203,7 +204,7 @@ export class MenuEditorScene extends Phaser.Scene {
 
     // Price up
     const upBtn = this.add.text(cols.price + 65, y + 15, '+', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#2ECC71',
+      fontFamily: 'Arial', fontSize: '20px', color: uiColor(this, 'green'),
     }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
     upBtn.on('pointerdown', () => {
       const newPrice = Math.min(15.00, currentPrice + 0.50);

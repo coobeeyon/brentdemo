@@ -6,6 +6,7 @@ import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager';
 import { SaveManager } from '../systems/SaveManager';
 import { TipManager } from '../systems/TipManager';
+import { uiColor, uiColorNum, scaledFontSize } from '../systems/UIUtils';
 
 export class GameplayScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -157,10 +158,10 @@ export class GameplayScene extends Phaser.Scene {
       this.gameState.loc.money += result.revenue;
 
       // Show floating revenue text
-      const revenueColor = result.dietaryViolation ? '#E67E22' : '#2ECC40';
+      const revenueColor = result.dietaryViolation ? '#E67E22' : uiColor(this, 'green');
       const floatText = this.add.text(GAME_WIDTH / 2, 340, `+$${result.revenue.toFixed(2)}`, {
         fontFamily: 'Arial',
-        fontSize: '22px',
+        fontSize: scaledFontSize(this, 22),
         color: revenueColor,
         fontStyle: 'bold',
       }).setOrigin(0.5);
@@ -181,8 +182,8 @@ export class GameplayScene extends Phaser.Scene {
           `⚠ ${result.violationType} violation — no tip!`,
           {
             fontFamily: 'Arial',
-            fontSize: '16px',
-            color: '#E74C3C',
+            fontSize: scaledFontSize(this, 16),
+            color: uiColor(this, 'red'),
             fontStyle: 'bold',
           }
         ).setOrigin(0.5);
@@ -204,8 +205,8 @@ export class GameplayScene extends Phaser.Scene {
           '🎁 Loyalty discount applied!',
           {
             fontFamily: 'Arial',
-            fontSize: '14px',
-            color: '#F1C40F',
+            fontSize: scaledFontSize(this, 14),
+            color: uiColor(this, 'yellow'),
             fontStyle: 'bold',
           }
         ).setOrigin(0.5);
@@ -283,45 +284,45 @@ export class GameplayScene extends Phaser.Scene {
     topBar.fillRect(0, 0, GAME_WIDTH, 56);
 
     this.dayText = this.add.text(12, 8, '', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
     });
 
     this.timeText = this.add.text(12, 30, '', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFD700',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFD700',
     });
 
     this.weatherText = this.add.text(160, 8, '', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
     });
 
     this.phaseText = this.add.text(160, 30, '', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#7FDBFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#7FDBFF',
     });
 
     this.speedText = this.add.text(280, 30, '', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
     });
 
     this.queueText = this.add.text(GAME_WIDTH / 2, 14, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF',
     }).setOrigin(0.5, 0);
 
     this.moneyText = this.add.text(GAME_WIDTH - 20, 8, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#2ECC40',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: uiColor(this, 'green'),
     }).setOrigin(1, 0);
 
     this.reputationText = this.add.text(GAME_WIDTH - 20, 30, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFDC00',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: uiColor(this, 'yellow'),
     }).setOrigin(1, 0);
 
     // Active event indicator (below top bar, center)
     this.eventText = this.add.text(GAME_WIDTH / 2, 38, '', {
-      fontFamily: 'Arial', fontSize: '12px', color: '#F1C40F',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: uiColor(this, 'yellow'),
     }).setOrigin(0.5, 0).setVisible(false);
 
     // Equipment warnings (bottom-right)
     this.equipWarningText = this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, '', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#F39C12',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: uiColor(this, 'yellow'),
       backgroundColor: '#00000088',
       padding: { x: 6, y: 4 },
       lineSpacing: 2,
@@ -329,7 +330,7 @@ export class GameplayScene extends Phaser.Scene {
 
     // Low stock warnings (bottom-left during serve phase)
     this.stockWarningText = this.add.text(10, GAME_HEIGHT - 10, '', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#E74C3C',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: uiColor(this, 'red'),
       backgroundColor: '#00000088',
       padding: { x: 6, y: 4 },
       lineSpacing: 2,
@@ -1091,7 +1092,7 @@ export class GameplayScene extends Phaser.Scene {
 
         // Bar
         const profit = r.revenue - r.expenses;
-        chartGfx.fillStyle(profit >= 0 ? 0x2ECC71 : 0xE74C3C, 0.8);
+        chartGfx.fillStyle(profit >= 0 ? uiColorNum(this, 'green') : uiColorNum(this, 'red'), 0.8);
         chartGfx.fillRoundedRect(bx + 2, by, barWidth - 4, barH, 2);
 
         // Day label
@@ -1172,7 +1173,10 @@ export class GameplayScene extends Phaser.Scene {
     panel.fillStyle(panelColor, 1);
     panel.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
 
-    const borderColor = result === 'win' ? 0x2ECC71 : result === 'soft_fail' ? 0xF39C12 : 0xE74C3C;
+    const gc = uiColorNum(this, 'green');
+    const rc = uiColorNum(this, 'red');
+    const yc = uiColorNum(this, 'yellow');
+    const borderColor = result === 'win' ? gc : result === 'soft_fail' ? yc : rc;
     panel.lineStyle(3, borderColor);
     panel.strokeRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
     container.add(panel);
@@ -1183,7 +1187,7 @@ export class GameplayScene extends Phaser.Scene {
       soft_fail: 'Season Over — Targets Missed',
       hard_fail: 'Bankrupt — Game Over',
     };
-    const resultColors = { win: '#2ECC71', soft_fail: '#F39C12', hard_fail: '#E74C3C' };
+    const resultColors = { win: uiColor(this, 'green'), soft_fail: uiColor(this, 'yellow'), hard_fail: uiColor(this, 'red') };
     const resultIcons = { win: '🎉', soft_fail: '😔', hard_fail: '💀' };
 
     const title = this.add.text(0, -panelH / 2 + 25, `${resultIcons[result]} ${resultLabels[result]}`, {
@@ -1207,7 +1211,7 @@ export class GameplayScene extends Phaser.Scene {
       container.add(l);
       const check = met ? '✅' : '❌';
       const v = this.add.text(leftX, yPos + 20, `${check} ${actual}  (target: ${target})`, {
-        fontFamily: 'Arial', fontSize: '16px', color: met ? '#2ECC71' : '#E74C3C',
+        fontFamily: 'Arial', fontSize: '16px', color: met ? uiColor(this, 'green') : uiColor(this, 'red'),
       });
       container.add(v);
     };

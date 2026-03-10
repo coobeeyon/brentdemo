@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, ShiftType, StaffSpecialty, SPECIALTY_LABELS, SPECIALTY_ICONS } from '../config/constants';
 import { GameState, getGameState, StaffMember } from '../systems/GameState';
+import { uiColor, uiColorNum } from '../systems/UIUtils';
 
 // Random name pools
 const FIRST_NAMES = [
@@ -87,7 +88,7 @@ export class StaffScene extends Phaser.Scene {
 
     // Balance + wages
     this.moneyText = this.add.text(panelX + 20, panelY + 60, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#2ECC40',
+      fontFamily: 'Arial', fontSize: '16px', color: uiColor(this, 'green'),
     });
     this.wagesText = this.add.text(panelX + panelW - 20, panelY + 60, '', {
       fontFamily: 'Arial', fontSize: '14px', color: '#E67E22',
@@ -217,7 +218,7 @@ export class StaffScene extends Phaser.Scene {
     moraleBg.fillRoundedRect(cols.morale, y + 10, moraleW, 10, 3);
     this.contentContainer.add(moraleBg);
 
-    const moraleColor = moraleRatio > 0.6 ? 0x2ECC71 : moraleRatio > 0.3 ? 0xF39C12 : 0xE74C3C;
+    const moraleColor = moraleRatio > 0.6 ? uiColorNum(this, 'green') : moraleRatio > 0.3 ? uiColorNum(this, 'yellow') : uiColorNum(this, 'red');
     const moraleFill = this.add.graphics();
     moraleFill.fillStyle(moraleColor, 1);
     moraleFill.fillRoundedRect(cols.morale, y + 10, moraleW * moraleRatio, 10, 3);

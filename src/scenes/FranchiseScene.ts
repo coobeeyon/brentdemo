@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, LOW_STOCK_THRESHOLD } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
+import { uiColor } from '../systems/UIUtils';
 
 export class FranchiseScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -43,8 +44,8 @@ export class FranchiseScene extends Phaser.Scene {
     const consistency = this.gameState.getBrandConsistency();
     const consistencyLabel = consistency.score === 1 ? '✓ Consistent'
       : consistency.score > 0 ? '~ Partial' : '✗ Inconsistent';
-    const consistencyColor = consistency.score === 1 ? '#2ECC71'
-      : consistency.score > 0 ? '#F39C12' : '#E74C3C';
+    const consistencyColor = consistency.score === 1 ? uiColor(this, 'green')
+      : consistency.score > 0 ? uiColor(this, 'yellow') : uiColor(this, 'red');
 
     this.add.text(panelX + 30, statsY,
       `Locations: ${stats.locationCount}  |  Total Staff: ${stats.totalStaff}  |  Avg Reputation: ${stats.totalReputation.toFixed(1)}★`,
@@ -70,7 +71,7 @@ export class FranchiseScene extends Phaser.Scene {
       const targetMet = stats.locationCount >= seasonDef.locationTarget;
       this.add.text(panelX + panelW - 30, statsY,
         `Target: ${stats.locationCount}/${seasonDef.locationTarget} locations`,
-        { ...statsStyle, color: targetMet ? '#2ECC71' : '#F39C12' }
+        { ...statsStyle, color: targetMet ? uiColor(this, 'green') : uiColor(this, 'yellow') }
       ).setOrigin(1, 0);
     }
 
