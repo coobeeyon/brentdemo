@@ -1063,10 +1063,10 @@
       "title": "Add dedicated GameOverScene for bankruptcy hard fail",
       "description": "Create a game over scene with proper visual treatment for bankruptcy. Shows final stats and option to return to main menu. Replace inline hard fail handling in GameplayScene.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
       "created_at": "2026-03-10T14:56:14.770559123Z",
-      "updated_at": "2026-03-10T14:56:14.770559123Z"
+      "updated_at": "2026-03-10T14:58:31.159732166Z"
     },
     "lb-syaq": {
       "id": "lb-syaq",
