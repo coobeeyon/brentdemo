@@ -698,6 +698,16 @@
       "created_at": "2026-03-10T18:04:34.588727376Z",
       "updated_at": "2026-03-10T18:06:02.580983454Z"
     },
+    "lb-f17w": {
+      "id": "lb-f17w",
+      "title": "Show seasonal event flavor in GameplayScene UI",
+      "description": "Ensure new seasonal events display properly in the event notification area during gameplay",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T18:54:50.393094162Z",
+      "updated_at": "2026-03-10T18:54:50.393094162Z"
+    },
     "lb-fbl1": {
       "id": "lb-fbl1",
       "title": "Events and random encounters",
@@ -2196,6 +2206,11 @@
     },
     {
       "from_id": "lb-z9jc",
+      "to_id": "lb-j00e",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-f17w",
       "to_id": "lb-j00e",
       "dep_type": "parent"
     }
