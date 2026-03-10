@@ -1337,10 +1337,16 @@ export class GameplayScene extends Phaser.Scene {
       const gameMode = this.registry.get('gameMode') as string ?? 'story';
       SaveManager.save(this.gameState, 'auto', gameMode);
 
-      // Check for season completion in story mode
-      if (gameMode === 'story' && this.gameState.isSeasonComplete()) {
-        this.showSeasonResults();
-        return;
+      // Check for mid-season bankruptcy in story mode
+      if (gameMode === 'story') {
+        const gs = this.gameState;
+        const isBankrupt = gs.franchiseMode
+          ? gs.locations.some(loc => loc.money < -100)
+          : gs.loc.money < -100;
+        if (isBankrupt || gs.isSeasonComplete()) {
+          this.showSeasonResults();
+          return;
+        }
       }
 
       // Check for challenge completion
