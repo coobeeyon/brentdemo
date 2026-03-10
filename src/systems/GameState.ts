@@ -112,6 +112,68 @@ export interface DayReport {
   reputationChange: number;
 }
 
+/** Per-location state for multi-location franchise (Season 5+) */
+export interface LocationState {
+  id: number;
+  name: string;
+
+  // Finances (per-location)
+  money: number;
+  dailyRevenue: number;
+  dailyExpenses: number;
+
+  // Reputation (per-location)
+  reputation: number;
+  reputationMomentum: number;
+  criticReviews: CriticReview[];
+
+  // Inventory
+  ingredients: Ingredient[];
+  flavors: Flavor[];
+
+  // Staff
+  staff: StaffMember[];
+
+  // Menu pricing overrides
+  menuPrices: Map<string, number>;
+
+  // History
+  dayReports: DayReport[];
+
+  // Equipment
+  equipment: OwnedEquipment[];
+
+  // Marketing campaigns
+  activeCampaigns: ActiveCampaign[];
+
+  // Store customization
+  currentDecor: DecorThemeId;
+  unlockedDecor: DecorThemeId[];
+  currentSeating: SeatingId;
+  unlockedSeating: SeatingId[];
+  currentSignage: SignageId;
+  unlockedSignage: SignageId[];
+
+  // Loans (per-location)
+  loanAmount: number;
+  loanInterestRate: number;
+  loanDaysRemaining: number;
+
+  // Health inspections
+  lastInspectionDay: number;
+  closureDaysRemaining: number;
+  inspectionHistory: HealthInspectionResult[];
+
+  // Recipes
+  recipes: Recipe[];
+
+  // Loyalty
+  loyalCustomers: LoyalCustomer[];
+
+  // Weather (per-location, different cities)
+  weather: WeatherType;
+}
+
 export interface ActiveCampaign {
   id: CampaignId;
   daysRemaining: number;
@@ -205,6 +267,11 @@ export class GameState {
   // Story mode
   seasonDay: number = 1;              // day within current season
   seasonRevenue: number = 0;          // total revenue accumulated this season
+
+  // Multi-location franchise (Season 5+)
+  locations: LocationState[] = [];
+  currentLocationId: number = 0;      // index into locations[]
+  franchiseMode: boolean = false;     // true when multi-location is active
 
   constructor() {
     this.initializeStartingInventory();
@@ -567,6 +634,136 @@ export class GameState {
       .filter(c => c.daysRemaining > 0);
   }
 
+  // ── Multi-location franchise methods ──────────────────────────────
+
+  /** Get the current location state (only valid in franchise mode) */
+  get currentLocation(): LocationState | undefined {
+    if (!this.franchiseMode || this.locations.length === 0) return undefined;
+    return this.locations[this.currentLocationId];
+  }
+
+  /** Initialize franchise mode by wrapping current single-location state into locations[0] */
+  initFranchiseMode(): void {
+    if (this.franchiseMode) return;
+
+    const firstLocation: LocationState = {
+      id: 0,
+      name: 'Hometown',
+      money: this.money,
+      dailyRevenue: this.dailyRevenue,
+      dailyExpenses: this.dailyExpenses,
+      reputation: this.reputation,
+      reputationMomentum: this.reputationMomentum,
+      criticReviews: [...this.criticReviews],
+      ingredients: [...this.ingredients],
+      flavors: [...this.flavors],
+      staff: [...this.staff],
+      menuPrices: new Map(this.menuPrices),
+      dayReports: [...this.dayReports],
+      equipment: [...this.equipment],
+      activeCampaigns: [...this.activeCampaigns],
+      currentDecor: this.currentDecor,
+      unlockedDecor: [...this.unlockedDecor],
+      currentSeating: this.currentSeating,
+      unlockedSeating: [...this.unlockedSeating],
+      currentSignage: this.currentSignage,
+      unlockedSignage: [...this.unlockedSignage],
+      loanAmount: this.loanAmount,
+      loanInterestRate: this.loanInterestRate,
+      loanDaysRemaining: this.loanDaysRemaining,
+      lastInspectionDay: this.lastInspectionDay,
+      closureDaysRemaining: this.closureDaysRemaining,
+      inspectionHistory: [...this.inspectionHistory],
+      recipes: [...this.recipes],
+      loyalCustomers: [...this.loyalCustomers],
+      weather: this.weather,
+    };
+
+    this.locations = [firstLocation];
+    this.currentLocationId = 0;
+    this.franchiseMode = true;
+  }
+
+  /** Add a new franchise location. Returns the new location or null if can't afford. */
+  addLocation(name: string, setupCost: number): LocationState | null {
+    if (!this.franchiseMode) return null;
+    if (this.money < setupCost) return null;
+
+    this.money -= setupCost;
+
+    const loc: LocationState = {
+      id: this.locations.length,
+      name,
+      money: 0,
+      dailyRevenue: 0,
+      dailyExpenses: 0,
+      reputation: STARTING_REPUTATION,
+      reputationMomentum: 0,
+      criticReviews: [],
+      ingredients: [],
+      flavors: this.flavors.filter(f => f.unlocked).map(f => ({ ...f })),
+      staff: [],
+      menuPrices: new Map(),
+      dayReports: [],
+      equipment: [
+        { id: EquipmentId.ICE_CREAM_MAKER, tier: 1, condition: 100, broken: false },
+        { id: EquipmentId.FREEZER, tier: 1, condition: 100, broken: false },
+        { id: EquipmentId.POS, tier: 1, condition: 100, broken: false },
+      ],
+      activeCampaigns: [],
+      currentDecor: DecorThemeId.BASIC,
+      unlockedDecor: [DecorThemeId.BASIC],
+      currentSeating: SeatingId.NONE,
+      unlockedSeating: [SeatingId.NONE],
+      currentSignage: SignageId.NONE,
+      unlockedSignage: [SignageId.NONE],
+      loanAmount: 0,
+      loanInterestRate: 0,
+      loanDaysRemaining: 0,
+      lastInspectionDay: 0,
+      closureDaysRemaining: 0,
+      inspectionHistory: [],
+      recipes: [],
+      loyalCustomers: [],
+      weather: WeatherType.SUNNY,
+    };
+
+    this.locations.push(loc);
+    return loc;
+  }
+
+  /** Switch the active location */
+  switchLocation(locationId: number): boolean {
+    if (!this.franchiseMode) return false;
+    if (locationId < 0 || locationId >= this.locations.length) return false;
+    this.currentLocationId = locationId;
+    return true;
+  }
+
+  /** Get aggregate franchise stats across all locations */
+  getFranchiseStats(): {
+    totalRevenue: number;
+    totalReputation: number;
+    locationCount: number;
+    totalStaff: number;
+  } {
+    if (!this.franchiseMode) {
+      return {
+        totalRevenue: this.dailyRevenue,
+        totalReputation: this.reputation,
+        locationCount: 1,
+        totalStaff: this.staff.length,
+      };
+    }
+
+    return {
+      totalRevenue: this.locations.reduce((sum, loc) => sum + loc.dailyRevenue, 0),
+      totalReputation: this.locations.reduce((sum, loc) => sum + loc.reputation, 0) / this.locations.length,
+      locationCount: this.locations.length,
+      totalStaff: this.locations.reduce((sum, loc) => sum + loc.staff.length, 0),
+    };
+  }
+
   /** Get the current season definition */
   getSeasonDef(): SeasonDef | undefined {
     return SEASON_CATALOG.find(s => s.season === this.season);
@@ -606,6 +803,11 @@ export class GameState {
         for (const flavorId of seasonDef.unlockFlavors) {
           this.unlockFlavor(flavorId);
         }
+      }
+
+      // Season 5: activate franchise mode
+      if (this.season === 5 && !this.franchiseMode) {
+        this.initFranchiseMode();
       }
     }
   }
