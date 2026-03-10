@@ -363,11 +363,10 @@
       "id": "lb-n92t",
       "title": "Text appears blurry",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T09:46:07.070387096Z",
-      "updated_at": "2026-03-10T10:00:32.817417732Z"
+      "updated_at": "2026-03-10T10:01:10.472821735Z"
     },
     "lb-nk2g": {
       "id": "lb-nk2g",
