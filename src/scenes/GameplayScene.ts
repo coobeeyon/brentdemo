@@ -469,6 +469,58 @@ export class GameplayScene extends Phaser.Scene {
       }).setOrigin(1, 0);
       prepContainer.add(invText);
 
+      // Catering contract offers
+      const contracts = this.gameState.loc.cateringContracts;
+      if (contracts.length > 0) {
+        let cateringY = 70;
+        for (const contract of contracts) {
+          const flavorName = this.gameState.loc.flavors.find(f => f.id === contract.flavorId)?.name ?? contract.flavorId;
+          const offerBg = this.add.graphics();
+          offerBg.fillStyle(0x1A5276, 0.9);
+          offerBg.fillRoundedRect(15, cateringY, 280, 60, 8);
+          prepContainer.add(offerBg);
+
+          const offerText = this.add.text(25, cateringY + 5, `🍨 Catering: ${contract.clientName}`, {
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: uiColor(this, 'yellow'), fontStyle: 'bold',
+          });
+          prepContainer.add(offerText);
+
+          const detailText = this.add.text(25, cateringY + 22, `${contract.scoops} scoops of ${flavorName} — $${contract.payment.toFixed(2)}`, {
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#BDC3C7',
+          });
+          prepContainer.add(detailText);
+
+          if (!contract.accepted) {
+            const acceptBtn = this.add.text(25, cateringY + 40, '✓ Accept', {
+              fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#FFF',
+              backgroundColor: '#27AE60', padding: { x: 8, y: 2 },
+            }).setInteractive({ useHandCursor: true });
+            acceptBtn.on('pointerdown', () => {
+              this.gameState.acceptCatering(contract.id);
+              this.updatePhaseUI();
+            });
+            prepContainer.add(acceptBtn);
+
+            const declineBtn = this.add.text(120, cateringY + 40, '✗ Decline', {
+              fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#FFF',
+              backgroundColor: '#7F8C8D', padding: { x: 8, y: 2 },
+            }).setInteractive({ useHandCursor: true });
+            declineBtn.on('pointerdown', () => {
+              this.gameState.loc.cateringContracts = contracts.filter(c => c.id !== contract.id);
+              this.updatePhaseUI();
+            });
+            prepContainer.add(declineBtn);
+          } else {
+            const acceptedLabel = this.add.text(25, cateringY + 40, '✓ Accepted — will fulfill at close', {
+              fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: uiColor(this, 'green'),
+            });
+            prepContainer.add(acceptedLabel);
+          }
+
+          cateringY += 70;
+        }
+      }
+
       // Season progress (story mode)
       const gameMode = this.registry.get('gameMode') as string ?? 'story';
       const curSeasonDef = this.gameState.getSeasonDef();
@@ -960,6 +1012,13 @@ export class GameplayScene extends Phaser.Scene {
       this.showMilestoneNotification(newMilestones);
     }
 
+    // Fulfill accepted catering contracts
+    const cateringResult = this.gameState.fulfillCatering();
+    if (cateringResult.revenue > 0) {
+      this.gameState.loc.dailyRevenue += cateringResult.revenue;
+      this.gameState.loc.money += cateringResult.revenue;
+    }
+
     // Record day report with full stats
     const s = this.gameState;
     const satisfaction = total > 0 ? Math.round((served / total) * 100) : 0;
@@ -1048,6 +1107,18 @@ export class GameplayScene extends Phaser.Scene {
       y += 25;
     }
 
+    // Show catering results in report
+    if (cateringResult.fulfilled > 0 || cateringResult.failed > 0) {
+      const cateringColor = cateringResult.failed > 0 ? uiColor(this, 'yellow') : uiColor(this, 'green');
+      let cateringLabel = `🍨 CATERING: ${cateringResult.fulfilled} fulfilled (+$${cateringResult.revenue.toFixed(2)})`;
+      if (cateringResult.failed > 0) cateringLabel += ` | ${cateringResult.failed} failed`;
+      const cateringText = this.add.text(leftX, y, cateringLabel, {
+        fontFamily: 'Arial', fontSize: '14px', color: cateringColor, fontStyle: 'bold',
+      });
+      report.add(cateringText);
+      y += 25;
+    }
+
     // Separator
     const sep = this.add.graphics();
     sep.lineStyle(1, 0x7F8C8D, 0.5);
@@ -1055,7 +1126,7 @@ export class GameplayScene extends Phaser.Scene {
     report.add(sep);
     y += 10;
 
-    addStat(leftX, y, 'REVENUE', `$${s.loc.dailyRevenue.toFixed(2)}`, '#2ECC40');
+    addStat(leftX, y, 'REVENUE', `$${s.loc.dailyRevenue.toFixed(2)}`, uiColor(this, 'green'));
     addStat(rightX, y, 'EXPENSES', `$${s.loc.dailyExpenses.toFixed(2)}`, '#E74C3C');
     y += 45;
     addStat(leftX, y, 'PROFIT', `$${s.profit.toFixed(2)}`, profitColor);

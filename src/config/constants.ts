@@ -28,6 +28,18 @@ export const LOW_STOCK_THRESHOLD = 10;
 export const LOYALTY_REDEMPTION_COST = 10;     // points required to redeem
 export const LOYALTY_DISCOUNT_PERCENT = 0.25;  // 25% discount when redeemed
 
+// Catering contracts
+export const CATERING_CHANCE = 0.35;          // chance per day of getting a catering offer
+export const CATERING_MIN_SCOOPS = 10;
+export const CATERING_MAX_SCOOPS = 30;
+export const CATERING_PRICE_PER_SCOOP = 3.50; // slightly above base price
+export const CATERING_REP_BONUS = 0.1;        // reputation bonus for fulfilling
+
+export const CATERING_CLIENTS = [
+  'Birthday Party', 'Office Party', 'School Event', 'Wedding Reception',
+  'Community Fair', 'Sports Team', 'Corporate Lunch', 'Neighborhood BBQ',
+];
+
 // Starting resources
 export const STARTING_MONEY = 500;
 export const STARTING_REPUTATION = 2.5; // out of 5 stars

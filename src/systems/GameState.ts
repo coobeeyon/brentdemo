@@ -47,6 +47,12 @@ import {
   ResearchEffects,
   MILESTONE_CATALOG,
   MilestoneStats,
+  CATERING_CHANCE,
+  CATERING_MIN_SCOOPS,
+  CATERING_MAX_SCOOPS,
+  CATERING_PRICE_PER_SCOOP,
+  CATERING_CLIENTS,
+  CATERING_REP_BONUS,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -117,6 +123,16 @@ export interface DayReport {
   reputationChange: number;
 }
 
+/** Catering contract — accepted during prep, fulfilled at end of day */
+export interface CateringContract {
+  id: string;
+  clientName: string;
+  flavorId: string;
+  scoops: number;       // number of scoops needed
+  payment: number;      // total payment on fulfillment
+  accepted: boolean;
+}
+
 /** Per-location state for multi-location franchise (Season 5+) */
 export interface LocationState {
   id: number;
@@ -177,6 +193,9 @@ export interface LocationState {
 
   // Weather (per-location, different cities)
   weather: WeatherType;
+
+  // Catering
+  cateringContracts: CateringContract[];
 }
 
 export interface ActiveCampaign {
@@ -268,6 +287,9 @@ export class GameState {
 
   // Loyalty
   loyalCustomers: LoyalCustomer[] = [];
+
+  // Catering
+  cateringContracts: CateringContract[] = [];
 
   // Story mode
   seasonDay: number = 1;              // day within current season
@@ -733,6 +755,7 @@ export class GameState {
       recipes: [...this.recipes],
       loyalCustomers: [...this.loyalCustomers],
       weather: this.weather,
+      cateringContracts: [...this.cateringContracts],
     };
 
     this.locations = [firstLocation];
@@ -782,6 +805,7 @@ export class GameState {
       recipes: [],
       loyalCustomers: [],
       weather: WeatherType.SUNNY,
+      cateringContracts: [],
     };
 
     this.locations.push(loc);
@@ -1092,6 +1116,81 @@ export class GameState {
       tipBonus: Math.min(activeLoyal * 0.01, 0.10),       // up to +10%
       spawnBonus: Math.min(activeLoyal * 0.02, 0.15),     // up to 15% more customers
     };
+  }
+
+  /** Generate a random catering contract offer for today */
+  generateCateringOffer(): CateringContract | null {
+    if (this.day < 3) return null; // don't offer catering on first 2 days
+    if (Math.random() > CATERING_CHANCE) return null;
+
+    const availableFlavors = this.loc.flavors.filter(f => f.unlocked);
+    if (availableFlavors.length === 0) return null;
+
+    const flavor = availableFlavors[Math.floor(Math.random() * availableFlavors.length)];
+    const scoops = CATERING_MIN_SCOOPS + Math.floor(Math.random() * (CATERING_MAX_SCOOPS - CATERING_MIN_SCOOPS + 1));
+    const client = CATERING_CLIENTS[Math.floor(Math.random() * CATERING_CLIENTS.length)];
+
+    const contract: CateringContract = {
+      id: `catering_${this.day}_${Date.now()}`,
+      clientName: client,
+      flavorId: flavor.id,
+      scoops,
+      payment: Math.round(scoops * CATERING_PRICE_PER_SCOOP * 100) / 100,
+      accepted: false,
+    };
+
+    return contract;
+  }
+
+  /** Accept a catering contract */
+  acceptCatering(contractId: string): boolean {
+    const contract = this.loc.cateringContracts.find(c => c.id === contractId);
+    if (!contract || contract.accepted) return false;
+    contract.accepted = true;
+    return true;
+  }
+
+  /** Fulfill accepted catering contracts at end of day. Returns total revenue earned. */
+  fulfillCatering(): { revenue: number; fulfilled: number; failed: number } {
+    let revenue = 0;
+    let fulfilled = 0;
+    let failed = 0;
+
+    for (const contract of this.loc.cateringContracts.filter(c => c.accepted)) {
+      // Check if we have enough ingredients for the scoops
+      const flavor = this.loc.flavors.find(f => f.id === contract.flavorId);
+      if (!flavor) { failed++; continue; }
+
+      // Each scoop needs 1 unit of each ingredient in the flavor
+      let canFulfill = true;
+      for (const ingId of flavor.ingredients) {
+        const ing = this.loc.ingredients.find(i => i.id === ingId);
+        if (!ing || ing.quantity < contract.scoops) {
+          canFulfill = false;
+          break;
+        }
+      }
+
+      if (canFulfill) {
+        // Deduct ingredients
+        for (const ingId of flavor.ingredients) {
+          const ing = this.loc.ingredients.find(i => i.id === ingId)!;
+          ing.quantity -= contract.scoops;
+        }
+        revenue += contract.payment;
+        fulfilled++;
+      } else {
+        failed++;
+        // Reputation penalty for failing to deliver
+        this.loc.reputation = Math.max(0, this.loc.reputation - 0.05);
+      }
+    }
+
+    if (fulfilled > 0) {
+      this.loc.reputation = Math.min(5, this.loc.reputation + CATERING_REP_BONUS * fulfilled);
+    }
+
+    return { revenue, fulfilled, failed };
   }
 
   /** Check if a research node's prerequisites are met */
@@ -1523,6 +1622,13 @@ export class GameState {
 
     // Roll weather for the day
     this.rollWeather();
+
+    // Generate catering offers for today
+    this.loc.cateringContracts = [];
+    const offer = this.generateCateringOffer();
+    if (offer) {
+      this.loc.cateringContracts.push(offer);
+    }
   }
 }
 
