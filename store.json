@@ -35,10 +35,10 @@
       "title": "Early game balance and feel",
       "description": "Umbrella for issues affecting the early game experience: level pacing and supply/resupply mechanics.",
       "item_type": "epic",
-      "status": "open",
+      "status": "closed",
       "priority": 1,
       "created_at": "2026-03-10T09:51:31.300881027Z",
-      "updated_at": "2026-03-10T09:51:37.224667722Z"
+      "updated_at": "2026-03-10T09:59:54.087153627Z"
     },
     "lb-6f4u": {
       "id": "lb-6f4u",
