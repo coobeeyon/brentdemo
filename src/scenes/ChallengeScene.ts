@@ -223,6 +223,16 @@ export class ChallengeScene extends Phaser.Scene {
       });
     });
 
+    // Leaderboard button
+    const lbBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, '🏆 Leaderboard', {
+      fontFamily: 'Arial', fontSize: '18px', color: '#FFD700',
+      backgroundColor: '#2C3E5088', padding: { x: 12, y: 6 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    lbBtn.on('pointerdown', () => {
+      this.scene.start('LeaderboardScene');
+    });
+
     // Back button
     const backBtn = this.add.text(20, GAME_HEIGHT - 40, '← Back to Menu', {
       fontFamily: 'Arial', fontSize: '18px', color: '#E74C3C',
