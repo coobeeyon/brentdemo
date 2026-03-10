@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { SaveManager } from '../systems/SaveManager';
 import { getGameState } from '../systems/GameState';
-import { scaledFontSize } from '../systems/UIUtils';
+import { scaledFontSize, createFullscreenButton } from '../systems/UIUtils';
 
 export class MainMenuScene extends Phaser.Scene {
   private loadPanel: Phaser.GameObjects.Container | null = null;
@@ -120,6 +120,9 @@ export class MainMenuScene extends Phaser.Scene {
       loadBtn.on('pointerout', () => loadBtn.setStyle({ backgroundColor: '#8E44AD' }));
       loadBtn.on('pointerdown', () => this.showLoadPanel());
     }
+
+    // Fullscreen toggle (bottom-left, only if API available)
+    createFullscreenButton(this, 90, GAME_HEIGHT - 30);
 
     // Version text
     this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, 'v1.0.0', {

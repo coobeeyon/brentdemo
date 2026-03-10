@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { getGameState } from '../systems/GameState';
 import { SaveManager } from '../systems/SaveManager';
-import { scaledFontSize } from '../systems/UIUtils';
+import { scaledFontSize, createFullscreenButton } from '../systems/UIUtils';
 
 export class PauseScene extends Phaser.Scene {
   private slotPanel: Phaser.GameObjects.Container | null = null;
@@ -74,6 +74,11 @@ export class PauseScene extends Phaser.Scene {
       }
 
       y += 44;
+    }
+
+    // Fullscreen toggle (below pause panel)
+    if (document.fullscreenEnabled) {
+      createFullscreenButton(this, GAME_WIDTH / 2, y + 10);
     }
 
     // ESC to resume
