@@ -491,12 +491,12 @@ export class PopUpBoothScene extends Phaser.Scene {
     }
 
     // Apply rewards to game state
-    this.gameState.money += this.totalRevenue;
-    this.gameState.dailyRevenue += this.totalRevenue;
+    this.gameState.loc.money += this.totalRevenue;
+    this.gameState.loc.dailyRevenue += this.totalRevenue;
     this.gameState.totalCustomersServed += this.served;
     this.gameState.totalRevenue += this.totalRevenue;
     if (repBonus > 0) {
-      this.gameState.reputation = Math.min(5, this.gameState.reputation + repBonus);
+      this.gameState.loc.reputation = Math.min(5, this.gameState.loc.reputation + repBonus);
     }
 
     const closeBtn = this.add.text(cx, cy + panelH / 2 - 40, 'Back to Store', {

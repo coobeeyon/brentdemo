@@ -38,7 +38,7 @@ export class SignageScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F',
     }).setOrigin(0.5, 0);
 
-    this.add.text(GAME_WIDTH / 2, panelY + 80, `Balance: $${this.gameState.money.toFixed(2)}`, {
+    this.add.text(GAME_WIDTH / 2, panelY + 80, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
       fontFamily: 'Arial', fontSize: '14px', color: '#2ECC40',
     }).setOrigin(0.5, 0);
 
@@ -67,9 +67,9 @@ export class SignageScene extends Phaser.Scene {
     let y = panelY + 105;
 
     for (const sign of SIGNAGE_CATALOG) {
-      const isOwned = this.gameState.unlockedSignage.includes(sign.id);
-      const isCurrent = this.gameState.currentSignage === sign.id;
-      const canAfford = this.gameState.money >= sign.cost;
+      const isOwned = this.gameState.loc.unlockedSignage.includes(sign.id);
+      const isCurrent = this.gameState.loc.currentSignage === sign.id;
+      const canAfford = this.gameState.loc.money >= sign.cost;
 
       const cardBg = this.add.graphics();
       const borderColor = isCurrent ? 0xF1C40F : isOwned ? 0x2ECC71 : 0x34495E;

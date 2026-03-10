@@ -37,7 +37,7 @@ export class DecorScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F',
     }).setOrigin(0.5, 0);
 
-    this.add.text(GAME_WIDTH / 2, panelY + 80, `Balance: $${this.gameState.money.toFixed(2)}`, {
+    this.add.text(GAME_WIDTH / 2, panelY + 80, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
       fontFamily: 'Arial', fontSize: '14px', color: '#2ECC40',
     }).setOrigin(0.5, 0);
 
@@ -66,9 +66,9 @@ export class DecorScene extends Phaser.Scene {
     let y = panelY + 105;
 
     for (const theme of DECOR_CATALOG) {
-      const isOwned = this.gameState.unlockedDecor.includes(theme.id);
-      const isCurrent = this.gameState.currentDecor === theme.id;
-      const canAfford = this.gameState.money >= theme.cost;
+      const isOwned = this.gameState.loc.unlockedDecor.includes(theme.id);
+      const isCurrent = this.gameState.loc.currentDecor === theme.id;
+      const canAfford = this.gameState.loc.money >= theme.cost;
 
       // Card background
       const cardBg = this.add.graphics();

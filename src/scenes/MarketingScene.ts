@@ -33,7 +33,7 @@ export class MarketingScene extends Phaser.Scene {
     }).setOrigin(0.5, 0);
 
     // Balance
-    this.add.text(GAME_WIDTH / 2, panelY + 60, `Balance: $${this.gameState.money.toFixed(2)}`, {
+    this.add.text(GAME_WIDTH / 2, panelY + 60, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
       fontFamily: 'Arial', fontSize: '16px', color: '#2ECC40',
     }).setOrigin(0.5, 0);
 
@@ -94,7 +94,7 @@ export class MarketingScene extends Phaser.Scene {
       // Top customers list
       let cy = y + 44;
       for (const lc of topCustomers) {
-        const flavorName = this.gameState.flavors.find(f => f.id === lc.favoriteFlavor)?.name ?? lc.favoriteFlavor;
+        const flavorName = this.gameState.loc.flavors.find(f => f.id === lc.favoriteFlavor)?.name ?? lc.favoriteFlavor;
         this.add.text(x, cy, `${lc.name} — ${lc.visits} visits, ${lc.points} pts, loves ${flavorName}`, {
           fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7',
         });
@@ -105,10 +105,10 @@ export class MarketingScene extends Phaser.Scene {
 
   private createCampaignCard(x: number, y: number, width: number, campaignId: CampaignId): void {
     const def = CAMPAIGN_CATALOG.find(c => c.id === campaignId)!;
-    const active = this.gameState.activeCampaigns.find(c => c.id === campaignId);
+    const active = this.gameState.loc.activeCampaigns.find(c => c.id === campaignId);
     const researchFx = this.gameState.getResearchEffects();
     const discountedCost = Math.round(def.cost * (1 - (researchFx.campaignDiscount ?? 0)));
-    const canAfford = this.gameState.money >= discountedCost;
+    const canAfford = this.gameState.loc.money >= discountedCost;
     const isActive = !!active;
 
     // Card background

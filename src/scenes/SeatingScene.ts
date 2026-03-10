@@ -39,7 +39,7 @@ export class SeatingScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F',
     }).setOrigin(0.5, 0);
 
-    this.add.text(GAME_WIDTH / 2, panelY + 80, `Balance: $${this.gameState.money.toFixed(2)}`, {
+    this.add.text(GAME_WIDTH / 2, panelY + 80, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
       fontFamily: 'Arial', fontSize: '14px', color: '#2ECC40',
     }).setOrigin(0.5, 0);
 
@@ -68,9 +68,9 @@ export class SeatingScene extends Phaser.Scene {
     let y = panelY + 105;
 
     for (const seating of SEATING_CATALOG) {
-      const isOwned = this.gameState.unlockedSeating.includes(seating.id);
-      const isCurrent = this.gameState.currentSeating === seating.id;
-      const canAfford = this.gameState.money >= seating.cost;
+      const isOwned = this.gameState.loc.unlockedSeating.includes(seating.id);
+      const isCurrent = this.gameState.loc.currentSeating === seating.id;
+      const canAfford = this.gameState.loc.money >= seating.cost;
 
       // Card background
       const cardBg = this.add.graphics();

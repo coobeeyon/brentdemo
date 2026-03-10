@@ -32,7 +32,7 @@ export class LoanScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '28px', color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
-    this.add.text(GAME_WIDTH / 2, panelY + 60, `Balance: $${this.gameState.money.toFixed(2)}`, {
+    this.add.text(GAME_WIDTH / 2, panelY + 60, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
       fontFamily: 'Arial', fontSize: '16px', color: '#2ECC40',
     }).setOrigin(0.5, 0);
 
@@ -59,7 +59,7 @@ export class LoanScene extends Phaser.Scene {
   private renderContent(panelX: number, panelY: number, panelW: number): void {
     this.contentContainer.removeAll(true);
 
-    if (this.gameState.loanAmount > 0) {
+    if (this.gameState.loc.loanAmount > 0) {
       this.renderActiveLoan(panelX, panelY, panelW);
     } else {
       this.renderLoanOptions(panelX, panelY, panelW);
@@ -76,7 +76,7 @@ export class LoanScene extends Phaser.Scene {
     this.contentContainer.add(headerText);
     y += 35;
 
-    const isOverdue = this.gameState.loanDaysRemaining <= 0;
+    const isOverdue = this.gameState.loc.loanDaysRemaining <= 0;
     const labelStyle = { fontFamily: 'Arial', fontSize: '15px', color: '#95A5A6' };
     const valueStyle = { fontFamily: 'Arial', fontSize: '17px', color: '#FFF' };
 
@@ -88,9 +88,9 @@ export class LoanScene extends Phaser.Scene {
       y += 28;
     };
 
-    addRow('Amount Owed:', `$${this.gameState.loanAmount.toFixed(2)}`, '#E74C3C');
-    addRow('Daily Interest:', `${(this.gameState.loanInterestRate * 100).toFixed(1)}%`, '#F39C12');
-    addRow('Days Remaining:', isOverdue ? 'OVERDUE!' : `${this.gameState.loanDaysRemaining}`, isOverdue ? '#E74C3C' : '#FFF');
+    addRow('Amount Owed:', `$${this.gameState.loc.loanAmount.toFixed(2)}`, '#E74C3C');
+    addRow('Daily Interest:', `${(this.gameState.loc.loanInterestRate * 100).toFixed(1)}%`, '#F39C12');
+    addRow('Days Remaining:', isOverdue ? 'OVERDUE!' : `${this.gameState.loc.loanDaysRemaining}`, isOverdue ? '#E74C3C' : '#FFF');
 
     if (isOverdue) {
       const warningText = this.add.text(GAME_WIDTH / 2, y + 5, '⚠ Overdue loans accrue double interest\nand cause daily reputation loss!', {
@@ -105,10 +105,10 @@ export class LoanScene extends Phaser.Scene {
 
     // Payment buttons
     const payAmounts = [50, 100, 250];
-    const payAllAmount = Math.min(this.gameState.loanAmount, this.gameState.money);
+    const payAllAmount = Math.min(this.gameState.loc.loanAmount, this.gameState.loc.money);
 
     payAmounts.forEach((amount, i) => {
-      const canAfford = this.gameState.money >= amount && this.gameState.loanAmount > 0;
+      const canAfford = this.gameState.loc.money >= amount && this.gameState.loc.loanAmount > 0;
       const payBtn = this.add.text(
         panelX + 40 + i * 125, y,
         `Pay $${amount}`,
