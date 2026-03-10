@@ -125,7 +125,7 @@ export const FLAVOR_CATALOG: FlavorDef[] = [
   { id: 'butter_pecan', name: 'Butter Pecan', ingredients: ['milk', 'sugar', 'nuts'], popularity: 0.6, starter: false },
   { id: 'cookie_dough', name: 'Cookie Dough', ingredients: ['milk', 'sugar', 'vanilla_extract'], popularity: 0.75, starter: false },
   { id: 'coffee', name: 'Coffee', ingredients: ['milk', 'sugar'], popularity: 0.65, starter: false },
-  { id: 'lemon_sorbet', name: 'Lemon Sorbet', ingredients: ['sugar', 'fruit'], popularity: 0.5, starter: false },
+  { id: 'lemon_sorbet', name: 'Lemon Sorbet', ingredients: ['sugar', 'fruit'], popularity: 0.5, starter: true },
   { id: 'coconut', name: 'Coconut', ingredients: ['milk', 'sugar'], popularity: 0.45, starter: false },
   { id: 'raspberry', name: 'Raspberry', ingredients: ['milk', 'sugar', 'fruit'], popularity: 0.55, starter: false },
   { id: 'peanut_butter', name: 'Peanut Butter', ingredients: ['milk', 'sugar', 'nuts'], popularity: 0.6, starter: false },

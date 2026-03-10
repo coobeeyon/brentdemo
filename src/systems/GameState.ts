@@ -225,7 +225,7 @@ export class GameState {
   completedMilestones: Set<string> = new Set();
   totalCustomersServed: number = 0;
   totalRevenue: number = 0;
-  unlockedFlavors: Set<string> = new Set(['vanilla', 'chocolate', 'strawberry']);
+  unlockedFlavors: Set<string> = new Set(['vanilla', 'chocolate', 'strawberry', 'lemon_sorbet']);
 
   // Equipment
   equipment: OwnedEquipment[] = [];
@@ -296,6 +296,7 @@ export class GameState {
       { id: 'strawberries', name: 'Strawberries', quantity: 25, costPer: 0.6, expiresInDays: 2 },
       { id: 'cream', name: 'Whipped Cream', quantity: 20, costPer: 0.4, expiresInDays: 5 },
       { id: 'sprinkles', name: 'Sprinkles', quantity: 40, costPer: 0.1, expiresInDays: 90 },
+      { id: 'fruit', name: 'Fresh Fruit', quantity: 25, costPer: 0.6, expiresInDays: 2 },
     ];
   }
 
