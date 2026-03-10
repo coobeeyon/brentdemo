@@ -302,12 +302,12 @@
     "lb-a0eg": {
       "id": "lb-a0eg",
       "title": "Pop-up booth revenue not added to game state money",
-      "description": "PopUpBoothScene earns revenue but never adds it to gameState.loc.money or loc.dailyRevenue. Booth revenue is lost after the scene closes.",
+      "description": "NOT A BUG - revenue is already applied at lines 494-501 of PopUpBoothScene.ts: loc.money, loc.dailyRevenue, totalCustomersServed, totalRevenue all updated correctly.",
       "item_type": "task",
       "status": "closed",
       "priority": 2,
       "created_at": "2026-03-10T15:54:04.000617754Z",
-      "updated_at": "2026-03-10T15:54:22.982146949Z"
+      "updated_at": "2026-03-10T15:54:23.701404656Z"
     },
     "lb-a7v8": {
       "id": "lb-a7v8",
