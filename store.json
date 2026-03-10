@@ -369,6 +369,16 @@
       "created_at": "2026-03-10T10:47:12.122078891Z",
       "updated_at": "2026-03-10T10:50:40.103081134Z"
     },
+    "lb-c2lm": {
+      "id": "lb-c2lm",
+      "title": "Apply scaledFontSize to challenge results modal",
+      "description": "showChallengeResults() in GameplayScene uses hardcoded font sizes instead of scaledFontSize().",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T15:00:30.125863702Z",
+      "updated_at": "2026-03-10T15:00:30.125863702Z"
+    },
     "lb-cbmk": {
       "id": "lb-cbmk",
       "title": "TutorialScene highlight border leaks between steps",
