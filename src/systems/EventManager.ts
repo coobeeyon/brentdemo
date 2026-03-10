@@ -89,7 +89,7 @@ const EVENT_CATALOG: GameEventDef[] = [
     icon: '⚡',
     minDay: 7,
     chance: 0.05,
-    effects: { equipmentOffline: true, customerSpawnMult: 1.5 },
+    effects: { equipmentOffline: true, customerSpawnMult: 1.5, breakdownMult: 2.0 },
   },
   {
     id: GameEventId.COMPETITOR_OPENS,
@@ -312,7 +312,7 @@ export class EventManager {
 
     // Extra spoilage from heat wave
     if (effects.spoilageMult && effects.spoilageMult > 1) {
-      for (const ing of gameState.ingredients) {
+      for (const ing of gameState.loc.ingredients) {
         // Reduce expiry by extra amount (spoilageMult - 1 extra days)
         const extraSpoilage = Math.floor(effects.spoilageMult - 1);
         ing.expiresInDays = Math.max(0, ing.expiresInDays - extraSpoilage);
