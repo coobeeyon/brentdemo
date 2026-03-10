@@ -684,11 +684,11 @@ export const EQUIPMENT_CATALOG: EquipmentDef[] = [
   {
     id: EquipmentId.TOPPINGS_BAR,
     name: 'Toppings Bar',
-    description: 'Self-serve toppings. Improves satisfaction and tips.',
+    description: 'Offer toppings to customers. Upgrade to self-serve for faster service.',
     tiers: [
       { tier: 0, name: 'Not Purchased', cost: 0, maintenanceCost: 0, effects: {} },
-      { tier: 1, name: 'Basic Bar', cost: 200, maintenanceCost: 5, effects: { qualityBonus: 0.05 } },
-      { tier: 2, name: 'Deluxe Bar', cost: 500, maintenanceCost: 12, effects: { qualityBonus: 0.2 } },
+      { tier: 1, name: 'Staff-Served Bar', cost: 200, maintenanceCost: 5, effects: { qualityBonus: 0.1 } },
+      { tier: 2, name: 'Self-Serve Deluxe', cost: 500, maintenanceCost: 12, effects: { qualityBonus: 0.15, serveSpeedMult: 0.9 } },
     ],
   },
 ];
@@ -945,6 +945,8 @@ export const SERVING_STYLE_CATALOG: ServingStyleDef[] = [
   { id: 'milkshake', name: 'Milkshake', priceMult: 1.6, ingredientMult: 1.5, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
   { id: 'float', name: 'Float', priceMult: 1.5, ingredientMult: 1.3, maxScoops: 2, requiredEquipment: EquipmentId.BLENDER },
   { id: 'sandwich', name: 'Ice Cream Sandwich', priceMult: 1.3, ingredientMult: 1.1, maxScoops: 1 },
+  { id: 'soft_serve_cone', name: 'Soft-Serve Cone', priceMult: 1.1, ingredientMult: 0.9, maxScoops: 2, requiredEquipment: EquipmentId.SOFT_SERVE_MACHINE },
+  { id: 'soft_serve_cup', name: 'Soft-Serve Cup', priceMult: 1.1, ingredientMult: 0.9, maxScoops: 2, requiredEquipment: EquipmentId.SOFT_SERVE_MACHINE },
 ];
 
 // Exterior Signage

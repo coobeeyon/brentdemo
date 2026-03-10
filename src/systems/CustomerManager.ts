@@ -108,11 +108,11 @@ export class CustomerManager {
    *  At 2x base price, spawn interval is ~1.5x longer (50% fewer customers).
    *  Below base price, no bonus (clamped at 1.0). */
   private getPriceSpawnMultiplier(): number {
-    const unlocked = this.gameState.flavors.filter(f => f.unlocked);
+    const unlocked = this.gameState.loc.flavors.filter(f => f.unlocked);
     if (unlocked.length === 0) return 1.0;
     let totalPrice = 0;
     for (const f of unlocked) {
-      totalPrice += this.gameState.menuPrices.get(f.id) ?? BASE_SCOOP_PRICE;
+      totalPrice += this.gameState.loc.menuPrices.get(f.id) ?? BASE_SCOOP_PRICE;
     }
     const avgPrice = totalPrice / unlocked.length;
     const ratio = avgPrice / BASE_SCOOP_PRICE;

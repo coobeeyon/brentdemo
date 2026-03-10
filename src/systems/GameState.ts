@@ -1044,26 +1044,41 @@ export class GameState {
     if (this.unlockedFlavors.has(flavorId)) return false;
     this.unlockedFlavors.add(flavorId);
 
-    // Look up from catalog for proper data
+    // Build the flavor entry from catalog or fallback
+    let flavorEntry: { id: string; name: string; unlocked: boolean; ingredients: string[]; popularity: number };
     const catalogEntry = FLAVOR_CATALOG.find(f => f.id === flavorId);
     if (catalogEntry) {
-      this.flavors.push({
+      flavorEntry = {
         id: catalogEntry.id,
         name: catalogEntry.name,
         unlocked: true,
         ingredients: catalogEntry.ingredients,
         popularity: catalogEntry.popularity,
-      });
+      };
     } else {
-      // Fallback for flavors not in catalog
       const name = flavorId.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
-      this.flavors.push({
+      flavorEntry = {
         id: flavorId,
         name,
         unlocked: true,
         ingredients: ['milk', 'sugar'],
         popularity: 0.5,
-      });
+      };
+    }
+
+    // In franchise mode, unlock at all locations so every franchise gets the flavor
+    if (this.franchiseMode && this.locations.length > 0) {
+      for (const location of this.locations) {
+        if (!location.flavors.some(f => f.id === flavorId)) {
+          location.flavors.push({ ...flavorEntry });
+        }
+      }
+      // Also update top-level flavors so addLocation() initializes new locations correctly
+      if (!this.flavors.some(f => f.id === flavorId)) {
+        this.flavors.push({ ...flavorEntry });
+      }
+    } else {
+      this.flavors.push(flavorEntry);
     }
     return true;
   }
