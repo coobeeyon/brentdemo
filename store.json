@@ -49,6 +49,16 @@
       "created_at": "2026-03-10T19:20:24.441049202Z",
       "updated_at": "2026-03-10T19:22:48.787589606Z"
     },
+    "lb-1p7y": {
+      "id": "lb-1p7y",
+      "title": "Create CharityDriveScene with donation level selection",
+      "description": "New scene where player picks donation tier (10%/25%/50%) during prep phase. Higher donation = bigger reputation boost. Shows projected donation amount and rep bonus.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T19:44:18.129609611Z",
+      "updated_at": "2026-03-10T19:44:18.129609611Z"
+    },
     "lb-1q4b": {
       "id": "lb-1q4b",
       "title": "Save/load game system",
@@ -2357,6 +2367,11 @@
     {
       "from_id": "lb-z9jc",
       "to_id": "lb-j00e",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-1p7y",
+      "to_id": "lb-skkb",
       "dep_type": "parent"
     }
   ]
