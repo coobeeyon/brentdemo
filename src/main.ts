@@ -23,6 +23,7 @@ import { LeaderboardScene } from './scenes/LeaderboardScene';
 import { VictoryScene } from './scenes/VictoryScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { CharityDriveScene } from './scenes/CharityDriveScene';
+import { SeasonIntroScene } from './scenes/SeasonIntroScene';
 import { GAME_WIDTH, GAME_HEIGHT } from './config/constants';
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -33,7 +34,7 @@ const config: Phaser.Types.Core.GameConfig = {
   backgroundColor: '#87CEEB',
   roundPixels: true,
   antialias: true,
-  scene: [BootScene, MainMenuScene, GameplayScene, PauseScene, ShopScene, EquipmentScene, StaffScene, MenuEditorScene, MarketingScene, LoanScene, DecorScene, SeatingScene, ResearchScene, RecipeScene, PopUpBoothScene, ChallengeScene, LeaderboardScene, SignageScene, TutorialScene, FranchiseScene, SettingsScene, VictoryScene, GameOverScene, CharityDriveScene],
+  scene: [BootScene, MainMenuScene, GameplayScene, PauseScene, ShopScene, EquipmentScene, StaffScene, MenuEditorScene, MarketingScene, LoanScene, DecorScene, SeatingScene, ResearchScene, RecipeScene, PopUpBoothScene, ChallengeScene, LeaderboardScene, SignageScene, TutorialScene, FranchiseScene, SettingsScene, VictoryScene, GameOverScene, CharityDriveScene, SeasonIntroScene],
   physics: {
     default: 'arcade',
     arcade: {
