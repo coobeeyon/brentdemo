@@ -19,10 +19,8 @@ export class PauseScene extends Phaser.Scene {
     overlay.fillStyle(0x000000, 0.6);
     overlay.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    // Pause panel
+    // Pause panel — height computed after buttons are laid out
     const panel = this.add.graphics();
-    panel.fillStyle(0x2C3E50, 1);
-    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, 50, 300, 760, 15);
 
     this.add.text(GAME_WIDTH / 2, 80, 'PAUSED', {
       fontFamily: 'Arial',
@@ -32,10 +30,10 @@ export class PauseScene extends Phaser.Scene {
 
     const btnStyle = {
       fontFamily: 'Arial',
-      fontSize: scaledFontSize(this, 20),
+      fontSize: scaledFontSize(this, 18),
       color: '#FFF',
       backgroundColor: '#34495E',
-      padding: { x: 20, y: 6 },
+      padding: { x: 20, y: 5 },
     };
 
     const gameState = getGameState(this);
@@ -59,7 +57,8 @@ export class PauseScene extends Phaser.Scene {
       { label: ' Main Menu ', action: () => { this.scene.stop('GameplayScene'); this.scene.start('MainMenuScene'); } },
     ];
 
-    let y = 120;
+    const spacing = 36;
+    let y = 108;
     for (const btn of buttons) {
       const text = this.add.text(GAME_WIDTH / 2, y, btn.label, btnStyle)
         .setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -73,13 +72,20 @@ export class PauseScene extends Phaser.Scene {
         text.on('pointerdown', btn.action);
       }
 
-      y += 44;
+      y += spacing;
     }
 
-    // Fullscreen toggle (below pause panel)
+    // Fullscreen toggle (below last button)
     if (document.fullscreenEnabled) {
-      createFullscreenButton(this, GAME_WIDTH / 2, y + 10);
+      createFullscreenButton(this, GAME_WIDTH / 2, y + 6);
+      y += spacing;
     }
+
+    // Draw pause panel background now that we know the final height
+    const panelTop = 50;
+    const panelHeight = y - panelTop + 10;
+    panel.fillStyle(0x2C3E50, 1);
+    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, panelTop, 300, panelHeight, 15);
 
     // ESC to resume
     this.input.keyboard!.on('keydown-ESC', () => this.resumeGame());
