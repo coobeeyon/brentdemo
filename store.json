@@ -963,11 +963,10 @@
       "title": "Apply scaledFontSize to season results modal in GameplayScene",
       "description": "The showSeasonResults() modal in GameplayScene uses hardcoded font sizes instead of scaledFontSize(), making it ignore the text size accessibility setting.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T14:58:45.430387947Z",
-      "updated_at": "2026-03-10T14:58:49.398802667Z"
+      "updated_at": "2026-03-10T15:00:16.847531954Z"
     },
     "lb-qg1v": {
       "id": "lb-qg1v",
