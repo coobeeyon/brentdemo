@@ -864,11 +864,10 @@
       "title": "Staff training progression UI",
       "description": "Training is just a button click. Add visible skill improvement tracking and training-in-progress state.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T16:44:51.352751371Z",
-      "updated_at": "2026-03-10T16:46:52.957488495Z"
+      "updated_at": "2026-03-10T16:48:00.539895377Z"
     },
     "lb-l2lg": {
       "id": "lb-l2lg",
