@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, SupplierDef, SUPPLIER_CATALOG, BULK_DISCOUNT_TIERS } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, SupplierDef, SUPPLIER_CATALOG, BULK_DISCOUNT_TIERS, LOW_STOCK_THRESHOLD } from '../config/constants';
 import { GameState, getGameState, Ingredient } from '../systems/GameState';
 
 interface ShopItem {
@@ -204,7 +204,7 @@ export class ShopScene extends Phaser.Scene {
     const existing = this.gameState.ingredients.find(i => i.id === item.id);
     const currentQty = existing?.quantity ?? 0;
     const isBaseIngredient = ['milk', 'sugar', 'vanilla_extract', 'cocoa', 'strawberries'].includes(item.id);
-    const isLow = isBaseIngredient && currentQty < 10;
+    const isLow = isBaseIngredient && currentQty < LOW_STOCK_THRESHOLD;
     const stockLabel = isLow ? `${currentQty} ⚠` : `${currentQty}`;
     const stockColor = isLow ? '#E74C3C' : '#FFF';
     const stockText = this.add.text(colX.stock, y + 8, stockLabel, {
@@ -295,7 +295,7 @@ export class ShopScene extends Phaser.Scene {
 
         // Refresh stock display with low-stock re-evaluation
         const newQty = this.gameState.ingredients.find(i => i.id === item.id)?.quantity ?? 0;
-        const newIsLow = isBaseIngredient && newQty < 10;
+        const newIsLow = isBaseIngredient && newQty < LOW_STOCK_THRESHOLD;
         stockText.setText(newIsLow ? `${newQty} ⚠` : `${newQty}`);
         stockText.setColor(newIsLow ? '#E74C3C' : '#FFF');
         this.updateDisplay();

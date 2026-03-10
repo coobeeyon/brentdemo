@@ -21,6 +21,9 @@ export const SPEED_NORMAL = 1;
 export const SPEED_FAST = 2;
 export const SPEED_PAUSED = 0;
 
+// Inventory thresholds
+export const LOW_STOCK_THRESHOLD = 10;
+
 // Starting resources
 export const STARTING_MONEY = 500;
 export const STARTING_REPUTATION = 2.5; // out of 5 stars

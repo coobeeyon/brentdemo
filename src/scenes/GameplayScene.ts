@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD } from '../config/constants';
 import { ChallengeDef } from './ChallengeScene';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
@@ -526,9 +526,8 @@ export class GameplayScene extends Phaser.Scene {
 
     // Stock warnings during serve phase
     if (s.phase === DayPhase.SERVE) {
-      const LOW_THRESHOLD = 5;
       const warnings = s.ingredients
-        .filter(i => i.quantity <= LOW_THRESHOLD)
+        .filter(i => i.quantity <= LOW_STOCK_THRESHOLD)
         .map(i => i.quantity === 0 ? `⛔ ${i.name}: OUT` : `⚠ ${i.name}: ${i.quantity}`);
 
       const hasOutOfStock = s.ingredients.some(i => i.quantity === 0);
