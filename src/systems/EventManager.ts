@@ -275,7 +275,7 @@ export class EventManager {
 
         // For trend alert, pick a random available flavor
         if (eventDef.id === GameEventId.TREND_ALERT) {
-          const flavors = gameState.flavors.filter(f => f.unlocked);
+          const flavors = gameState.loc.flavors.filter(f => f.unlocked);
           if (flavors.length > 0) {
             active.trendingFlavorId = flavors[Math.floor(Math.random() * flavors.length)].id;
           }

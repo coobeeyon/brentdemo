@@ -1529,7 +1529,7 @@ export class GameState {
     }
 
     // Expired or near-expired ingredients: -10 each
-    const expiredCount = this.ingredients.filter(i => i.expiresInDays <= 1 && i.quantity > 0).length;
+    const expiredCount = this.loc.ingredients.filter(i => i.expiresInDays <= 1 && i.quantity > 0).length;
     if (expiredCount > 0) {
       score -= expiredCount * 10;
       violations.push(`${expiredCount} ingredient(s) expired or expiring today`);

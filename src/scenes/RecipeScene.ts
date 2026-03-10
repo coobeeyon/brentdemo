@@ -108,7 +108,7 @@ export class RecipeScene extends Phaser.Scene {
       this.contentContainer.add(nameText);
 
       // Details
-      const flavorName = this.gameState.flavors.find(f => f.id === recipe.flavorId)?.name ?? recipe.flavorId;
+      const flavorName = this.gameState.loc.flavors.find(f => f.id === recipe.flavorId)?.name ?? recipe.flavorId;
       const styleDef = SERVING_STYLE_CATALOG.find(s => s.id === recipe.style);
       const toppingNames = recipe.toppings.map(tid => {
         const tDef = TOPPING_CATALOG.find(t => t.ingredientId === tid);
@@ -169,7 +169,7 @@ export class RecipeScene extends Phaser.Scene {
       toppings: new Set<string>(),
     };
 
-    const availableFlavors = this.gameState.flavors.filter(f => f.unlocked);
+    const availableFlavors = this.gameState.loc.flavors.filter(f => f.unlocked);
     const availableStyles = this.gameState.getAvailableStyles();
     const availableToppings = this.gameState.getAvailableToppings();
 
@@ -259,7 +259,7 @@ export class RecipeScene extends Phaser.Scene {
     const calcPrice = () => {
       const flavor = availableFlavors[state.flavorIdx];
       const style = availableStyles[state.styleIdx];
-      const basePrice = (this.gameState.menuPrices.get(flavor?.id ?? '') ?? BASE_SCOOP_PRICE) * (style?.priceMult ?? 1);
+      const basePrice = (this.gameState.loc.menuPrices.get(flavor?.id ?? '') ?? BASE_SCOOP_PRICE) * (style?.priceMult ?? 1);
       const toppingPrice = Array.from(state.toppings).reduce((sum, tid) => {
         const tDef = TOPPING_CATALOG.find(t => t.ingredientId === tid);
         return sum + (tDef?.price ?? 0.50);
