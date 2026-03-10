@@ -894,11 +894,10 @@
       "title": "Add gameplay side panels for inventory and orders",
       "description": "Spec says 'Side panels: quick-access inventory, staff status, and active orders queue' but currently all info is accessed through modal scenes or compact top bar. Add collapsible side panels showing current inventory levels, staff status, and active order queue during serve phase.",
       "item_type": "feature",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T16:27:47.948635905Z",
-      "updated_at": "2026-03-10T16:30:37.168021448Z"
+      "updated_at": "2026-03-10T16:32:53.103511544Z"
     },
     "lb-ljjm": {
       "id": "lb-ljjm",
