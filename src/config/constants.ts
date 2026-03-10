@@ -29,6 +29,19 @@ export const STARTING_REPUTATION = 2.5; // out of 5 stars
 export const BASE_PATIENCE_MS = 30000; // 30 seconds at 1x speed
 export const MAX_QUEUE_LENGTH = 8;
 
+// Dietary Restrictions
+export enum DietaryRestriction {
+  NONE = 'none',
+  VEGAN = 'vegan',       // no milk-based ingredients
+  NUT_FREE = 'nut_free', // no nut ingredients or toppings
+}
+
+/** Ingredient ids that contain dairy */
+export const DAIRY_INGREDIENTS = ['milk', 'cream'];
+
+/** Ingredient ids that contain nuts */
+export const NUT_INGREDIENTS = ['nuts'];
+
 // Pricing
 export const BASE_SCOOP_PRICE = 3.00;
 export const BASE_TOPPING_PRICE = 0.50;

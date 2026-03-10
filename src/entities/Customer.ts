@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
-import { BASE_PATIENCE_MS, BASE_SCOOP_PRICE, ToppingDef, ServingStyleDef, SERVING_STYLE_CATALOG } from '../config/constants';
+import {
+  BASE_PATIENCE_MS, BASE_SCOOP_PRICE, ToppingDef, ServingStyleDef, SERVING_STYLE_CATALOG,
+  DietaryRestriction, DAIRY_INGREDIENTS, NUT_INGREDIENTS, FLAVOR_CATALOG, FlavorDef,
+} from '../config/constants';
 
 export enum CustomerType {
   REGULAR = 'regular',
@@ -46,6 +49,9 @@ export class Customer {
   tipMultiplier: number;
   served: boolean = false;
   left: boolean = false;
+  dietaryRestriction: DietaryRestriction = DietaryRestriction.NONE;
+  likedFlavors: string[] = [];   // flavor ids this customer prefers (2x order chance)
+  dislikedFlavors: string[] = []; // flavor ids this customer avoids
 
   // Visual elements
   private bodyCircle!: Phaser.GameObjects.Graphics;
@@ -73,12 +79,77 @@ export class Customer {
     this.patience = this.maxPatience;
     this.tipMultiplier = typeInfo.tipMult;
 
+    // Assign dietary restriction (15% chance of vegan, 10% nut-free)
+    const dietRoll = Math.random();
+    if (dietRoll < 0.15) {
+      this.dietaryRestriction = DietaryRestriction.VEGAN;
+    } else if (dietRoll < 0.25) {
+      this.dietaryRestriction = DietaryRestriction.NUT_FREE;
+    }
+
+    // Assign flavor preferences from the full catalog
+    this.generatePreferences(availableFlavors);
+
     // Generate order
     this.order = this.generateOrder(availableFlavors, menuPrices, availableToppings ?? [], availableStyles ?? SERVING_STYLE_CATALOG.filter(s => !s.requiredEquipment));
 
     // Create visuals
     this.sprite = scene.add.container(x, y);
     this.createVisuals();
+  }
+
+  /** Check if a flavor is compatible with this customer's dietary restriction */
+  private flavorAllowed(flavorId: string): boolean {
+    const def = FLAVOR_CATALOG.find(f => f.id === flavorId);
+    if (!def) return true;
+    if (this.dietaryRestriction === DietaryRestriction.VEGAN) {
+      return !def.ingredients.some(i => DAIRY_INGREDIENTS.includes(i));
+    }
+    if (this.dietaryRestriction === DietaryRestriction.NUT_FREE) {
+      return !def.ingredients.some(i => NUT_INGREDIENTS.includes(i));
+    }
+    return true;
+  }
+
+  /** Check if a topping is compatible with this customer's dietary restriction */
+  private toppingAllowed(toppingIngredientId: string): boolean {
+    if (this.dietaryRestriction === DietaryRestriction.VEGAN) {
+      return !DAIRY_INGREDIENTS.includes(toppingIngredientId);
+    }
+    if (this.dietaryRestriction === DietaryRestriction.NUT_FREE) {
+      return !NUT_INGREDIENTS.includes(toppingIngredientId);
+    }
+    return true;
+  }
+
+  /** Assign 1-2 liked flavors and 0-1 disliked flavors from available options */
+  private generatePreferences(availableFlavors: string[]): void {
+    const pool = availableFlavors.filter(f => this.flavorAllowed(f));
+    if (pool.length === 0) return;
+
+    // Pick 1-2 liked flavors
+    const numLiked = Math.min(pool.length, 1 + (Math.random() < 0.5 ? 1 : 0));
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    this.likedFlavors = shuffled.slice(0, numLiked);
+
+    // Pick 0-1 disliked flavors (from remaining)
+    const remaining = shuffled.slice(numLiked);
+    if (remaining.length > 0 && Math.random() < 0.4) {
+      this.dislikedFlavors = [remaining[0]];
+    }
+  }
+
+  /** Pick a flavor with liked flavors getting 2x weight */
+  private pickWeightedFlavor(pool: string[]): string {
+    if (pool.length === 0) return 'vanilla'; // shouldn't happen
+    const weights = pool.map(f => this.likedFlavors.includes(f) ? 2 : 1);
+    const total = weights.reduce((a, b) => a + b, 0);
+    let roll = Math.random() * total;
+    for (let i = 0; i < pool.length; i++) {
+      roll -= weights[i];
+      if (roll <= 0) return pool[i];
+    }
+    return pool[pool.length - 1];
   }
 
   private generateOrder(availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings: ToppingDef[] = [], availableStyles: ServingStyleDef[] = []): Order {
@@ -92,14 +163,25 @@ export class Customer {
       this.type === CustomerType.TOURIST ? Math.ceil(Math.random() * Math.min(3, maxScoops)) :
       Math.ceil(Math.random() * Math.min(2, maxScoops));
 
+    // Filter flavors by dietary restriction and dislike
+    const allowedFlavors = availableFlavors.filter(
+      f => this.flavorAllowed(f) && !this.dislikedFlavors.includes(f)
+    );
+    // If restriction removes everything, fall back to full list
+    const flavorPool = allowedFlavors.length > 0 ? allowedFlavors : availableFlavors;
+
+    // Filter toppings by dietary restriction
+    const allowedToppings = availableToppings.filter(t => this.toppingAllowed(t.ingredientId));
+
     const items: OrderItem[] = [];
 
     for (let i = 0; i < numScoops; i++) {
-      const flavorId = availableFlavors[Math.floor(Math.random() * availableFlavors.length)];
+      // Weighted selection: liked flavors get 2x weight
+      const flavorId = this.pickWeightedFlavor(flavorPool);
 
       // Pick toppings based on available catalog and popularity
       const toppings: string[] = [];
-      for (const topping of availableToppings) {
+      for (const topping of allowedToppings) {
         if (Math.random() < topping.popularity) {
           toppings.push(topping.ingredientId);
         }
@@ -152,6 +234,17 @@ export class Customer {
     if (typeLabels[this.type]) {
       const label = this.scene.add.text(12, -22, typeLabels[this.type], { fontSize: '12px' });
       this.sprite.add(label);
+    }
+
+    // Dietary restriction icon
+    const dietIcons: Record<DietaryRestriction, string> = {
+      [DietaryRestriction.NONE]: '',
+      [DietaryRestriction.VEGAN]: '🌱',
+      [DietaryRestriction.NUT_FREE]: '🚫🥜',
+    };
+    if (dietIcons[this.dietaryRestriction]) {
+      const dietLabel = this.scene.add.text(-20, -22, dietIcons[this.dietaryRestriction], { fontSize: '10px' });
+      this.sprite.add(dietLabel);
     }
 
     // Patience bar
