@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD, VIP_PERK_THRESHOLDS } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD, VIP_PERK_THRESHOLDS, SEASON_NARRATIVES } from '../config/constants';
 import { ChallengeDef } from './ChallengeScene';
 import { GameState, getGameState, CriticReview, LocationState, DayReport } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
@@ -125,6 +125,7 @@ export class GameplayScene extends Phaser.Scene {
 
     // Launch tutorial for new players on Day 1
     // Note: startNewDay() already incremented day from 1 to 2, so check day === 2
+    let tutorialWillShow = false;
     if (!isLoadingSave && this.gameState.day === 2 && gameMode === 'story') {
       const tutorialSeen = this.registry.get('tutorialSeen') as boolean;
       let seenInStorage = false;
@@ -134,7 +135,21 @@ export class GameplayScene extends Phaser.Scene {
         // localStorage may not be available
       }
       if (!tutorialSeen && !seenInStorage) {
+        tutorialWillShow = true;
         this.scene.launch('TutorialScene');
+        this.scene.pause();
+      }
+    }
+
+    // Show season intro narrative on the first day of each season (story mode only)
+    // Skip if the tutorial is showing (season 1 first play) or loading a save
+    const showSeasonIntro = this.registry.get('showSeasonIntro') as boolean;
+    if (!isLoadingSave && gameMode === 'story' && !tutorialWillShow) {
+      // seasonDay === 2 means first day (startNewDay incremented from 1 to 2)
+      if (this.gameState.seasonDay === 2 || showSeasonIntro) {
+        this.registry.set('showSeasonIntro', false);
+        this.registry.set('introSeason', this.gameState.season);
+        this.scene.launch('SeasonIntroScene');
         this.scene.pause();
       }
     }
@@ -1630,8 +1645,10 @@ export class GameplayScene extends Phaser.Scene {
     backdrop.fillRect(-GAME_WIDTH / 2, -GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT);
     container.add(backdrop);
 
+    const narrative = SEASON_NARRATIVES.find(n => n.season === seasonDef.season);
+    const hasNarrative = narrative && result !== 'hard_fail';
     const panelW = 500;
-    const panelH = 440;
+    const panelH = hasNarrative ? 520 : 440;
     const panel = this.add.graphics();
 
     // Panel color based on result
@@ -1666,8 +1683,20 @@ export class GameplayScene extends Phaser.Scene {
     }).setOrigin(0.5, 0);
     container.add(seasonName);
 
+    // Narrative flavor text for win/soft-fail
+    let narrativeOffset = 0;
+    if (hasNarrative) {
+      const narr = result === 'win' ? narrative.win : narrative.softFail;
+      const headlineText = this.add.text(0, -panelH / 2 + 86, `"${narr.headline}"`, {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#F1C40F',
+        fontStyle: 'italic',
+      }).setOrigin(0.5, 0);
+      container.add(headlineText);
+      narrativeOffset = 28;
+    }
+
     // Targets vs actual
-    let y = -panelH / 2 + 100;
+    let y = -panelH / 2 + 100 + narrativeOffset;
     const leftX = -panelW / 2 + 40;
 
     const addTarget = (yPos: number, label: string, actual: string, target: string, met: boolean) => {
@@ -1758,6 +1787,10 @@ export class GameplayScene extends Phaser.Scene {
           this.rollDailyEvent();
           this.updatePhaseUI();
           this.showStaffQuitNotices();
+          // Show season intro narrative for the new season
+          this.registry.set('introSeason', s.season);
+          this.scene.launch('SeasonIntroScene');
+          this.scene.pause();
         });
       } else {
         // Game complete! All 5 seasons done — transition to VictoryScene
@@ -1817,6 +1850,10 @@ export class GameplayScene extends Phaser.Scene {
           this.rollDailyEvent();
           this.updatePhaseUI();
           this.showStaffQuitNotices();
+          // Show season intro narrative for the new season
+          this.registry.set('introSeason', s.season);
+          this.scene.launch('SeasonIntroScene');
+          this.scene.pause();
         });
       } else {
         // Final season soft-fail — allow accepting partial completion
