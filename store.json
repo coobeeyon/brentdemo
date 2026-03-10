@@ -95,10 +95,10 @@
       "title": "No tutorial explaining food purchase is mandatory",
       "description": "Player feedback: buying food is required but there is no in-game guidance telling players this. Needs tutorial or onboarding prompt.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
       "created_at": "2026-03-10T09:50:28.383805663Z",
-      "updated_at": "2026-03-10T09:51:37.081498859Z"
+      "updated_at": "2026-03-10T09:56:21.383136937Z"
     },
     "lb-actv": {
       "id": "lb-actv",
