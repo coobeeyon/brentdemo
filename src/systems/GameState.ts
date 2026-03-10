@@ -1073,6 +1073,10 @@ export class GameState {
           location.flavors.push({ ...flavorEntry });
         }
       }
+      // Also update top-level flavors so addLocation() initializes new locations correctly
+      if (!this.flavors.some(f => f.id === flavorId)) {
+        this.flavors.push({ ...flavorEntry });
+      }
     } else {
       this.flavors.push(flavorEntry);
     }
