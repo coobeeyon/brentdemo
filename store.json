@@ -436,8 +436,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 3,
+      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T15:48:44.428694310Z",
-      "updated_at": "2026-03-10T15:48:44.428694310Z"
+      "updated_at": "2026-03-10T15:49:04.701092157Z"
     },
     "lb-ct8e": {
       "id": "lb-ct8e",
