@@ -194,15 +194,15 @@ export class LeaderboardScene extends Phaser.Scene {
     overlay.add(panel);
 
     overlay.add(this.add.text(cx, cy - 45, 'Reset all challenge scores?', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5));
 
     overlay.add(this.add.text(cx, cy - 15, 'This cannot be undone.', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#E74C3C',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#E74C3C',
     }).setOrigin(0.5));
 
     const confirmBtn = this.add.text(cx - 70, cy + 35, 'Reset', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
       backgroundColor: '#E74C3C', padding: { x: 16, y: 6 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     overlay.add(confirmBtn);
@@ -216,7 +216,7 @@ export class LeaderboardScene extends Phaser.Scene {
     });
 
     const cancelBtn = this.add.text(cx + 70, cy + 35, 'Cancel', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
       backgroundColor: '#7F8C8D', padding: { x: 16, y: 6 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     overlay.add(cancelBtn);
