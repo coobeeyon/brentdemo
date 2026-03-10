@@ -40,7 +40,7 @@ export enum DietaryRestriction {
 }
 
 /** Ingredient ids that contain dairy */
-export const DAIRY_INGREDIENTS = ['milk', 'cream'];
+export const DAIRY_INGREDIENTS = ['milk', 'cream', 'hot_fudge', 'caramel'];
 
 /** Ingredient ids that contain nuts */
 export const NUT_INGREDIENTS = ['nuts'];
