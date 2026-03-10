@@ -731,6 +731,21 @@
   },
   "deps": [
     {
+      "from_id": "lb-00et",
+      "to_id": "lb-3l93",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-0hec",
+      "to_id": "lb-3l93",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-0hec",
+      "to_id": "lb-dfd5",
+      "dep_type": "blocks"
+    },
+    {
       "from_id": "lb-3pxv",
       "to_id": "lb-hu03",
       "dep_type": "parent"
@@ -766,6 +781,31 @@
       "dep_type": "parent"
     },
     {
+      "from_id": "lb-b6u3",
+      "to_id": "lb-00et",
+      "dep_type": "blocks"
+    },
+    {
+      "from_id": "lb-b6u3",
+      "to_id": "lb-0hec",
+      "dep_type": "blocks"
+    },
+    {
+      "from_id": "lb-b6u3",
+      "to_id": "lb-3l93",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-b6u3",
+      "to_id": "lb-ogiw",
+      "dep_type": "blocks"
+    },
+    {
+      "from_id": "lb-b6u3",
+      "to_id": "lb-xtgt",
+      "dep_type": "blocks"
+    },
+    {
       "from_id": "lb-be71",
       "to_id": "lb-hu03",
       "dep_type": "parent"
@@ -773,6 +813,11 @@
     {
       "from_id": "lb-byoe",
       "to_id": "lb-u8ep",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-dfd5",
+      "to_id": "lb-3l93",
       "dep_type": "parent"
     },
     {
@@ -841,6 +886,11 @@
       "dep_type": "parent"
     },
     {
+      "from_id": "lb-ogiw",
+      "to_id": "lb-3l93",
+      "dep_type": "parent"
+    },
+    {
       "from_id": "lb-rtw5",
       "to_id": "lb-nm04",
       "dep_type": "parent"
@@ -866,64 +916,14 @@
       "dep_type": "parent"
     },
     {
-      "from_id": "lb-ypij",
-      "to_id": "lb-hu03",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-b6u3",
-      "to_id": "lb-3l93",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-00et",
-      "to_id": "lb-3l93",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-ogiw",
-      "to_id": "lb-3l93",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-0hec",
-      "to_id": "lb-3l93",
-      "dep_type": "parent"
-    },
-    {
       "from_id": "lb-xtgt",
       "to_id": "lb-3l93",
       "dep_type": "parent"
     },
     {
-      "from_id": "lb-dfd5",
-      "to_id": "lb-3l93",
+      "from_id": "lb-ypij",
+      "to_id": "lb-hu03",
       "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-b6u3",
-      "to_id": "lb-00et",
-      "dep_type": "blocks"
-    },
-    {
-      "from_id": "lb-b6u3",
-      "to_id": "lb-0hec",
-      "dep_type": "blocks"
-    },
-    {
-      "from_id": "lb-b6u3",
-      "to_id": "lb-ogiw",
-      "dep_type": "blocks"
-    },
-    {
-      "from_id": "lb-b6u3",
-      "to_id": "lb-xtgt",
-      "dep_type": "blocks"
-    },
-    {
-      "from_id": "lb-0hec",
-      "to_id": "lb-dfd5",
-      "dep_type": "blocks"
     }
   ]
 }
