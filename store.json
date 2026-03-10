@@ -15,11 +15,10 @@
       "title": "getSeasonResult omits last-day dailyRevenue from win check",
       "description": "In getSeasonResult() (GameState.ts:907), the revenue check uses this.seasonRevenue but not dailyRevenue. showSeasonResults() is called before startNewDay() (which accumulates dailyRevenue into seasonRevenue), so the final day earnings are excluded from the win check. The results panel compensates in the display (GameplayScene.ts:1155: seasonRevenue + loc.dailyRevenue) but the pass/fail logic does not. Fix: in getSeasonResult(), compute effectiveRevenue = this.seasonRevenue + this.loc.dailyRevenue (and sum across all locations in franchise mode) before comparing to revenueTarget.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:52:07.579363724Z",
-      "updated_at": "2026-03-10T12:54:02.797208900Z"
+      "updated_at": "2026-03-10T12:55:04.674863095Z"
     },
     "lb-0hec": {
       "id": "lb-0hec",
