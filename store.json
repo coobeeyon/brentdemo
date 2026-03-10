@@ -1068,6 +1068,16 @@
       "created_at": "2026-03-10T10:30:12.531591793Z",
       "updated_at": "2026-03-10T10:33:03.348904074Z"
     },
+    "lb-ruly": {
+      "id": "lb-ruly",
+      "title": "Season results stats only show active location data in franchise mode",
+      "description": "showSeasonResults() uses s.loc.dayReports and s.loc.money for the stats summary, but in franchise mode this only shows the active location. Should aggregate customers served/lost and balance across all locations.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T15:31:44.467741814Z",
+      "updated_at": "2026-03-10T15:31:44.467741814Z"
+    },
     "lb-s251": {
       "id": "lb-s251",
       "title": "End-of-day financial report with charts",
