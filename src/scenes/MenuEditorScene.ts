@@ -73,7 +73,7 @@ export class MenuEditorScene extends Phaser.Scene {
     this.contentContainer.add(this.add.text(cols.popularity, startY, 'POPULARITY', hStyle));
     this.contentContainer.add(this.add.text(cols.basePrice, startY, 'BASE', hStyle));
     this.contentContainer.add(this.add.text(cols.price, startY, 'YOUR PRICE', hStyle));
-    this.contentContainer.add(this.add.text(cols.ingredients, startY, 'NEEDS', hStyle));
+    this.contentContainer.add(this.add.text(cols.ingredients, startY, 'SUGGEST', hStyle));
 
     this.gameState.loc.flavors.forEach((flavor, i) => {
       this.createFlavorRow(flavor, i, startY + 25, cols);
@@ -211,6 +211,30 @@ export class MenuEditorScene extends Phaser.Scene {
       this.refreshUI();
     });
     this.contentContainer.add(upBtn);
+
+    // Suggested price button
+    const suggested = this.getSuggestedPrice(flavor);
+    const suggestBtn = this.add.text(cols.ingredients, y + 15, `Suggest $${suggested.toFixed(2)}`, {
+      fontFamily: 'Arial', fontSize: '11px', color: '#3498DB',
+      padding: { x: 4, y: 2 },
+    }).setInteractive({ useHandCursor: true });
+    suggestBtn.on('pointerdown', () => {
+      this.gameState.loc.menuPrices.set(flavor.id, suggested);
+      this.refreshUI();
+    });
+    suggestBtn.on('pointerover', () => suggestBtn.setStyle({ color: '#5DADE2' }));
+    suggestBtn.on('pointerout', () => suggestBtn.setStyle({ color: '#3498DB' }));
+    this.contentContainer.add(suggestBtn);
+  }
+
+  private getSuggestedPrice(flavor: Flavor): number {
+    const rep = this.gameState.loc.reputation; // 0-5 stars
+    const pop = flavor.popularity; // 0-1
+    // Higher reputation and popularity support higher prices
+    const suggested = BASE_SCOOP_PRICE * (1 + rep * 0.1 + pop * 0.2);
+    // Round to nearest $0.50 and clamp
+    const rounded = Math.round(suggested * 2) / 2;
+    return Math.max(1.00, Math.min(15.00, rounded));
   }
 
   private refreshUI(): void {
