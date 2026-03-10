@@ -433,11 +433,10 @@
       "title": "Add fullscreen toggle button for mobile browsers",
       "description": "Add a fullscreen toggle accessible from the main menu and pause menu that uses the Fullscreen API",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T18:22:23.646426022Z",
-      "updated_at": "2026-03-10T18:25:10.401511741Z"
+      "updated_at": "2026-03-10T18:26:18.747282076Z"
     },
     "lb-aqtx": {
       "id": "lb-aqtx",
