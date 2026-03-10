@@ -444,11 +444,10 @@
       "title": "Remaining loc bypasses in GameState recipes/loyalty, GameplayScene HUD, RecipeScene, CustomerManager",
       "description": "Multiple location-scoped fields still accessed directly instead of through loc: GameState recipe methods (lines 1007-1047), loyalty methods (1051-1119); GameplayScene weather/staff/campaigns/loans/equipment display; RecipeScene recipe reads; CustomerManager recipe matching.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T13:20:58.058565171Z",
-      "updated_at": "2026-03-10T13:21:02.845991382Z"
+      "updated_at": "2026-03-10T13:22:36.246534673Z"
     },
     "lb-g435": {
       "id": "lb-g435",
