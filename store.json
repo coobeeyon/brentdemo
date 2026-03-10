@@ -1121,11 +1121,12 @@
     "lb-oh7s": {
       "id": "lb-oh7s",
       "title": "unlockFlavor incomplete for new franchise locations",
+      "description": "The e04e6bc fix correctly pushes newly unlocked flavors to all existing location.flavors, but does NOT update this.flavors (the top-level list). addLocation() at GameState.ts:848 initializes new location flavors from this.flavors.filter(f => f.unlocked), which is stale once franchise mode is active. Any flavor researched AFTER Season 5 begins is visible at existing locations but absent from locations opened afterward. Fix: also push flavorEntry to this.flavors in the franchise branch of unlockFlavor so addLocation always has the full set.",
       "item_type": "task",
       "status": "open",
       "priority": 2,
       "created_at": "2026-03-10T17:18:16.246781770Z",
-      "updated_at": "2026-03-10T17:18:16.246781770Z"
+      "updated_at": "2026-03-10T17:18:20.775698754Z"
     },
     "lb-pcny": {
       "id": "lb-pcny",
