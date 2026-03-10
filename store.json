@@ -643,11 +643,10 @@
       "title": "Fix remaining loc-bypass in ChallengeScene, PopUpBoothScene, RecipeScene, GameplayScene, EventManager",
       "description": "29 instances across 5 files where gameState.X is used instead of gameState.loc.X for location-scoped fields, breaking franchise mode.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T20:02:38.622969947Z",
-      "updated_at": "2026-03-10T20:02:42.958627306Z"
+      "updated_at": "2026-03-10T20:04:57.532049798Z"
     },
     "lb-db57": {
       "id": "lb-db57",
