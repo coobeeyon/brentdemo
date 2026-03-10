@@ -32,7 +32,7 @@ const TIPS: GameplayTip[] = [
       'You can hire staff from the Pause menu (ESC)\n' +
       'to serve customers faster. Staff improve\n' +
       'speed, accuracy, and friendliness!',
-    condition: (gs) => gs.staff.length === 0 && gs.day >= 3,
+    condition: (gs) => gs.loc.staff.length === 0 && gs.day >= 3,
   },
   {
     id: 'equipment_worn',
@@ -42,7 +42,7 @@ const TIPS: GameplayTip[] = [
       'Open Equipment from the Pause menu (ESC)\n' +
       'to repair it before it breaks down!',
     condition: (gs) =>
-      gs.equipment.some(
+      gs.loc.equipment.some(
         (e) => e.condition !== undefined && e.condition < 50
       ),
   },
@@ -74,7 +74,7 @@ const TIPS: GameplayTip[] = [
       'Marketing campaigns can bring in more\n' +
       'customers. Open Marketing from the Pause\n' +
       'menu (ESC) to launch a campaign.',
-    condition: (gs) => gs.loc.money >= 200 && gs.day >= 5 && gs.activeCampaigns.length === 0,
+    condition: (gs) => gs.loc.money >= 200 && gs.day >= 5 && gs.loc.activeCampaigns.length === 0,
   },
 ];
 

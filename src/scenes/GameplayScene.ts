@@ -86,14 +86,14 @@ export class GameplayScene extends Phaser.Scene {
     // Roll for today's event
     this.rollDailyEvent();
 
-    // Check for health inspection
-    if (this.gameState.shouldTriggerInspection()) {
+    // Check for health inspection (sandbox mode has no failure state)
+    if (gameMode !== 'sandbox' && this.gameState.shouldTriggerInspection()) {
       const result = this.gameState.runHealthInspection();
       this.showInspectionNotification(result);
     }
 
     // If store is closed due to failed inspection, show closure notice
-    if (this.gameState.closureDaysRemaining > 0) {
+    if (gameMode !== 'sandbox' && this.gameState.closureDaysRemaining > 0) {
       this.showClosureNotice();
     }
 
