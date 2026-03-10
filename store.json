@@ -868,6 +868,16 @@
       "created_at": "2026-03-09T19:04:48.793873768Z",
       "updated_at": "2026-03-09T19:13:17.363271530Z"
     },
+    "lb-va38": {
+      "id": "lb-va38",
+      "title": "TipManager reads stale top-level fields instead of gs.loc in franchise mode",
+      "description": "TipManager.ts checks gs.staff (line 35), gs.equipment (line 45), and gs.activeCampaigns (line 77) directly on the GameState top-level instead of gs.loc. After initFranchiseMode() runs in Season 5, those top-level arrays become stale; only gs.loc.staff, gs.loc.equipment, and gs.loc.activeCampaigns are current. The hire_staff, equipment_worn, and try_marketing tips will evaluate incorrect conditions in franchise mode. Fix: update the three tip conditions to use gs.loc.staff, gs.loc.equipment, and gs.loc.activeCampaigns.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T12:25:26.939558832Z",
+      "updated_at": "2026-03-10T12:25:26.939558832Z"
+    },
     "lb-vl3q": {
       "id": "lb-vl3q",
       "title": "Sandbox mode: unlimited funds and no-fail state",
