@@ -729,6 +729,16 @@
       "created_at": "2026-03-09T18:04:26.558601524Z",
       "updated_at": "2026-03-09T18:07:10.090956532Z"
     },
+    "lb-j2b4": {
+      "id": "lb-j2b4",
+      "title": "Catering offers only generated for active location in franchise mode",
+      "description": "startNewDay() only generates catering offers for this.loc (active location). Other franchise locations never receive catering opportunities.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 4,
+      "created_at": "2026-03-10T15:56:01.249480677Z",
+      "updated_at": "2026-03-10T15:56:01.249480677Z"
+    },
     "lb-jl24": {
       "id": "lb-jl24",
       "title": "Mid-season bankruptcy should trigger immediate game over",
