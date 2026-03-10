@@ -115,11 +115,10 @@
       "title": "Dietary restrictions have no satisfaction penalty when violated",
       "description": "Customer.ts assigns vegan/nut-free restrictions but there is no gameplay consequence when incompatible items are served. At game start all flavors contain milk, so the flavorPool fallback (Customer.ts generateOrder) silently serves vegan customers dairy with no reputation or satisfaction hit. Spec implies restrictions should affect gameplay. Add a satisfaction/tip penalty when a served order contains ingredients incompatible with the customer's restriction.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T11:50:02.604998747Z",
-      "updated_at": "2026-03-10T11:52:19.524763222Z"
+      "updated_at": "2026-03-10T11:54:04.021041042Z"
     },
     "lb-86z6": {
       "id": "lb-86z6",
