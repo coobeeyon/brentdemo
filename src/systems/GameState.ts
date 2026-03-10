@@ -1702,6 +1702,13 @@ export class GameState {
       if (this.getVipPerks().wordOfMouth) {
         loc.reputation = Math.min(5, loc.reputation + 0.1);
       }
+
+      // Generate catering offers for today (per-location)
+      loc.cateringContracts = [];
+      const offer = this.generateCateringOffer();
+      if (offer) {
+        loc.cateringContracts.push(offer);
+      }
     }
 
     // Restore active location
@@ -1718,13 +1725,6 @@ export class GameState {
 
     // Roll weather for the day
     this.rollWeather();
-
-    // Generate catering offers for today
-    this.loc.cateringContracts = [];
-    const offer = this.generateCateringOffer();
-    if (offer) {
-      this.loc.cateringContracts.push(offer);
-    }
   }
 }
 
