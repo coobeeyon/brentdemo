@@ -594,11 +594,10 @@
       "title": "Add catering contracts as a revenue source",
       "description": "Spec mentions catering contracts as revenue. Add a simple catering system: random catering requests appear, player can accept for guaranteed revenue but must have stock. Could be a new event type or a section in the marketing scene.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 4,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:48:52.713981234Z",
-      "updated_at": "2026-03-10T13:00:37.553226314Z"
+      "updated_at": "2026-03-10T13:04:15.242924389Z"
     },
     "lb-lhws": {
       "id": "lb-lhws",
