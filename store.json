@@ -1185,8 +1185,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:00:33.013513662Z",
-      "updated_at": "2026-03-10T19:00:33.013513662Z"
+      "updated_at": "2026-03-10T19:02:00.166793598Z"
     },
     "lb-mqxc": {
       "id": "lb-mqxc",
