@@ -638,6 +638,16 @@
       "created_at": "2026-03-09T18:53:32.962551785Z",
       "updated_at": "2026-03-09T18:59:47.940607096Z"
     },
+    "lb-rhor": {
+      "id": "lb-rhor",
+      "title": "GameplayScene season retry sets s.money instead of s.loc.money in franchise mode",
+      "description": "GameplayScene.ts:1189 assigns 's.money = seasonDef.startingMoney' on season retry. After initFranchiseMode(), the active location's balance is at s.locations[0].money (accessed via s.loc.money), not the top-level s.money field. A season retry in franchise mode resets the wrong field, so the player keeps their actual money and the top-level stale field gets the reset value. Fix: change to s.loc.money = seasonDef.startingMoney.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T11:16:53.978199441Z",
+      "updated_at": "2026-03-10T11:16:53.978199441Z"
+    },
     "lb-rtw5": {
       "id": "lb-rtw5",
       "title": "Bulk discount tiers in ShopScene",
@@ -1018,6 +1028,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-rhor",
+      "to_id": "lb-3l93",
       "dep_type": "parent"
     }
   ]
