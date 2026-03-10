@@ -499,7 +499,7 @@ export class GameState {
       }
 
       // High reputation = pride in workplace
-      if (this.reputation >= 4) {
+      if (this.loc.reputation >= 4) {
         moraleChange += 1;
       }
 
@@ -603,23 +603,23 @@ export class GameState {
     if (criticReview) {
       const criticImpact = (criticReview.rating - 3) * 0.2; // -0.4 to +0.4
       change += criticImpact;
-      this.criticReviews.push(criticReview);
+      this.loc.criticReviews.push(criticReview);
     }
 
     // Momentum: consecutive good/bad days amplify change (up to ±50% boost)
-    if ((change > 0 && this.reputationMomentum > 0) || (change < 0 && this.reputationMomentum < 0)) {
-      const momentumBoost = Math.min(Math.abs(this.reputationMomentum) * 0.1, 0.5);
+    if ((change > 0 && this.loc.reputationMomentum > 0) || (change < 0 && this.loc.reputationMomentum < 0)) {
+      const momentumBoost = Math.min(Math.abs(this.loc.reputationMomentum) * 0.1, 0.5);
       change *= (1 + momentumBoost);
     }
 
     // Update momentum (decays toward 0, pushed by current change)
-    this.reputationMomentum = this.reputationMomentum * 0.7 + (change > 0 ? 1 : change < 0 ? -1 : 0);
+    this.loc.reputationMomentum = this.loc.reputationMomentum * 0.7 + (change > 0 ? 1 : change < 0 ? -1 : 0);
 
     // Clamp total change to reasonable bounds
     change = Math.max(-0.5, Math.min(0.5, change));
 
     // Apply and clamp reputation
-    this.reputation = Math.max(0.5, Math.min(5, this.reputation + change));
+    this.loc.reputation = Math.max(0.5, Math.min(5, this.loc.reputation + change));
 
     return change;
   }
@@ -627,15 +627,15 @@ export class GameState {
   /** Word-of-mouth multiplier: higher rep = more customers, with accelerating returns */
   getWordOfMouthMultiplier(): number {
     // Below 2.5 stars: fewer customers. Above 2.5: more. Exponential above 4.
-    if (this.reputation <= 2.5) {
-      return 0.6 + (this.reputation / 2.5) * 0.4; // 0.6 to 1.0
+    if (this.loc.reputation <= 2.5) {
+      return 0.6 + (this.loc.reputation / 2.5) * 0.4; // 0.6 to 1.0
     }
     // 2.5 to 4: linear growth
-    if (this.reputation <= 4) {
-      return 1.0 + (this.reputation - 2.5) * 0.4; // 1.0 to 1.6
+    if (this.loc.reputation <= 4) {
+      return 1.0 + (this.loc.reputation - 2.5) * 0.4; // 1.0 to 1.6
     }
     // 4 to 5: accelerating growth (word of mouth kicks in)
-    return 1.6 + (this.reputation - 4) * 0.8; // 1.6 to 2.4
+    return 1.6 + (this.loc.reputation - 4) * 0.8; // 1.6 to 2.4
   }
 
   /** Launch a marketing campaign */
@@ -830,9 +830,9 @@ export class GameState {
     if (!this.franchiseMode) {
       return {
         dailyRevenue: this.dailyRevenue,
-        totalReputation: this.reputation,
+        totalReputation: this.loc.reputation,
         locationCount: 1,
-        totalStaff: this.staff.length,
+        totalStaff: this.loc.staff.length,
       };
     }
 
@@ -946,7 +946,7 @@ export class GameState {
       return 'soft_fail';
     }
 
-    const metReputation = this.reputation >= seasonDef.reputationTarget;
+    const metReputation = this.loc.reputation >= seasonDef.reputationTarget;
     if (metRevenue && metReputation) return 'win';
     return 'soft_fail';
   }
@@ -1243,7 +1243,7 @@ export class GameState {
       totalDays: this.day,
       totalCustomersServed: this.totalCustomersServed,
       totalRevenue: this.totalRevenue,
-      reputation: this.reputation,
+      reputation: this.loc.reputation,
       equipmentOwned: this.loc.equipment.filter(e => e.tier > 0).length,
       staffCount: this.loc.staff.length,
       flavorsUnlocked: this.unlockedFlavors.size,
@@ -1454,7 +1454,7 @@ export class GameState {
     }
 
     // Low reputation is a signal of past issues: -5 if below 2
-    if (this.reputation < 2) {
+    if (this.loc.reputation < 2) {
       score -= 5;
       violations.push('Prior complaints on record');
     }
@@ -1484,7 +1484,7 @@ export class GameState {
       reputationChange = -0.2 - (INSPECTION_PASS_THRESHOLD - score) / 200; // -0.2 to -0.5
     }
 
-    this.reputation = Math.max(0.5, Math.min(5, this.reputation + reputationChange));
+    this.loc.reputation = Math.max(0.5, Math.min(5, this.loc.reputation + reputationChange));
 
     const result: HealthInspectionResult = {
       day: this.day,
@@ -1495,9 +1495,9 @@ export class GameState {
       reputationChange,
     };
 
-    this.lastInspectionDay = this.day;
-    this.closureDaysRemaining = closureDays;
-    this.inspectionHistory.push(result);
+    this.loc.lastInspectionDay = this.day;
+    this.loc.closureDaysRemaining = closureDays;
+    this.loc.inspectionHistory.push(result);
 
     return result;
   }
@@ -1505,7 +1505,7 @@ export class GameState {
   /** Check if a health inspection should trigger today */
   shouldTriggerInspection(): boolean {
     // Respect cooldown
-    if (this.day - this.lastInspectionDay < INSPECTION_COOLDOWN_DAYS) return false;
+    if (this.day - this.loc.lastInspectionDay < INSPECTION_COOLDOWN_DAYS) return false;
     // Don't inspect on day 1
     if (this.day <= 1) return false;
     return Math.random() < INSPECTION_CHANCE;

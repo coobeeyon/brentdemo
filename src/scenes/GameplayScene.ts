@@ -94,7 +94,7 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // If store is closed due to failed inspection, show closure notice
-    if (gameMode !== 'sandbox' && this.gameState.closureDaysRemaining > 0) {
+    if (gameMode !== 'sandbox' && this.gameState.loc.closureDaysRemaining > 0) {
       this.showClosureNotice();
     }
 
@@ -398,7 +398,7 @@ export class GameplayScene extends Phaser.Scene {
       });
       prepContainer.add(shopBtn);
 
-      const isClosed = this.gameState.closureDaysRemaining > 0;
+      const isClosed = this.gameState.loc.closureDaysRemaining > 0;
 
       if (isClosed) {
         // Store is closed — show skip day button instead
@@ -528,7 +528,7 @@ export class GameplayScene extends Phaser.Scene {
         const progressLines = [
           `Season ${curSeasonDef.season}: ${curSeasonDef.name}`,
           `Revenue: $${this.gameState.seasonRevenue.toFixed(0)} / $${curSeasonDef.revenueTarget}`,
-          `Reputation: ${this.gameState.reputation.toFixed(1)} / ${curSeasonDef.reputationTarget.toFixed(1)}`,
+          `Reputation: ${this.gameState.loc.reputation.toFixed(1)} / ${curSeasonDef.reputationTarget.toFixed(1)}`,
           `Days: ${this.gameState.seasonDay} / ${curSeasonDef.daysPerSeason}`,
         ];
         const progressText = this.add.text(GAME_WIDTH / 2, 70, progressLines.join('\n'), {
@@ -569,11 +569,11 @@ export class GameplayScene extends Phaser.Scene {
       }
 
       // Health inspection status
-      if (this.gameState.closureDaysRemaining > 0) {
+      if (this.gameState.loc.closureDaysRemaining > 0) {
         costLines.push('');
-        costLines.push(`⛔ CLOSED: ${this.gameState.closureDaysRemaining} day(s) left`);
-      } else if (this.gameState.inspectionHistory.length > 0) {
-        const last = this.gameState.inspectionHistory[this.gameState.inspectionHistory.length - 1];
+        costLines.push(`⛔ CLOSED: ${this.gameState.loc.closureDaysRemaining} day(s) left`);
+      } else if (this.gameState.loc.inspectionHistory.length > 0) {
+        const last = this.gameState.loc.inspectionHistory[this.gameState.loc.inspectionHistory.length - 1];
         costLines.push('');
         costLines.push(`Last Inspection: ${last.passed ? '✅' : '❌'} ${last.score}/100`);
       }
@@ -952,7 +952,7 @@ export class GameplayScene extends Phaser.Scene {
 
   private showClosureNotice(): void {
     // During prepare phase, show a notice that the store is closed
-    const days = this.gameState.closureDaysRemaining;
+    const days = this.gameState.loc.closureDaysRemaining;
     const notif = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, `⛔ STORE CLOSED\nHealth inspection failure\n${days} day(s) remaining`, {
       fontFamily: 'Arial', fontSize: '24px', color: '#E74C3C',
       backgroundColor: '#00000088', padding: { x: 20, y: 16 },
@@ -986,21 +986,21 @@ export class GameplayScene extends Phaser.Scene {
     if (repChange > 0 && researchEffects.reputationGainMult) {
       const bonus = repChange * (researchEffects.reputationGainMult - 1);
       repChange += bonus;
-      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + bonus));
+      this.gameState.loc.reputation = Math.max(0.5, Math.min(5, this.gameState.loc.reputation + bonus));
     }
 
     // Apply campaign reputation bonus
     const campaignEffects = this.gameState.getCampaignEffects();
     if (campaignEffects.reputationBonus) {
       repChange += campaignEffects.reputationBonus;
-      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + campaignEffects.reputationBonus));
+      this.gameState.loc.reputation = Math.max(0.5, Math.min(5, this.gameState.loc.reputation + campaignEffects.reputationBonus));
     }
 
     // Apply signage daily reputation bonus
     const signageRepBonus = this.gameState.getSignageDef().dailyRepBonus;
     if (signageRepBonus > 0) {
       repChange += signageRepBonus;
-      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + signageRepBonus));
+      this.gameState.loc.reputation = Math.max(0.5, Math.min(5, this.gameState.loc.reputation + signageRepBonus));
     }
 
     // Track cumulative stats for milestones
