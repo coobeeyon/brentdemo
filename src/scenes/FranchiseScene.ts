@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, LOW_STOCK_THRESHOLD } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
 
 export class FranchiseScene extends Phaser.Scene {
@@ -177,7 +177,7 @@ export class FranchiseScene extends Phaser.Scene {
       const alerts: string[] = [];
       if (loc.closureDaysRemaining > 0) alerts.push(`CLOSED (${loc.closureDaysRemaining}d)`);
       if (loc.loanAmount > 0) alerts.push(`Loan: $${loc.loanAmount.toFixed(0)}`);
-      const lowStock = loc.ingredients.filter(ing => ing.quantity < 10).length;
+      const lowStock = loc.ingredients.filter(ing => ing.quantity < LOW_STOCK_THRESHOLD).length;
       if (lowStock > 0) alerts.push(`${lowStock} low stock`);
 
       if (alerts.length > 0) {
