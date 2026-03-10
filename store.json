@@ -1336,6 +1336,11 @@
       "dep_type": "blocks"
     },
     {
+      "from_id": "lb-1sy2",
+      "to_id": "lb-w5rb",
+      "dep_type": "parent"
+    },
+    {
       "from_id": "lb-38is",
       "to_id": "lb-3l93",
       "dep_type": "parent"
@@ -1566,6 +1571,11 @@
       "dep_type": "parent"
     },
     {
+      "from_id": "lb-vprf",
+      "to_id": "lb-w5rb",
+      "dep_type": "parent"
+    },
+    {
       "from_id": "lb-vs0r",
       "to_id": "lb-vsat",
       "dep_type": "parent"
@@ -1593,16 +1603,6 @@
     {
       "from_id": "lb-z5qm",
       "to_id": "lb-nrrt",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-1sy2",
-      "to_id": "lb-w5rb",
-      "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-vprf",
-      "to_id": "lb-w5rb",
       "dep_type": "parent"
     }
   ]
