@@ -374,11 +374,10 @@
       "title": "Apply scaledFontSize to challenge results modal",
       "description": "showChallengeResults() in GameplayScene uses hardcoded font sizes instead of scaledFontSize().",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:00:30.125863702Z",
-      "updated_at": "2026-03-10T15:00:34.243720752Z"
+      "updated_at": "2026-03-10T15:01:12.546038830Z"
     },
     "lb-cbmk": {
       "id": "lb-cbmk",
