@@ -91,7 +91,7 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Launch tutorial for new players on Day 1
-    if (!isLoadingSave && this.gameState.day === 1) {
+    if (!isLoadingSave && this.gameState.day === 1 && !this.challengeDef) {
       const tutorialSeen = this.registry.get('tutorialSeen') as boolean;
       let seenInStorage = false;
       try {

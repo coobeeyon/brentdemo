@@ -92,7 +92,7 @@ export class ShopScene extends Phaser.Scene {
     // Supply guidance hint for new players (Day 1, low stock)
     const totalStock = this.gameState.ingredients.reduce((sum, i) => sum + i.quantity, 0);
     if (this.gameState.day <= 3 || totalStock < 30) {
-      this.add.text(GAME_WIDTH / 2, panelY + 83, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
+      this.add.text(GAME_WIDTH / 2, panelY + 68, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
         fontFamily: 'Arial',
         fontSize: '12px',
         color: '#F1C40F',
