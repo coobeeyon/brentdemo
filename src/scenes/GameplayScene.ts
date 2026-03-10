@@ -623,6 +623,7 @@ export class GameplayScene extends Phaser.Scene {
       this.serveButton.setVisible(false);
       this.customerManager.resetDayStats();
       this.customerManager.clearQueue();
+      getAudioManager(this).startAmbience('prep');
 
       const prepContainer = this.add.container(0, 0).setName('phaseUI');
 
