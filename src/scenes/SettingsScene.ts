@@ -100,7 +100,7 @@ export class SettingsScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), fontStyle: 'bold',
       color: this.settings.colorblindMode ? '#2ECC71' : '#95A5A6',
       backgroundColor: '#34495E',
-      padding: { x: 12, y: 4 },
+      padding: { x: 12, y: 8 },
     }).setInteractive({ useHandCursor: true });
 
     cbToggle.on('pointerdown', () => {
@@ -126,7 +126,7 @@ export class SettingsScene extends Phaser.Scene {
         fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), fontStyle: 'bold',
         color: isActive ? '#2ECC71' : '#BDC3C7',
         backgroundColor: isActive ? '#1A5276' : '#34495E',
-        padding: { x: 12, y: 4 },
+        padding: { x: 12, y: 8 },
       }).setInteractive({ useHandCursor: true });
 
       sizeBtn.on('pointerdown', () => {
@@ -153,7 +153,7 @@ export class SettingsScene extends Phaser.Scene {
         fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), fontStyle: 'bold',
         color: isActive ? '#2ECC71' : '#BDC3C7',
         backgroundColor: isActive ? '#1A5276' : '#34495E',
-        padding: { x: 10, y: 4 },
+        padding: { x: 10, y: 8 },
       }).setInteractive({ useHandCursor: true });
 
       dlBtn.on('pointerdown', () => {

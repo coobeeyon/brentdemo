@@ -202,7 +202,7 @@ export class MainMenuScene extends Phaser.Scene {
       if (save.data) {
         const loadBtn = this.add.text(panelW / 2 - 25, slotY + 24, 'Load', {
           fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
-          backgroundColor: '#8E44AD', padding: { x: 10, y: 4 },
+          backgroundColor: '#8E44AD', padding: { x: 10, y: 8 },
         }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
         loadBtn.on('pointerdown', () => {
           this.loadPanel?.destroy();
