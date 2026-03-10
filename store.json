@@ -64,11 +64,10 @@
       "title": "Create CharityDriveScene with donation level selection",
       "description": "New scene where player picks donation tier (10%/25%/50%) during prep phase. Higher donation = bigger reputation boost. Shows projected donation amount and rep bonus.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:44:18.129609611Z",
-      "updated_at": "2026-03-10T19:44:28.413794487Z"
+      "updated_at": "2026-03-10T19:45:25.345531080Z"
     },
     "lb-1q4b": {
       "id": "lb-1q4b",
