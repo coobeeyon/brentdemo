@@ -743,11 +743,10 @@
       "title": "Franchise mode: startNewDay only processes active location",
       "description": "In GameState.startNewDay(), all per-day processing (ingredient expiry, staff wages, equipment maintenance, loan interest, daily counter resets) only runs on the currently active location via this.loc. Non-active locations in franchise mode never pay wages, never expire ingredients, and never have their dailyRevenue counted toward seasonRevenue when they are not active. This gives an unintended advantage and makes the season revenue target harder to reach for the active location alone. Fix: iterate all locations for daily processing, or document the intended design (each location only progresses when it is the active one).",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T11:41:30.189469060Z",
-      "updated_at": "2026-03-10T11:43:00.983121130Z"
+      "updated_at": "2026-03-10T11:44:33.617752717Z"
     },
     "lb-u8ep": {
       "id": "lb-u8ep",
