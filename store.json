@@ -574,11 +574,10 @@
       "title": "Franchise bankruptcy check only tests active location",
       "description": "getSeasonResult() at GameState.ts:861 calls this.loc.money which only returns the current location's balance. In franchise mode with multiple locations, a non-active location could go deeply negative (bankrupt) without triggering hard_fail. Fix: iterate over all this.locations and return hard_fail if any location's money < -100.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 1,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T11:49:57.800292289Z",
-      "updated_at": "2026-03-10T11:51:20.307929451Z"
+      "updated_at": "2026-03-10T11:51:45.312941969Z"
     },
     "lb-mzff": {
       "id": "lb-mzff",
