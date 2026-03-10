@@ -33,6 +33,7 @@ export class GameplayScene extends Phaser.Scene {
   private sidePanelRight!: Phaser.GameObjects.Container;
   private sidePanelLeftOpen: boolean = false;
   private sidePanelRightOpen: boolean = false;
+  private sidePanelUpdateTimer: number = 0;
 
   constructor() {
     super({ key: 'GameplayScene' });
@@ -495,6 +496,11 @@ export class GameplayScene extends Phaser.Scene {
     this.sidePanelLeft.setVisible(isServe);
     this.sidePanelRight.setVisible(isServe);
     if (!isServe) return;
+
+    // Throttle updates to every 500ms to avoid excessive object creation
+    this.sidePanelUpdateTimer -= this.game.loop.delta;
+    if (this.sidePanelUpdateTimer > 0) return;
+    this.sidePanelUpdateTimer = 500;
 
     // Remove previous dynamic content (keep bg at index 0 and tab at index 1)
     while (this.sidePanelLeft.length > 2) {
