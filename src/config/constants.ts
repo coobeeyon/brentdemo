@@ -1017,3 +1017,161 @@ export const SIGNAGE_CATALOG: SignageDef[] = [
     dailyRepBonus: 0.08,
   },
 ];
+
+// ─── Season Narrative ────────────────────────────────────────────────
+
+export interface SeasonNarrative {
+  season: number;
+  intro: {
+    title: string;
+    setting: string;
+    paragraphs: string[];
+    tip: string;
+  };
+  win: {
+    headline: string;
+    paragraphs: string[];
+  };
+  softFail: {
+    headline: string;
+    paragraphs: string[];
+  };
+}
+
+export const SEASON_NARRATIVES: SeasonNarrative[] = [
+  {
+    season: 1,
+    intro: {
+      title: 'Chapter 1: Humble Beginnings',
+      setting: 'A sun-bleached roadside stand on Maple Street',
+      paragraphs: [
+        'The hand-painted sign reads "OPEN" in wobbly letters. Your grandmother\'s old ice cream maker sits on the counter, still humming the same tune it did when you were six years old.',
+        'It\'s not much — a folding table, a striped umbrella, and three tubs of ice cream. But it\'s yours. The neighborhood kids are already peeking around the corner, and Mrs. Henderson from next door promised to spread the word.',
+        'Every empire starts somewhere. Yours starts here, one scoop at a time.',
+      ],
+      tip: 'Focus on the basics: keep your stock up and your prices fair. Happy customers come back.',
+    },
+    win: {
+      headline: 'Word Gets Around',
+      paragraphs: [
+        'The little stand on Maple Street has become the talk of the neighborhood. People drive across town just for a scoop, and the local paper ran a small feature: "Hometown Scoops: The Stand Worth the Drive."',
+        'A letter arrives from the Beach Town Business Association. They\'ve got an empty storefront on the boardwalk, and they want YOU to fill it.',
+      ],
+    },
+    softFail: {
+      headline: 'A Tough Start',
+      paragraphs: [
+        'The stand is still standing, but barely. Some days the only customer was the mailman, and he was just being polite. The numbers don\'t lie — this wasn\'t the grand opening you dreamed of.',
+        'But the ice cream maker still hums, and tomorrow is a new day. Maybe it\'s time to rethink the approach.',
+      ],
+    },
+  },
+  {
+    season: 2,
+    intro: {
+      title: 'Chapter 2: Salt Air and Sunscreen',
+      setting: 'A cozy shop on the Surfside Boardwalk',
+      paragraphs: [
+        'The bell above the door jingles as you step inside your new shop for the first time. It smells like salt water and possibility. Through the front window, you can see the ocean — and a steady stream of beachgoers with sunburns and sweet tooths.',
+        'The boardwalk is busy from dawn to dusk. Families, surfers, tourists — they all want cold treats and they want them fast. The shop next door sells lemonade and the owner gives you a friendly wave.',
+        'This is the real deal now. Actual walls, a real freezer, and more flavors than you ever thought you\'d serve. Time to make a splash.',
+      ],
+      tip: 'Beach crowds are large but impatient. Keep lines short and stock high during peak hours.',
+    },
+    win: {
+      headline: 'Boardwalk Sensation',
+      paragraphs: [
+        'Your shop is THE stop on the boardwalk. Tourists tag it on social media, and locals have their "usual" orders. The lemonade shop owner started sending customers your way — you return the favor.',
+        'A scout from the City Food Court Collective reaches out. They have a premium spot opening up downtown, and your reputation precedes you.',
+      ],
+    },
+    softFail: {
+      headline: 'Washed Out',
+      paragraphs: [
+        'The beach crowds came and went, but somehow the shop never quite caught the wave. Maybe the prices were off, or the menu didn\'t have enough variety for the tourist crowd.',
+        'The boardwalk isn\'t going anywhere, and neither are you. There\'s always next season.',
+      ],
+    },
+  },
+  {
+    season: 3,
+    intro: {
+      title: 'Chapter 3: Big City Scoops',
+      setting: 'A gleaming stall in the Downtown Food Court',
+      paragraphs: [
+        'The food court buzzes with a hundred conversations. Office workers on lunch breaks, students with headphones, food bloggers with cameras — everyone is in a hurry and everyone has opinions.',
+        'Your stall is sandwiched between a ramen place and a taco stand. The competition is fierce, but so is the foot traffic. A digital menu board glows overhead, and the freezer case gleams under fluorescent lights.',
+        'In the city, reputation is everything. One bad review echoes louder than a hundred good ones. But get it right, and you\'ll have lines out the door.',
+      ],
+      tip: 'City customers are demanding. Invest in staff and equipment to handle the volume without sacrificing quality.',
+    },
+    win: {
+      headline: 'Downtown Darling',
+      paragraphs: [
+        'The food bloggers call you a "hidden gem" — though there\'s nothing hidden about the line that stretches past the taco stand every lunch hour. Your signature creations are getting shared across social media.',
+        'A luxury resort on the coast has taken notice. Their concierge desk keeps recommending your shop to guests. They want to talk about something bigger.',
+      ],
+    },
+    softFail: {
+      headline: 'Lost in the Crowd',
+      paragraphs: [
+        'The city is unforgiving. Between the fierce competition and the breakneck pace, the shop struggled to stand out. The food bloggers moved on to the next new thing.',
+        'But you learned something valuable about running a business under pressure. That knowledge doesn\'t go away.',
+      ],
+    },
+  },
+  {
+    season: 4,
+    intro: {
+      title: 'Chapter 4: The VIP Treatment',
+      setting: 'An elegant parlor at the Coral Cove Resort',
+      paragraphs: [
+        'Crystal chandeliers. Marble countertops. A view of the infinity pool through floor-to-ceiling windows. This is not your grandmother\'s ice cream stand.',
+        'The resort guests expect the best — artisan flavors, impeccable service, and an experience worth the premium price tag. The resort manager made it clear: "Our guests don\'t wait in lines."',
+        'The stakes have never been higher. VIP clientele, food critics who vacation here, and a brand reputation that\'s finally worth protecting. This is where you prove you belong among the best.',
+      ],
+      tip: 'VIPs have high expectations but pay premium prices. Invest in quality and keep satisfaction high to unlock VIP perks.',
+    },
+    win: {
+      headline: 'Five-Star Flavor',
+      paragraphs: [
+        'The resort gave you a permanent spot on their "Guest Favorites" list. A national food magazine featured your lavender honey sundae. You\'ve gone from a roadside stand to a name people recognize.',
+        'Investors have been calling. Partners want in. The dream that started under a striped umbrella has grown beyond anything you imagined. It\'s time to think bigger — much bigger.',
+      ],
+    },
+    softFail: {
+      headline: 'Melting Under Pressure',
+      paragraphs: [
+        'The resort crowd was tougher than expected. VIP expectations and premium pricing are a delicate balance, and the margins were razor-thin.',
+        'The resort manager was understanding — "Not everyone thrives under the spotlight the first time." The parlor is still yours if you want another shot.',
+      ],
+    },
+  },
+  {
+    season: 5,
+    intro: {
+      title: 'Chapter 5: The Franchise',
+      setting: 'Your brand-new corporate headquarters',
+      paragraphs: [
+        'The whiteboard in your new office is covered in maps, spreadsheets, and sticky notes. Three locations circled in red. Revenue projections. Staff rosters. Supply chain logistics.',
+        'You\'re not just scooping ice cream anymore — you\'re building an empire. Each new location needs to feel like YOUR shop, with the same quality, the same warmth, the same magic that got you here.',
+        'From a roadside stand to a franchise. Your grandmother would be proud. Now comes the hardest part: making sure every single scoop, in every single shop, is worthy of the name on the sign.',
+      ],
+      tip: 'Maintain brand consistency across all locations. Keep an eye on each store\'s finances and staff morale.',
+    },
+    win: {
+      headline: 'An Empire of Ice Cream',
+      paragraphs: [
+        'Three locations, all thriving. The franchise model works — consistent quality, happy staff, loyal customers at every store. The brand you built from nothing is now a household name in town.',
+        'Standing in the original spot on Maple Street, you can still hear your grandmother\'s ice cream maker humming. Some things never change. But everything around it has — thanks to you.',
+      ],
+    },
+    softFail: {
+      headline: 'Growing Pains',
+      paragraphs: [
+        'Running one shop was hard. Running three was a whole different challenge. Spreading too thin meant some locations suffered, and the brand consistency wasn\'t quite there.',
+        'But the foundation is solid. The shops are open, the customers are coming, and with a little more focus, this franchise can still become everything you dreamed.',
+      ],
+    },
+  },
+];
