@@ -423,11 +423,10 @@
       "title": "Create SeasonIntroScene overlay",
       "description": "Build a scene that displays season intro narrative with setting artwork description, animated text, and a Continue button. Show when starting a new season.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T20:19:18.730812384Z",
-      "updated_at": "2026-03-10T20:21:01.182620916Z"
+      "updated_at": "2026-03-10T20:22:33.012613430Z"
     },
     "lb-9v3z": {
       "id": "lb-9v3z",
