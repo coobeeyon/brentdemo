@@ -100,6 +100,16 @@
       "created_at": "2026-03-10T10:24:26.322431353Z",
       "updated_at": "2026-03-10T10:27:41.313217236Z"
     },
+    "lb-4zye": {
+      "id": "lb-4zye",
+      "title": "Reputation mutations bypass loc in franchise mode",
+      "description": "calculateReputationChange() (GameState.ts:622) writes to this.reputation and this.reputationMomentum/criticReviews instead of this.loc equivalents. GameplayScene.ts lines 989, 996, 1003 also write this.gameState.reputation directly. In franchise mode (Season 5), this.loc.reputation points to the per-location field but these mutations go to the top-level field. Effect: reputation never changes in Season 5 -- win check via getFranchiseStats().totalReputation reads the frozen initial value, and the end-of-day display (which correctly reads s.loc.reputation) also shows the frozen value. Fix: in calculateReputationChange(), replace this.reputation with this.loc.reputation, this.reputationMomentum with this.loc.reputationMomentum, and this.criticReviews.push with this.loc.criticReviews.push. In GameplayScene.ts lines 989/996/1003, replace this.gameState.reputation with this.gameState.loc.reputation.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 1,
+      "created_at": "2026-03-10T13:14:18.030367724Z",
+      "updated_at": "2026-03-10T13:14:18.030367724Z"
+    },
     "lb-5a3z": {
       "id": "lb-5a3z",
       "title": "Early game balance and feel",
