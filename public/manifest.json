@@ -1,0 +1,19 @@
+{
+  "name": "Ice Cream Store Simulator",
+  "short_name": "Ice Cream Sim",
+  "description": "Run your own ice cream shop! Manage inventory, hire staff, and grow your business.",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["games", "entertainment"]
+}

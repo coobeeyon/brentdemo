@@ -132,8 +132,8 @@ export class EquipmentScene extends Phaser.Scene {
     if (owned?.broken) {
       const repairCost = this.getRepairCost(def.id);
       const repairBtn = this.add.text(panelX + 450, y + 48, `Repair $${repairCost}`, {
-        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
-        backgroundColor: '#E67E22', padding: { x: 8, y: 3 },
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
+        backgroundColor: '#E67E22', padding: { x: 10, y: 8 },
       }).setInteractive({ useHandCursor: true });
 
       repairBtn.on('pointerdown', () => {

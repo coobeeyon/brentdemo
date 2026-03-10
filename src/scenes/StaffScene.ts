@@ -258,9 +258,9 @@ export class StaffScene extends Phaser.Scene {
     const shifts: ShiftType[] = [ShiftType.OFF, ShiftType.MORNING, ShiftType.AFTERNOON, ShiftType.FULL_DAY];
     const nextShift = shifts[(shifts.indexOf(currentShift) + 1) % shifts.length];
     const toggleBtn = this.add.text(cols.action, y + 5, `→ ${shiftLabels[nextShift]}`, {
-      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
       backgroundColor: '#3498DB',
-      padding: { x: 8, y: 4 },
+      padding: { x: 10, y: 8 },
     }).setInteractive({ useHandCursor: true });
 
     toggleBtn.on('pointerdown', () => {
@@ -274,9 +274,9 @@ export class StaffScene extends Phaser.Scene {
     const avgStat = (member.speed + member.accuracy + member.friendliness) / 3;
     const trainCost = Math.round(20 + avgStat * 10);
     const allMaxed = member.speed >= 10 && member.accuracy >= 10 && member.friendliness >= 10;
-    const trainBtn = this.add.text(cols.action + 65, y + 5, allMaxed ? 'Maxed' : `Train $${trainCost}`, {
-      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
-      backgroundColor: allMaxed ? '#7F8C8D' : '#8E44AD', padding: { x: 6, y: 4 },
+    const trainBtn = this.add.text(cols.action + 75, y + 5, allMaxed ? 'Maxed' : `Train $${trainCost}`, {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
+      backgroundColor: allMaxed ? '#7F8C8D' : '#8E44AD', padding: { x: 8, y: 8 },
     }).setInteractive({ useHandCursor: true });
 
     if (!allMaxed) {
@@ -304,9 +304,9 @@ export class StaffScene extends Phaser.Scene {
     this.contentContainer.add(trainBtn);
 
     // Fire button (moved further right to fit train button)
-    const fireBtn = this.add.text(cols.action + 155, y + 5, 'Fire', {
-      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
-      backgroundColor: '#E74C3C', padding: { x: 8, y: 4 },
+    const fireBtn = this.add.text(cols.action + 170, y + 5, 'Fire', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
+      backgroundColor: '#E74C3C', padding: { x: 10, y: 8 },
     }).setInteractive({ useHandCursor: true });
 
     fireBtn.on('pointerdown', () => {
@@ -345,8 +345,8 @@ export class StaffScene extends Phaser.Scene {
     // Hire button
     if (this.gameState.loc.staff.length < MAX_STAFF) {
       const hireBtn = this.add.text(cols.action, y + 7, `Hire ($${m.wage * 3} signing)`, {
-        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
-        backgroundColor: '#27AE60', padding: { x: 10, y: 4 },
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
+        backgroundColor: '#27AE60', padding: { x: 12, y: 8 },
       }).setInteractive({ useHandCursor: true });
 
       hireBtn.on('pointerdown', () => {

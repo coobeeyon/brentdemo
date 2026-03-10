@@ -54,3 +54,37 @@ export function scaledFontSize(scene: Phaser.Scene, basePx: number): string {
   const mult = TEXT_SIZE_MULTIPLIERS[settings.textSize] ?? 1;
   return `${Math.round(basePx * mult)}px`;
 }
+
+/**
+ * Create a fullscreen toggle button. Returns the text object.
+ * Only shown when the Fullscreen API is available.
+ */
+export function createFullscreenButton(scene: Phaser.Scene, x: number, y: number): Phaser.GameObjects.Text | null {
+  if (!document.fullscreenEnabled) return null;
+
+  const label = () => document.fullscreenElement ? 'Exit Fullscreen' : '  Fullscreen  ';
+
+  const btn = scene.add.text(x, y, label(), {
+    fontFamily: 'Arial',
+    fontSize: scaledFontSize(scene, 20),
+    color: '#FFF',
+    backgroundColor: '#566573',
+    padding: { x: 16, y: 6 },
+  }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+  btn.on('pointerover', () => btn.setStyle({ backgroundColor: '#6C7A89' }));
+  btn.on('pointerout', () => btn.setStyle({ backgroundColor: '#566573' }));
+  btn.on('pointerdown', () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    } else {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+    // Update label after a brief delay for the state to change
+    scene.time.delayedCall(100, () => {
+      if (btn.active) btn.setText(label());
+    });
+  });
+
+  return btn;
+}

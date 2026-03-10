@@ -453,7 +453,7 @@ export class GameplayScene extends Phaser.Scene {
     // Left tab (toggle button)
     const leftTab = this.add.text(panelW, 0, '📦', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 16),
-      backgroundColor: '#1A252FE8', padding: { x: 4, y: 8 },
+      backgroundColor: '#1A252FE8', padding: { x: 10, y: 10 },
     }).setInteractive({ useHandCursor: true });
     this.sidePanelLeft.add(leftTab);
     leftTab.on('pointerdown', () => {
@@ -475,7 +475,7 @@ export class GameplayScene extends Phaser.Scene {
     // Right tab (toggle button)
     const rightTab = this.add.text(-28, 0, '👥', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 16),
-      backgroundColor: '#1A252FE8', padding: { x: 4, y: 8 },
+      backgroundColor: '#1A252FE8', padding: { x: 10, y: 10 },
     }).setInteractive({ useHandCursor: true });
     this.sidePanelRight.add(rightTab);
     rightTab.on('pointerdown', () => {
@@ -736,8 +736,8 @@ export class GameplayScene extends Phaser.Scene {
 
           if (!contract.accepted) {
             const acceptBtn = this.add.text(25, cateringY + 40, '✓ Accept', {
-              fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#FFF',
-              backgroundColor: '#27AE60', padding: { x: 8, y: 2 },
+              fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
+              backgroundColor: '#27AE60', padding: { x: 10, y: 8 },
             }).setInteractive({ useHandCursor: true });
             acceptBtn.on('pointerdown', () => {
               this.gameState.acceptCatering(contract.id);
@@ -745,9 +745,9 @@ export class GameplayScene extends Phaser.Scene {
             });
             prepContainer.add(acceptBtn);
 
-            const declineBtn = this.add.text(120, cateringY + 40, '✗ Decline', {
-              fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#FFF',
-              backgroundColor: '#7F8C8D', padding: { x: 8, y: 2 },
+            const declineBtn = this.add.text(130, cateringY + 40, '✗ Decline', {
+              fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
+              backgroundColor: '#7F8C8D', padding: { x: 10, y: 8 },
             }).setInteractive({ useHandCursor: true });
             declineBtn.on('pointerdown', () => {
               this.gameState.loc.cateringContracts = contracts.filter(c => c.id !== contract.id);

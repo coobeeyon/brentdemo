@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { getGameState } from '../systems/GameState';
 import { SaveManager } from '../systems/SaveManager';
-import { scaledFontSize } from '../systems/UIUtils';
+import { scaledFontSize, createFullscreenButton } from '../systems/UIUtils';
 
 export class PauseScene extends Phaser.Scene {
   private slotPanel: Phaser.GameObjects.Container | null = null;
@@ -19,10 +19,8 @@ export class PauseScene extends Phaser.Scene {
     overlay.fillStyle(0x000000, 0.6);
     overlay.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    // Pause panel
+    // Pause panel — height computed after buttons are laid out
     const panel = this.add.graphics();
-    panel.fillStyle(0x2C3E50, 1);
-    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, 50, 300, 760, 15);
 
     this.add.text(GAME_WIDTH / 2, 80, 'PAUSED', {
       fontFamily: 'Arial',
@@ -32,10 +30,10 @@ export class PauseScene extends Phaser.Scene {
 
     const btnStyle = {
       fontFamily: 'Arial',
-      fontSize: scaledFontSize(this, 20),
+      fontSize: scaledFontSize(this, 18),
       color: '#FFF',
       backgroundColor: '#34495E',
-      padding: { x: 20, y: 6 },
+      padding: { x: 20, y: 5 },
     };
 
     const gameState = getGameState(this);
@@ -59,7 +57,8 @@ export class PauseScene extends Phaser.Scene {
       { label: ' Main Menu ', action: () => { this.scene.stop('GameplayScene'); this.scene.start('MainMenuScene'); } },
     ];
 
-    let y = 120;
+    const spacing = 36;
+    let y = 108;
     for (const btn of buttons) {
       const text = this.add.text(GAME_WIDTH / 2, y, btn.label, btnStyle)
         .setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -73,8 +72,20 @@ export class PauseScene extends Phaser.Scene {
         text.on('pointerdown', btn.action);
       }
 
-      y += 44;
+      y += spacing;
     }
+
+    // Fullscreen toggle (below last button)
+    if (document.fullscreenEnabled) {
+      createFullscreenButton(this, GAME_WIDTH / 2, y + 6);
+      y += spacing;
+    }
+
+    // Draw pause panel background now that we know the final height
+    const panelTop = 50;
+    const panelHeight = y - panelTop + 10;
+    panel.fillStyle(0x2C3E50, 1);
+    panel.fillRoundedRect(GAME_WIDTH / 2 - 150, panelTop, 300, panelHeight, 15);
 
     // ESC to resume
     this.input.keyboard!.on('keydown-ESC', () => this.resumeGame());
@@ -140,7 +151,7 @@ export class PauseScene extends Phaser.Scene {
       if (mode === 'save' && save.slot !== 'auto') {
         const saveBtn = this.add.text(panelW / 2 - 25, slotY + 24, 'Save', {
           fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
-          backgroundColor: '#27AE60', padding: { x: 10, y: 4 },
+          backgroundColor: '#27AE60', padding: { x: 10, y: 8 },
         }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
         saveBtn.on('pointerdown', () => {
           SaveManager.save(gameState, save.slot, gameMode);
@@ -150,7 +161,7 @@ export class PauseScene extends Phaser.Scene {
       } else if (mode === 'load' && save.data) {
         const loadBtn = this.add.text(panelW / 2 - 25, slotY + 24, 'Load', {
           fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
-          backgroundColor: '#3498DB', padding: { x: 10, y: 4 },
+          backgroundColor: '#3498DB', padding: { x: 10, y: 8 },
         }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
         loadBtn.on('pointerdown', () => {
           const saveData = SaveManager.getSaveData(save.slot);

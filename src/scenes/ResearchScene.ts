@@ -193,7 +193,7 @@ export class ResearchScene extends Phaser.Scene {
       if (!isUnlocked && canResearch) {
         const btn = this.add.text(panelX + panelW - 45, y + 55, 'Research', {
           fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
-          backgroundColor: '#3498DB', padding: { x: 10, y: 4 },
+          backgroundColor: '#3498DB', padding: { x: 10, y: 8 },
         }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
         btn.on('pointerdown', () => {

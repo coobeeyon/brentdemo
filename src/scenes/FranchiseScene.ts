@@ -207,7 +207,7 @@ export class FranchiseScene extends Phaser.Scene {
         if (activeLoc.staff.length > 1) {
           const transferBtn = this.add.text(panelX + cardW - 10, y + 55, 'Send Staff →', {
             fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
-            backgroundColor: '#8E44AD', padding: { x: 10, y: 4 },
+            backgroundColor: '#8E44AD', padding: { x: 10, y: 8 },
           }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
           transferBtn.on('pointerdown', () => {

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#87CEEB"/>
+  <ellipse cx="256" cy="180" rx="100" ry="90" fill="#F5DEB3"/>
+  <ellipse cx="256" cy="160" rx="80" ry="70" fill="#FFB6C1"/>
+  <ellipse cx="256" cy="145" rx="60" ry="55" fill="#98FB98"/>
+  <polygon points="176,220 256,420 336,220" fill="#D2B48C"/>
+  <text x="256" y="480" text-anchor="middle" font-family="Arial" font-size="48" fill="#2C3E50" font-weight="bold">ICE CREAM</text>
+</svg>

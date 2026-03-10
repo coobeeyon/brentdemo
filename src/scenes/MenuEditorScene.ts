@@ -125,7 +125,7 @@ export class MenuEditorScene extends Phaser.Scene {
     const toggleBtn = this.add.text(cols.toggle, y + 15, flavor.unlocked ? 'ON' : 'OFF', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
       backgroundColor: flavor.unlocked ? '#27AE60' : '#95A5A6',
-      padding: { x: 6, y: 4 },
+      padding: { x: 8, y: 8 },
     }).setInteractive({ useHandCursor: true });
 
     toggleBtn.on('pointerdown', () => {
@@ -216,8 +216,8 @@ export class MenuEditorScene extends Phaser.Scene {
     // Suggested price button
     const suggested = this.getSuggestedPrice(flavor);
     const suggestBtn = this.add.text(cols.ingredients, y + 15, `Suggest $${suggested.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#3498DB',
-      padding: { x: 4, y: 2 },
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#3498DB',
+      padding: { x: 8, y: 6 },
     }).setInteractive({ useHandCursor: true });
     suggestBtn.on('pointerdown', () => {
       this.gameState.loc.menuPrices.set(flavor.id, suggested);
