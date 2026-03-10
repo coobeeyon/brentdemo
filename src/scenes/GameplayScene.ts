@@ -1279,7 +1279,7 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Mini revenue chart (last 7 days)
-    const recentReports = s.dayReports.slice(-7);
+    const recentReports = s.loc.dayReports.slice(-7);
     if (recentReports.length > 1) {
       const chartX = -panelW / 2 + 30;
       const chartW = panelW - 60;
