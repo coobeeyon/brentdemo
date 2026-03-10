@@ -348,6 +348,15 @@
       "created_at": "2026-03-10T12:39:56.942490240Z",
       "updated_at": "2026-03-10T12:44:25.205792056Z"
     },
+    "lb-9ifa": {
+      "id": "lb-9ifa",
+      "title": "Touch target audit missed SettingsScene and ResearchScene buttons",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T18:44:58.177348454Z",
+      "updated_at": "2026-03-10T18:44:58.177348454Z"
+    },
     "lb-9v3z": {
       "id": "lb-9v3z",
       "title": "Marketing campaigns system",
