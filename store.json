@@ -429,6 +429,16 @@
       "created_at": "2026-03-09T18:53:32.973403388Z",
       "updated_at": "2026-03-09T19:13:30.141928923Z"
     },
+    "lb-mzff": {
+      "id": "lb-mzff",
+      "title": "Supplier data model and catalog",
+      "description": "Define SupplierDef interface and SUPPLIER_CATALOG with 3 suppliers having different price multipliers and quality.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T10:30:12.520771355Z",
+      "updated_at": "2026-03-10T10:30:12.520771355Z"
+    },
     "lb-n92t": {
       "id": "lb-n92t",
       "title": "Text appears blurry",
@@ -749,6 +759,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-mzff",
+      "to_id": "lb-nm04",
       "dep_type": "parent"
     }
   ]
