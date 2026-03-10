@@ -369,6 +369,16 @@
       "created_at": "2026-03-09T18:04:26.558601524Z",
       "updated_at": "2026-03-09T18:07:10.090956532Z"
     },
+    "lb-jql7": {
+      "id": "lb-jql7",
+      "title": "Franchise mode: revenue recorded to top-level GameState, not location",
+      "description": "In GameplayScene.ts:145-146, customer sale revenue always goes to this.gameState.dailyRevenue and this.gameState.money (top-level fields). But in franchise mode, wages/purchases/maintenance deduct from loc.money and loc.dailyExpenses (location-specific). After initFranchiseMode(), loc.money diverges from this.money: revenue accrues to this.money while expenses drain loc.money. FranchiseScene dashboard shows loc.money which never receives revenue and goes deeply negative. getFranchiseStats().totalRevenue sums loc.dailyRevenue which is always 0. Fix: route revenue through loc (gameState.loc.money and loc.dailyRevenue), and roll up loc.dailyRevenue to seasonRevenue in startNewDay.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T11:03:50.345530985Z",
+      "updated_at": "2026-03-10T11:03:50.345530985Z"
+    },
     "lb-jsuc": {
       "id": "lb-jsuc",
       "title": "Tutorial appears in Challenge mode on Day 1",
@@ -943,6 +953,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-jql7",
+      "to_id": "lb-3l93",
       "dep_type": "parent"
     }
   ]
