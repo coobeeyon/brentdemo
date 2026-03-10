@@ -1326,11 +1326,10 @@
       "title": "Fix GameOverScene target text low contrast against dark background",
       "description": "Target values use color #555 (dark gray) which is hard to read on dark panel. Change to lighter color for readability.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T18:04:33.179791836Z",
-      "updated_at": "2026-03-10T18:04:40.519006335Z"
+      "updated_at": "2026-03-10T18:06:02.571831872Z"
     },
     "lb-st3l": {
       "id": "lb-st3l",
