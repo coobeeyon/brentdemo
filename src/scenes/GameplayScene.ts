@@ -1591,18 +1591,18 @@ export class GameplayScene extends Phaser.Scene {
     // Title
     const resultIcon = stars >= 3 ? '🏆' : stars >= 1 ? '⭐' : '😔';
     container.add(this.add.text(0, -panelH / 2 + 25, `${resultIcon} ${ch.icon} ${ch.name} Complete!`, {
-      fontFamily: 'Arial', fontSize: '22px', color: '#FFD700', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFD700', fontStyle: 'bold',
     }).setOrigin(0.5));
 
     // Stars display
     const starStr = '★'.repeat(stars) + '☆'.repeat(3 - stars);
     container.add(this.add.text(0, -panelH / 2 + 60, starStr, {
-      fontFamily: 'Arial', fontSize: '36px', color: '#FFD700',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 36), color: '#FFD700',
     }).setOrigin(0.5));
 
     if (isNewBest) {
       container.add(this.add.text(0, -panelH / 2 + 100, 'NEW BEST!', {
-        fontFamily: 'Arial', fontSize: '16px', color: '#2ECC71', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#2ECC71', fontStyle: 'bold',
       }).setOrigin(0.5));
     }
 
@@ -1612,7 +1612,7 @@ export class GameplayScene extends Phaser.Scene {
 
     const addLine = (text: string, color: string = '#BDC3C7') => {
       container.add(this.add.text(leftX, y, text, {
-        fontFamily: 'Arial', fontSize: '16px', color,
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color,
       }));
       y += 28;
     };
@@ -1626,7 +1626,7 @@ export class GameplayScene extends Phaser.Scene {
 
     // Buttons
     const retryBtn = this.add.text(-120, panelH / 2 - 45, 'Retry', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#F39C12', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     container.add(retryBtn);
@@ -1637,7 +1637,7 @@ export class GameplayScene extends Phaser.Scene {
     });
 
     const lbBtn = this.add.text(0, panelH / 2 - 45, '🏆 Leaderboard', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#1A5276', padding: { x: 16, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     container.add(lbBtn);
@@ -1647,7 +1647,7 @@ export class GameplayScene extends Phaser.Scene {
     });
 
     const menuBtn = this.add.text(120, panelH / 2 - 45, 'Menu', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     container.add(menuBtn);
