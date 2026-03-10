@@ -3,6 +3,7 @@ import { Customer, CustomerType } from '../entities/Customer';
 import { GameState, CriticReview } from './GameState';
 import { GameEventEffects } from './EventManager';
 import { GAME_WIDTH, MAX_QUEUE_LENGTH, DayPhase, BASE_SCOOP_PRICE } from '../config/constants';
+import { getAudioManager } from './AudioManager';
 
 const QUEUE_START_X = 240;
 const QUEUE_START_Y = 480;
@@ -64,6 +65,7 @@ export class CustomerManager {
       if (customer.left) {
         this.queue.splice(i, 1);
         this.customersLost++;
+        getAudioManager(this.scene).customerLeave();
         this.repositionQueue();
       }
     }
@@ -205,6 +207,7 @@ export class CustomerManager {
     });
 
     this.queue.push(customer);
+    getAudioManager(this.scene).customerArrive();
   }
 
   private repositionQueue(): void {
