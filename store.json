@@ -557,8 +557,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T13:14:22.818231299Z",
-      "updated_at": "2026-03-10T13:14:22.818231299Z"
+      "updated_at": "2026-03-10T13:15:02.898930180Z"
     },
     "lb-kn50": {
       "id": "lb-kn50",
