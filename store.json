@@ -1424,8 +1424,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 3,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:10:42.988150137Z",
-      "updated_at": "2026-03-10T19:10:42.988150137Z"
+      "updated_at": "2026-03-10T19:16:42.361901808Z"
     },
     "lb-rtw5": {
       "id": "lb-rtw5",
