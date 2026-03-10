@@ -97,6 +97,9 @@ export class ShopScene extends Phaser.Scene {
 
       tab.on('pointerdown', () => {
         this.currentSupplier = supplier;
+        if (this.isEmergency) {
+          this.registry.set('emergencyResupply', true);
+        }
         this.scene.restart(); // re-render with new supplier
       });
 
