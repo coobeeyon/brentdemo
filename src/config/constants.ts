@@ -684,11 +684,11 @@ export const EQUIPMENT_CATALOG: EquipmentDef[] = [
   {
     id: EquipmentId.TOPPINGS_BAR,
     name: 'Toppings Bar',
-    description: 'Self-serve toppings. Improves satisfaction and tips.',
+    description: 'Offer toppings to customers. Upgrade to self-serve for faster service.',
     tiers: [
       { tier: 0, name: 'Not Purchased', cost: 0, maintenanceCost: 0, effects: {} },
-      { tier: 1, name: 'Basic Bar', cost: 200, maintenanceCost: 5, effects: { qualityBonus: 0.05 } },
-      { tier: 2, name: 'Deluxe Bar', cost: 500, maintenanceCost: 12, effects: { qualityBonus: 0.2 } },
+      { tier: 1, name: 'Staff-Served Bar', cost: 200, maintenanceCost: 5, effects: { qualityBonus: 0.1 } },
+      { tier: 2, name: 'Self-Serve Deluxe', cost: 500, maintenanceCost: 12, effects: { qualityBonus: 0.15, serveSpeedMult: 0.9 } },
     ],
   },
 ];
