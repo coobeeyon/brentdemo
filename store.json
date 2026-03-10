@@ -40,6 +40,16 @@
       "created_at": "2026-03-09T18:11:40.287255086Z",
       "updated_at": "2026-03-09T18:13:15.226856965Z"
     },
+    "lb-1sy2": {
+      "id": "lb-1sy2",
+      "title": "Build LeaderboardScene with challenge scores overview",
+      "description": "Create LeaderboardScene showing all 6 challenges with best scores, star ratings, and total stars. Include summary stats.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T14:30:58.786260025Z",
+      "updated_at": "2026-03-10T14:30:58.786260025Z"
+    },
     "lb-2q6a": {
       "id": "lb-2q6a",
       "title": "Bulk discount not shown in shop price display",
@@ -1563,6 +1573,11 @@
     {
       "from_id": "lb-z5qm",
       "to_id": "lb-nrrt",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-1sy2",
+      "to_id": "lb-w5rb",
       "dep_type": "parent"
     }
   ]
