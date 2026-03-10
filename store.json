@@ -1482,11 +1482,10 @@
       "title": "Wire up SFX to gameplay events",
       "description": "Add sound triggers to GameplayScene (serve, customer arrive/leave, day start/end), ShopScene (purchase), StaffScene (hire), MainMenuScene (button clicks), and other key interactions.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:10:42.962185106Z",
-      "updated_at": "2026-03-10T19:11:55.714274505Z"
+      "updated_at": "2026-03-10T19:15:37.811716804Z"
     },
     "lb-sgoc": {
       "id": "lb-sgoc",
