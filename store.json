@@ -1457,6 +1457,16 @@
       "created_at": "2026-03-10T14:00:04.793546870Z",
       "updated_at": "2026-03-10T14:02:48.004909023Z"
     },
+    "lb-sazy": {
+      "id": "lb-sazy",
+      "title": "Wire up SFX to gameplay events",
+      "description": "Add sound triggers to GameplayScene (serve, customer arrive/leave, day start/end), ShopScene (purchase), StaffScene (hire), MainMenuScene (button clicks), and other key interactions.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T19:10:42.962185106Z",
+      "updated_at": "2026-03-10T19:10:42.962185106Z"
+    },
     "lb-sgoc": {
       "id": "lb-sgoc",
       "title": "Fix build script: tsc not on PATH",
@@ -2256,6 +2266,11 @@
     },
     {
       "from_id": "lb-c5yf",
+      "to_id": "lb-vwcd",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-sazy",
       "to_id": "lb-vwcd",
       "dep_type": "parent"
     }
