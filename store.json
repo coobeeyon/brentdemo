@@ -388,6 +388,16 @@
       "created_at": "2026-03-09T18:53:32.968519942Z",
       "updated_at": "2026-03-09T19:01:55.492043486Z"
     },
+    "lb-tp8c": {
+      "id": "lb-tp8c",
+      "title": "Level one feels tedious and too long",
+      "description": "Player feedback: level 1 drags on and hasn't been completed in testing. May need pacing adjustments or length reduction.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T09:50:28.363828577Z",
+      "updated_at": "2026-03-10T09:50:28.363828577Z"
+    },
     "lb-u8ep": {
       "id": "lb-u8ep",
       "title": "UI/HUD Implementation",
