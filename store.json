@@ -434,11 +434,10 @@
       "title": "Add soft-serve cone/cup as distinct serving styles requiring Soft-Serve Machine",
       "description": "SPEC says soft-serve machine enables soft-serve options with additional flavor channels. Machine exists but no soft-serve serving styles. Add soft-serve cone and soft-serve cup styles that require SOFT_SERVE_MACHINE equipment.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T16:58:25.491919374Z",
-      "updated_at": "2026-03-10T16:58:29.797152032Z"
+      "updated_at": "2026-03-10T16:59:15.800869692Z"
     },
     "lb-cbmk": {
       "id": "lb-cbmk",
