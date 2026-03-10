@@ -838,6 +838,16 @@
       "created_at": "2026-03-10T10:21:59.353635513Z",
       "updated_at": "2026-03-10T10:29:48.498256739Z"
     },
+    "lb-uva1": {
+      "id": "lb-uva1",
+      "title": "Expand tutorial to cover pricing, reputation, and staff basics",
+      "description": "The tutorial currently only covers buying ingredients and serving. Add steps explaining: (1) the menu editor and suggested price tool, (2) how reputation/stars work and affect customer flow, (3) how to hire and assign staff from the pause menu. Keep it concise - just awareness, not deep dives.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T12:16:24.072048710Z",
+      "updated_at": "2026-03-10T12:16:24.072048710Z"
+    },
     "lb-v5nj": {
       "id": "lb-v5nj",
       "title": "Seating arrangement system",
@@ -1212,6 +1222,11 @@
     },
     {
       "from_id": "lb-z5qm",
+      "to_id": "lb-nrrt",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-uva1",
       "to_id": "lb-nrrt",
       "dep_type": "parent"
     }
