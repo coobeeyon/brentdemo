@@ -64,7 +64,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: 'You\'re Ready!',
     body:
       'That\'s the basics! A few more tips:\n\n' +
-      '  Press SPACE to change game speed\n' +
+      '  After the tutorial, press SPACE to change game speed\n' +
       '  Press ESC for the pause menu\n' +
       '  Keep your reputation up for more customers\n' +
       '  Upgrade equipment to serve faster\n\n' +
@@ -150,7 +150,13 @@ export class TutorialScene extends Phaser.Scene {
 
     // Keyboard navigation
     this.input.keyboard!.on('keydown-ENTER', () => this.advance());
-    this.input.keyboard!.on('keydown-SPACE', () => this.advance());
+    this.input.keyboard!.on('keydown-SPACE', () => {
+      // Don't let SPACE close the tutorial on the last step —
+      // SPACE is used for game-speed control in gameplay.
+      if (this.currentStep < TUTORIAL_STEPS.length - 1) {
+        this.advance();
+      }
+    });
     this.input.keyboard!.on('keydown-ESC', () => this.closeTutorial());
 
     this.showStep();
