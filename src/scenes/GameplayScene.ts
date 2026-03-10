@@ -35,12 +35,16 @@ export class GameplayScene extends Phaser.Scene {
     this.eventManager = new EventManager();
 
     const isLoadingSave = this.registry.get('loadSave') as boolean;
+    const gameMode = this.registry.get('gameMode') as string ?? 'story';
+
+    // Sandbox mode: unlimited funds
+    if (!isLoadingSave && gameMode === 'sandbox') {
+      this.gameState.money = 99999;
+    }
+
     if (!isLoadingSave) {
       this.gameState.startNewDay();
     }
-
-    // Load challenge definition if in challenge mode
-    const gameMode = this.registry.get('gameMode') as string ?? 'story';
     this.challengeDef = gameMode === 'challenge'
       ? (this.registry.get('challengeDef') as ChallengeDef | null) ?? null
       : null;
@@ -1014,6 +1018,11 @@ export class GameplayScene extends Phaser.Scene {
       if (gameMode === 'challenge' && this.challengeDef && this.gameState.day >= this.challengeDef.days) {
         this.showChallengeResults();
         return;
+      }
+
+      // Sandbox mode: ensure unlimited funds persist
+      if (gameMode === 'sandbox' && this.gameState.money < 99999) {
+        this.gameState.money = 99999;
       }
 
       this.gameState.startNewDay();
