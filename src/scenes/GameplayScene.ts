@@ -5,6 +5,7 @@ import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager';
 import { SaveManager } from '../systems/SaveManager';
+import { TipManager } from '../systems/TipManager';
 
 export class GameplayScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -24,6 +25,7 @@ export class GameplayScene extends Phaser.Scene {
   private weatherText!: Phaser.GameObjects.Text;
   private emergencyResupplyBtn!: Phaser.GameObjects.Text;
   private challengeDef: ChallengeDef | null = null;
+  private tipManager!: TipManager;
 
   constructor() {
     super({ key: 'GameplayScene' });
@@ -33,6 +35,7 @@ export class GameplayScene extends Phaser.Scene {
     this.gameState = getGameState(this);
     this.customerManager = new CustomerManager(this, this.gameState);
     this.eventManager = new EventManager();
+    this.tipManager = new TipManager();
 
     const isLoadingSave = this.registry.get('loadSave') as boolean;
     const gameMode = this.registry.get('gameMode') as string ?? 'story';
@@ -108,6 +111,11 @@ export class GameplayScene extends Phaser.Scene {
         this.scene.launch('TutorialScene');
         this.scene.pause();
       }
+    }
+
+    // Show contextual gameplay tips (skips day 1 to let tutorial play)
+    if (this.gameState.day > 1) {
+      this.checkGameplayTips();
     }
 
     // Keyboard shortcuts
@@ -660,6 +668,62 @@ export class GameplayScene extends Phaser.Scene {
     });
   }
 
+  private checkGameplayTips(): void {
+    const tip = this.tipManager.checkTips(this.gameState);
+    if (!tip) return;
+
+    // Delay tip slightly so it doesn't overlap with other start-of-day notifications
+    this.time.delayedCall(2000, () => {
+      const notif = this.add.container(GAME_WIDTH / 2, 100);
+
+      const bg = this.add.graphics();
+      bg.fillStyle(0x1A5276, 0.95);
+      bg.fillRoundedRect(-200, -35, 400, 70, 10);
+      bg.lineStyle(2, 0xF39C12);
+      bg.strokeRoundedRect(-200, -35, 400, 70, 10);
+      notif.add(bg);
+
+      const title = this.add.text(0, -23, `💡 ${tip.title}`, {
+        fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F', fontStyle: 'bold',
+      }).setOrigin(0.5, 0);
+      notif.add(title);
+
+      const body = this.add.text(0, -4, tip.body, {
+        fontFamily: 'Arial', fontSize: '11px', color: '#ECF0F1',
+        wordWrap: { width: 370 }, lineSpacing: 2,
+      }).setOrigin(0.5, 0);
+      notif.add(body);
+
+      // Resize background to fit content
+      const totalH = body.height + 35;
+      bg.clear();
+      bg.fillStyle(0x1A5276, 0.95);
+      bg.fillRoundedRect(-200, -35, 400, totalH, 10);
+      bg.lineStyle(2, 0xF39C12);
+      bg.strokeRoundedRect(-200, -35, 400, totalH, 10);
+
+      notif.setAlpha(0);
+      this.tweens.add({
+        targets: notif,
+        alpha: 1,
+        y: 120,
+        duration: 600,
+        ease: 'Power2',
+        onComplete: () => {
+          this.time.delayedCall(6000, () => {
+            this.tweens.add({
+              targets: notif,
+              alpha: 0,
+              y: 100,
+              duration: 500,
+              onComplete: () => notif.destroy(),
+            });
+          });
+        },
+      });
+    });
+  }
+
   private showMilestoneNotification(milestones: string[]): void {
     const notif = this.add.container(GAME_WIDTH / 2, 130);
     const bg = this.add.graphics();
@@ -1053,6 +1117,8 @@ export class GameplayScene extends Phaser.Scene {
       // Roll for next day's event
       this.rollDailyEvent();
       this.updatePhaseUI();
+      // Show contextual tips at start of new day
+      this.checkGameplayTips();
     });
   }
 
