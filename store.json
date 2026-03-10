@@ -165,11 +165,10 @@
       "title": "Add day length setting to SettingsScene",
       "description": "Spec says day duration should be configurable (5-15 min). dayDurationMs exists on GameState but no UI to change it. Add a day length toggle in SettingsScene (Short 3min / Normal 5min / Long 10min). Persist in settings.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T14:20:17.089247459Z",
-      "updated_at": "2026-03-10T14:20:20.763316377Z"
+      "updated_at": "2026-03-10T14:21:33.678277046Z"
     },
     "lb-6f4u": {
       "id": "lb-6f4u",
