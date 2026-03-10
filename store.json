@@ -983,11 +983,10 @@
       "title": "Add contextual gameplay tips system for post-tutorial guidance",
       "description": "After the tutorial ends, show contextual tips at key moments: first equipment breakdown, first low reputation, first staff hire available, etc. Use a TipManager that tracks which tips have been shown and triggers them based on game state conditions.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:16:24.063963390Z",
-      "updated_at": "2026-03-10T12:17:32.138427053Z"
+      "updated_at": "2026-03-10T12:20:15.461236833Z"
     },
     "lb-zc6s": {
       "id": "lb-zc6s",
