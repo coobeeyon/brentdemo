@@ -1422,11 +1422,10 @@
       "title": "Add background ambiance loops",
       "description": "Add subtle procedural ambient sounds: shop bustle during serve phase, calm during prep. Use oscillators with low volume.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:10:42.988150137Z",
-      "updated_at": "2026-03-10T19:16:42.361901808Z"
+      "updated_at": "2026-03-10T19:17:55.365381728Z"
     },
     "lb-rtw5": {
       "id": "lb-rtw5",
