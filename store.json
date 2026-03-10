@@ -443,11 +443,10 @@
       "title": "Level one feels tedious and too long",
       "description": "Player feedback: level 1 drags on and hasn't been completed in testing. May need pacing adjustments or length reduction.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T09:50:28.363828577Z",
-      "updated_at": "2026-03-10T09:58:44.522729577Z"
+      "updated_at": "2026-03-10T09:59:46.924781019Z"
     },
     "lb-u8ep": {
       "id": "lb-u8ep",
