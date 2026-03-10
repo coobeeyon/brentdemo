@@ -508,7 +508,7 @@ export class GameplayScene extends Phaser.Scene {
     this.moneyText.setText(`$${s.loc.money.toFixed(2)}`);
     this.reputationText.setText('★'.repeat(Math.round(s.loc.reputation)) + '☆'.repeat(5 - Math.round(s.loc.reputation)));
     const activeStaff = s.getActiveStaff().length;
-    const totalAssigned = s.staff.filter(st => st.assigned).length;
+    const totalAssigned = s.loc.staff.filter(st => st.assigned).length;
     const staffLabel = totalAssigned > 0 ? ` | Staff: ${activeStaff}/${totalAssigned}` : '';
     this.queueText.setText(`Queue: ${this.customerManager.getQueueLength()} | Served: ${this.customerManager.customersServed} | Lost: ${this.customerManager.customersLost}${staffLabel}`);
 
@@ -526,11 +526,11 @@ export class GameplayScene extends Phaser.Scene {
 
     // Stock warnings during serve phase
     if (s.phase === DayPhase.SERVE) {
-      const warnings = s.ingredients
+      const warnings = s.loc.ingredients
         .filter(i => i.quantity <= LOW_STOCK_THRESHOLD)
         .map(i => i.quantity === 0 ? `⛔ ${i.name}: OUT` : `⚠ ${i.name}: ${i.quantity}`);
 
-      const hasOutOfStock = s.ingredients.some(i => i.quantity === 0);
+      const hasOutOfStock = s.loc.ingredients.some(i => i.quantity === 0);
 
       if (warnings.length > 0) {
         this.stockWarningText.setText(warnings.join('\n'));
@@ -898,7 +898,7 @@ export class GameplayScene extends Phaser.Scene {
     addStat(leftX, y, 'SATISFACTION', `${satisfaction}%`, satisfaction >= 70 ? '#2ECC40' : '#F39C12');
     const repChangeSign = repChange >= 0 ? '+' : '';
     const repChangeColor = repChange > 0 ? '#2ECC40' : repChange < 0 ? '#E74C3C' : '#95A5A6';
-    addStat(rightX, y, 'REPUTATION', '★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation)) + ` (${repChangeSign}${repChange.toFixed(2)})`, '#FFDC00');
+    addStat(rightX, y, 'REPUTATION', '★'.repeat(Math.round(s.loc.reputation)) + '☆'.repeat(5 - Math.round(s.loc.reputation)) + ` (${repChangeSign}${repChange.toFixed(2)})`, '#FFDC00');
     y += 45;
 
     // Show critic review in report if present
@@ -1094,7 +1094,7 @@ export class GameplayScene extends Phaser.Scene {
     // In franchise mode, show aggregate reputation
     const effectiveRep = (seasonDef.isFranchise && s.franchiseMode)
       ? s.getFranchiseStats().totalReputation
-      : s.reputation;
+      : s.loc.reputation;
     const metRep = effectiveRep >= seasonDef.reputationTarget;
     const repStars = '★'.repeat(Math.round(effectiveRep)) + '☆'.repeat(5 - Math.round(effectiveRep));
     addTarget(y, 'REPUTATION', `${repStars} (${effectiveRep.toFixed(1)})`, `${seasonDef.reputationTarget.toFixed(1)}+`, metRep);
@@ -1186,7 +1186,7 @@ export class GameplayScene extends Phaser.Scene {
         // Reset season state but keep equipment/staff
         s.seasonDay = 0;
         s.seasonRevenue = 0;
-        s.money = seasonDef.startingMoney;
+        s.loc.money = seasonDef.startingMoney;
         s.startNewDay();
         SaveManager.save(s, 'auto', 'story');
         this.rollDailyEvent();
@@ -1290,7 +1290,7 @@ export class GameplayScene extends Phaser.Scene {
     y += 8;
     addLine(`Customers Served: ${totalServed}`, '#2ECC71');
     addLine(`Customers Lost: ${totalLost}`, totalLost > 0 ? '#E74C3C' : '#FFF');
-    addLine(`Final Reputation: ${'★'.repeat(Math.round(s.reputation))}${'☆'.repeat(5 - Math.round(s.reputation))}`, '#FFDC00');
+    addLine(`Final Reputation: ${'★'.repeat(Math.round(s.loc.reputation))}${'☆'.repeat(5 - Math.round(s.loc.reputation))}`, '#FFDC00');
 
     // Buttons
     const retryBtn = this.add.text(-80, panelH / 2 - 45, 'Retry', {
