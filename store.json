@@ -1173,11 +1173,10 @@
       "title": "Low balance warning misses non-active franchise locations",
       "description": "In a4ceb71, the low balance warning (GameplayScene.ts:1261) only checks s.loc.money (active location). But startNewDay() deducts wages and maintenance from ALL franchise locations each day. A non-active location can go below -100 (hard_fail threshold) with no warning shown to the player. Fix: in story mode, check all locations money and show a warning if ANY location is negative.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T15:27:33.910714495Z",
-      "updated_at": "2026-03-10T15:28:00.484167286Z"
+      "updated_at": "2026-03-10T15:30:08.583205419Z"
     },
     "lb-tp8c": {
       "id": "lb-tp8c",
