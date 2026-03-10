@@ -1792,9 +1792,9 @@ export class GameplayScene extends Phaser.Scene {
     if (!ch) return;
 
     const s = this.gameState;
-    const totalRevenue = s.dayReports.reduce((sum, r) => sum + r.revenue, 0);
-    const totalServed = s.dayReports.reduce((sum, r) => sum + r.customersServed, 0);
-    const totalLost = s.dayReports.reduce((sum, r) => sum + r.customersLost, 0);
+    const totalRevenue = s.loc.dayReports.reduce((sum, r) => sum + r.revenue, 0);
+    const totalServed = s.loc.dayReports.reduce((sum, r) => sum + r.customersServed, 0);
+    const totalLost = s.loc.dayReports.reduce((sum, r) => sum + r.customersLost, 0);
 
     // Calculate stars
     const stars = totalRevenue >= ch.revenueTargets[2] ? 3
