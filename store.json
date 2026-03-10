@@ -524,11 +524,10 @@
       "title": "Leaderboard button in challenge results has no text label",
       "description": "In GameplayScene.showChallengeResults(), the leaderboard button label is just '🏆' (a trophy emoji) with no text. This makes it unclear that the button navigates to the leaderboard. The equivalent button in ChallengeScene correctly says '🏆 Leaderboard'. Fix: change the lbBtn text to '🏆 Leaderboard' to match.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T14:46:39.306507605Z",
-      "updated_at": "2026-03-10T14:47:07.000209373Z"
+      "updated_at": "2026-03-10T14:48:37.584321993Z"
     },
     "lb-futq": {
       "id": "lb-futq",
