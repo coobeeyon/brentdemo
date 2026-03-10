@@ -1193,10 +1193,10 @@
       "title": "Challenge leaderboard scene",
       "description": "Add a leaderboard scene showing all challenge best scores, stars, and rankings in one place. Accessible from ChallengeScene.",
       "item_type": "epic",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
       "created_at": "2026-03-10T14:30:54.932974378Z",
-      "updated_at": "2026-03-10T14:30:54.932974378Z"
+      "updated_at": "2026-03-10T14:32:51.177176952Z"
     },
     "lb-wlsu": {
       "id": "lb-wlsu",
