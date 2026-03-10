@@ -42,7 +42,7 @@ export class GameplayScene extends Phaser.Scene {
 
     // Sandbox mode: unlimited funds
     if (!isLoadingSave && gameMode === 'sandbox') {
-      this.gameState.money = 99999;
+      this.gameState.loc.money = 99999;
     }
 
     if (!isLoadingSave) {
@@ -98,8 +98,7 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Launch tutorial for new players on Day 1
-    const gameModeTutorialCheck = this.registry.get('gameMode') as string ?? 'story';
-    if (!isLoadingSave && this.gameState.day === 1 && gameModeTutorialCheck === 'story') {
+    if (!isLoadingSave && this.gameState.day === 1 && gameMode === 'story') {
       const tutorialSeen = this.registry.get('tutorialSeen') as boolean;
       let seenInStorage = false;
       try {
@@ -1111,8 +1110,8 @@ export class GameplayScene extends Phaser.Scene {
       }
 
       // Sandbox mode: ensure unlimited funds persist
-      if (gameMode === 'sandbox' && this.gameState.money < 99999) {
-        this.gameState.money = 99999;
+      if (gameMode === 'sandbox' && this.gameState.loc.money < 99999) {
+        this.gameState.loc.money = 99999;
       }
 
       this.gameState.startNewDay();
