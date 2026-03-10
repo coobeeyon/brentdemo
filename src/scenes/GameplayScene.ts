@@ -22,6 +22,7 @@ export class GameplayScene extends Phaser.Scene {
   private serveButton!: Phaser.GameObjects.Text;
   private eventText!: Phaser.GameObjects.Text;
   private weatherText!: Phaser.GameObjects.Text;
+  private emergencyResupplyBtn!: Phaser.GameObjects.Text;
   private challengeDef: ChallengeDef | null = null;
 
   constructor() {
@@ -274,6 +275,21 @@ export class GameplayScene extends Phaser.Scene {
       padding: { x: 6, y: 4 },
       lineSpacing: 2,
     }).setOrigin(0, 1).setVisible(false);
+
+    // Emergency resupply button (shown during serve phase when out of stock)
+    this.emergencyResupplyBtn = this.add.text(10, GAME_HEIGHT - 50, '🚚 Emergency Resupply (1.5x cost)', {
+      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      backgroundColor: '#C0392B',
+      padding: { x: 10, y: 6 },
+    }).setOrigin(0, 1).setInteractive({ useHandCursor: true }).setVisible(false);
+
+    this.emergencyResupplyBtn.on('pointerdown', () => {
+      this.registry.set('emergencyResupply', true);
+      this.scene.launch('ShopScene');
+      this.scene.pause();
+    });
+    this.emergencyResupplyBtn.on('pointerover', () => this.emergencyResupplyBtn.setStyle({ backgroundColor: '#E74C3C' }));
+    this.emergencyResupplyBtn.on('pointerout', () => this.emergencyResupplyBtn.setStyle({ backgroundColor: '#C0392B' }));
   }
 
   private createPhaseUI(): void {
@@ -514,14 +530,24 @@ export class GameplayScene extends Phaser.Scene {
         .filter(i => i.quantity <= LOW_THRESHOLD)
         .map(i => i.quantity === 0 ? `⛔ ${i.name}: OUT` : `⚠ ${i.name}: ${i.quantity}`);
 
+      const hasOutOfStock = s.ingredients.some(i => i.quantity === 0);
+
       if (warnings.length > 0) {
         this.stockWarningText.setText(warnings.join('\n'));
         this.stockWarningText.setVisible(true);
+        // Show emergency resupply button when something is out
+        this.emergencyResupplyBtn.setVisible(hasOutOfStock);
+        // Position the resupply button above the warnings
+        if (hasOutOfStock) {
+          this.emergencyResupplyBtn.setY(this.stockWarningText.y - this.stockWarningText.height - 8);
+        }
       } else {
         this.stockWarningText.setVisible(false);
+        this.emergencyResupplyBtn.setVisible(false);
       }
     } else {
       this.stockWarningText.setVisible(false);
+      this.emergencyResupplyBtn.setVisible(false);
     }
 
     // Equipment warnings (broken or low condition)

@@ -28,10 +28,13 @@ const SHOP_CATALOG: ShopItem[] = [
   { id: 'caramel', name: 'Caramel Drizzle', basePrice: 4.50, bulkSize: 10, expiresInDays: 21 },
 ];
 
+const EMERGENCY_MARKUP = 1.5;
+
 export class ShopScene extends Phaser.Scene {
   private gameState!: GameState;
   private moneyText!: Phaser.GameObjects.Text;
   private itemRows: Phaser.GameObjects.Container[] = [];
+  private isEmergency = false;
 
   constructor() {
     super({ key: 'ShopScene' });
@@ -40,6 +43,10 @@ export class ShopScene extends Phaser.Scene {
   create(): void {
     this.gameState = getGameState(this);
     this.itemRows = [];
+
+    // Check if this is an emergency resupply (during serve phase)
+    this.isEmergency = this.registry.get('emergencyResupply') === true;
+    this.registry.set('emergencyResupply', false);
 
     // Overlay background
     const overlay = this.add.graphics();
@@ -53,14 +60,15 @@ export class ShopScene extends Phaser.Scene {
     const panelH = 660;
 
     const panel = this.add.graphics();
-    panel.fillStyle(0x2C3E50, 1);
+    panel.fillStyle(this.isEmergency ? 0x4A1A2E : 0x2C3E50, 1);
     panel.fillRoundedRect(panelX, panelY, panelW, panelH, 15);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, panelY + 25, '🛒 Ingredient Shop', {
+    const titleLabel = this.isEmergency ? '🚚 Emergency Resupply (1.5x prices!)' : '🛒 Ingredient Shop';
+    this.add.text(GAME_WIDTH / 2, panelY + 25, titleLabel, {
       fontFamily: 'Arial',
-      fontSize: '28px',
-      color: '#FFF',
+      fontSize: this.isEmergency ? '24px' : '28px',
+      color: this.isEmergency ? '#E74C3C' : '#FFF',
     }).setOrigin(0.5);
 
     // Balance display
@@ -240,7 +248,9 @@ export class ShopScene extends Phaser.Scene {
     const baseMult = 0.75 + (Math.abs(seed) % 60) / 100;
     // Apply event price modifier (supply shortage / bulk discount)
     const eventMult = (this.registry.get('eventIngredientPriceMult') as number) ?? 1.0;
-    return baseMult * eventMult;
+    // Emergency resupply markup
+    const emergencyMult = this.isEmergency ? EMERGENCY_MARKUP : 1.0;
+    return baseMult * eventMult * emergencyMult;
   }
 
   private hashCode(str: string): number {
