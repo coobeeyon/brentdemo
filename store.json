@@ -994,11 +994,10 @@
       "title": "Dynamic ingredient price fluctuations",
       "description": "Spec says prices fluctuate based on season and demand. Currently prices are fixed per supplier. Add seasonal multipliers and demand-based adjustments.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T16:44:55.556510302Z",
-      "updated_at": "2026-03-10T16:46:08.527399348Z"
+      "updated_at": "2026-03-10T16:46:33.435094898Z"
     },
     "lb-mrhq": {
       "id": "lb-mrhq",
