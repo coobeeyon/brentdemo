@@ -619,6 +619,16 @@
       "created_at": "2026-03-10T10:35:49.447847880Z",
       "updated_at": "2026-03-10T10:38:11.834762171Z"
     },
+    "lb-kp1j": {
+      "id": "lb-kp1j",
+      "title": "Add Save/Load buttons to PauseScene for manual save slots",
+      "description": "SaveManager already supports 3 manual slots (listSaves, getSaveData, deleteSave) but PauseScene has no Save/Load UI. Spec says 'manual save slots available'. Add Save Game and Load Game buttons to pause menu that show slot selection.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T13:50:24.262608208Z",
+      "updated_at": "2026-03-10T13:50:24.262608208Z"
+    },
     "lb-ks7m": {
       "id": "lb-ks7m",
       "title": "Exterior signage customization",
