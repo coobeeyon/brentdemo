@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
 import { scaledFontSize, uiColor } from '../systems/UIUtils';
+import { getAudioManager } from '../systems/AudioManager';
 
 export class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -9,6 +10,7 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   create(): void {
+    getAudioManager(this).gameOver();
     const gameState = getGameState(this);
     const seasonDef = gameState.getSeasonDef();
 

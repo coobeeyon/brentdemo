@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, ShiftType, StaffSpecialty, SPECIALTY_LABELS, SPECIALTY_ICONS } from '../config/constants';
 import { GameState, getGameState, StaffMember } from '../systems/GameState';
 import { uiColor, uiColorNum, scaledFontSize } from '../systems/UIUtils';
+import { getAudioManager } from '../systems/AudioManager';
 
 // Random name pools
 const FIRST_NAMES = [
@@ -356,6 +357,7 @@ export class StaffScene extends Phaser.Scene {
           this.gameState.loc.dailyExpenses += signingBonus;
           this.gameState.loc.staff.push(m);
           this.candidates = this.candidates.filter(c => c !== cand);
+          getAudioManager(this).hire();
           this.refreshUI();
         } else {
           hireBtn.setStyle({ backgroundColor: '#C0392B' });

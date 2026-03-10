@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, SupplierDef, SUPPLIER_CATALOG, BULK_DISCOUNT_TIERS, LOW_STOCK_THRESHOLD } from '../config/constants';
 import { GameState, getGameState, Ingredient } from '../systems/GameState';
 import { uiColor, scaledFontSize } from '../systems/UIUtils';
+import { getAudioManager } from '../systems/AudioManager';
 
 interface ShopItem {
   id: string;
@@ -327,10 +328,12 @@ export class ShopScene extends Phaser.Scene {
         this.updateDisplay();
 
         // Flash feedback
+        getAudioManager(this).purchase();
         buyBtn.setStyle({ backgroundColor: '#1E8449' });
         this.time.delayedCall(200, () => buyBtn.setStyle({ backgroundColor: '#27AE60' }));
       } else {
         // Can't afford — flash red
+        getAudioManager(this).error();
         buyBtn.setStyle({ backgroundColor: '#C0392B' });
         this.time.delayedCall(300, () => buyBtn.setStyle({ backgroundColor: '#27AE60' }));
       }

@@ -3,6 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { SaveManager } from '../systems/SaveManager';
 import { getGameState } from '../systems/GameState';
 import { scaledFontSize, createFullscreenButton } from '../systems/UIUtils';
+import { getAudioManager } from '../systems/AudioManager';
 
 export class MainMenuScene extends Phaser.Scene {
   private loadPanel: Phaser.GameObjects.Container | null = null;
@@ -87,9 +88,9 @@ export class MainMenuScene extends Phaser.Scene {
       btn.on('pointerout', () => btn.setStyle({ backgroundColor: '#FF6B9D' }));
     });
 
-    storyBtn.on('pointerdown', () => this.startGame('story'));
-    sandboxBtn.on('pointerdown', () => this.startGame('sandbox'));
-    challengeBtn.on('pointerdown', () => this.scene.start('ChallengeScene'));
+    storyBtn.on('pointerdown', () => { getAudioManager(this).click(); this.startGame('story'); });
+    sandboxBtn.on('pointerdown', () => { getAudioManager(this).click(); this.startGame('sandbox'); });
+    challengeBtn.on('pointerdown', () => { getAudioManager(this).click(); this.scene.start('ChallengeScene'); });
 
     // Settings button
     const settingsBtn = this.add.text(GAME_WIDTH / 2, nextY, '   Settings   ', {
