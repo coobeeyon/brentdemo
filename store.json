@@ -604,11 +604,10 @@
       "title": "VictoryScene/GameOverScene: career stats show wrong location's data in franchise mode",
       "description": "In franchise mode (Season 5), VictoryScene and GameOverScene both read gameState.loc.dayReports to compute career stats (totalDays, totalServed, totalLost). Since loc returns locations[currentLocationId], if the player was managing a non-Hometown location when the season ended, the stats will show only that newer location's reports (Season 5 only) instead of the full career history from location 0. Fix: in both scenes, always read from locations[0].dayReports when in franchise mode, or aggregate across all locations.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:13:29.305940684Z",
-      "updated_at": "2026-03-10T15:14:22.769393610Z"
+      "updated_at": "2026-03-10T15:15:38.775377641Z"
     },
     "lb-gm7w": {
       "id": "lb-gm7w",
