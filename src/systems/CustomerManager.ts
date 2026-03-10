@@ -124,7 +124,7 @@ export class CustomerManager {
   }
 
   private spawnCustomer(): void {
-    const availableFlavors = this.gameState.flavors
+    const availableFlavors = this.gameState.loc.flavors
       .filter(f => f.unlocked)
       .map(f => f.id);
 
@@ -161,7 +161,7 @@ export class CustomerManager {
       forcedType = CustomerType.VIP;
     }
 
-    const customer = new Customer(this.scene, x, y, weightedFlavors, this.gameState.menuPrices, availableToppings, availableStyles, forcedType);
+    const customer = new Customer(this.scene, x, y, weightedFlavors, this.gameState.loc.menuPrices, availableToppings, availableStyles, forcedType);
 
     // Apply weather patience modifier
     const weatherPatienceMult = this.gameState.getWeatherDef().patienceMult;
@@ -360,11 +360,11 @@ export class CustomerManager {
   private canFulfillOrder(customer: Customer): boolean {
     // Check each item's flavor ingredients are available
     for (const item of customer.order.items) {
-      const flavor = this.gameState.flavors.find(f => f.id === item.flavorId);
+      const flavor = this.gameState.loc.flavors.find(f => f.id === item.flavorId);
       if (!flavor) return false;
 
       for (const ingId of flavor.ingredients) {
-        const ing = this.gameState.ingredients.find(i => i.id === ingId);
+        const ing = this.gameState.loc.ingredients.find(i => i.id === ingId);
         if (!ing || ing.quantity < 1) return false;
       }
     }
@@ -373,17 +373,17 @@ export class CustomerManager {
 
   private deductIngredients(customer: Customer): void {
     for (const item of customer.order.items) {
-      const flavor = this.gameState.flavors.find(f => f.id === item.flavorId);
+      const flavor = this.gameState.loc.flavors.find(f => f.id === item.flavorId);
       if (!flavor) continue;
 
       for (const ingId of flavor.ingredients) {
-        const ing = this.gameState.ingredients.find(i => i.id === ingId);
+        const ing = this.gameState.loc.ingredients.find(i => i.id === ingId);
         if (ing) ing.quantity -= 1;
       }
 
       // Deduct topping ingredients
       for (const toppingId of item.toppings) {
-        const ing = this.gameState.ingredients.find(i => i.id === toppingId);
+        const ing = this.gameState.loc.ingredients.find(i => i.id === toppingId);
         if (ing) ing.quantity -= 1;
       }
     }
