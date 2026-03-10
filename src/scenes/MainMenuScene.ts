@@ -122,7 +122,7 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     // Version text
-    this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, 'v0.1.0', {
+    this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, 'v1.0.0', {
       fontFamily: 'Arial',
       fontSize: scaledFontSize(this, 14),
       color: '#FFFFFF88',
