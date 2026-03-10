@@ -1,5 +1,15 @@
 {
   "items": {
+    "lb-00et": {
+      "id": "lb-00et",
+      "title": "SaveManager v9: serialize/deserialize multi-location state",
+      "description": "Bump SAVE_VERSION to 9. Serialize locations[] and currentLocationId. Migration from v8: wrap existing flat state into locations[0]. Ensure save slot metadata shows location count.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T10:40:42.560473169Z",
+      "updated_at": "2026-03-10T10:40:42.560473169Z"
+    },
     "lb-1q4b": {
       "id": "lb-1q4b",
       "title": "Save/load game system",
@@ -822,6 +832,11 @@
     },
     {
       "from_id": "lb-b6u3",
+      "to_id": "lb-3l93",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-00et",
       "to_id": "lb-3l93",
       "dep_type": "parent"
     }
