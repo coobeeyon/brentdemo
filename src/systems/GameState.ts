@@ -84,6 +84,7 @@ export interface StaffMember {
   shift: ShiftType;           // scheduled shift
   consecutiveDaysWorked: number; // for fairness tracking
   specialty: StaffSpecialty;  // task-specific bonus
+  lowMoraleDays: number;     // consecutive days with morale < 20
 }
 
 export interface CriticReview {
@@ -209,6 +210,9 @@ export interface LocationState {
 
   // Transient: waste from expired ingredients at start of today (not serialized)
   _todayWaste?: WastedIngredient[];
+
+  // Transient: staff who quit at start of today due to low morale (not serialized)
+  _staffQuit?: string[];
 }
 
 export interface ActiveCampaign {
@@ -527,6 +531,36 @@ export class GameState {
 
       member.morale = Math.max(0, Math.min(100, member.morale + moraleChange));
     }
+  }
+
+  /** Check for staff turnover: unhappy staff may quit. Returns names of staff who left. */
+  checkStaffTurnover(): string[] {
+    const loc = this.loc;
+    const quitters: string[] = [];
+
+    for (const member of loc.staff) {
+      if (member.morale < 20) {
+        member.lowMoraleDays = (member.lowMoraleDays ?? 0) + 1;
+      } else {
+        member.lowMoraleDays = 0;
+      }
+
+      // After 3+ consecutive low-morale days, increasing chance to quit
+      // Day 3: 20%, Day 4: 40%, Day 5+: 60%
+      if (member.lowMoraleDays >= 3) {
+        const quitChance = Math.min(0.6, 0.2 * (member.lowMoraleDays - 2));
+        if (Math.random() < quitChance) {
+          quitters.push(member.name);
+        }
+      }
+    }
+
+    // Remove quitters
+    if (quitters.length > 0) {
+      loc.staff = loc.staff.filter(s => !quitters.includes(s.name));
+    }
+
+    return quitters;
   }
 
   /** Train a staff member: improve one random stat by 1 (costs money) */
@@ -1635,6 +1669,9 @@ export class GameState {
 
       // Update staff morale
       this.updateStaffMorale();
+
+      // Check for staff turnover (unhappy staff may quit)
+      loc._staffQuit = this.checkStaffTurnover();
 
       // Tick down campaign durations
       this.updateCampaigns();

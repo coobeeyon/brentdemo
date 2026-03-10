@@ -787,6 +787,37 @@ export class GameplayScene extends Phaser.Scene {
     });
   }
 
+  private showStaffQuitNotices(): void {
+    const quitList = this.gameState.loc._staffQuit;
+    if (!quitList || quitList.length === 0) return;
+
+    const msg = quitList.length === 1
+      ? `${quitList[0]} quit due to low morale!`
+      : `${quitList.join(', ')} quit due to low morale!`;
+
+    const notice = this.add.text(
+      GAME_WIDTH / 2, 340, msg,
+      {
+        fontFamily: 'Arial',
+        fontSize: scaledFontSize(this, 14),
+        color: '#FF6B6B',
+        fontStyle: 'bold',
+        backgroundColor: '#2C0000',
+        padding: { x: 10, y: 6 },
+      }
+    ).setOrigin(0.5).setDepth(100);
+
+    this.tweens.add({
+      targets: notice,
+      alpha: 0,
+      y: 300,
+      duration: 4000,
+      delay: 2000,
+      ease: 'Power2',
+      onComplete: () => notice.destroy(),
+    });
+  }
+
   private checkGameplayTips(): void {
     const tip = this.tipManager.checkTips(this.gameState);
     if (!tip) return;
@@ -1268,6 +1299,8 @@ export class GameplayScene extends Phaser.Scene {
       // Roll for next day's event
       this.rollDailyEvent();
       this.updatePhaseUI();
+      // Notify player if staff quit
+      this.showStaffQuitNotices();
       // Show contextual tips at start of new day
       this.checkGameplayTips();
     });
@@ -1412,6 +1445,7 @@ export class GameplayScene extends Phaser.Scene {
           SaveManager.save(s, 'auto', 'story');
           this.rollDailyEvent();
           this.updatePhaseUI();
+          this.showStaffQuitNotices();
         });
       } else {
         // Game complete! All 5 seasons done
@@ -1457,6 +1491,7 @@ export class GameplayScene extends Phaser.Scene {
         SaveManager.save(s, 'auto', 'story');
         this.rollDailyEvent();
         this.updatePhaseUI();
+        this.showStaffQuitNotices();
       });
 
       const menuBtn = this.add.text(100, panelH / 2 - 45, 'Main Menu', {

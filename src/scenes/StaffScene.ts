@@ -41,6 +41,7 @@ function generateStaffMember(): StaffMember {
     assigned: false,
     shift: ShiftType.OFF,
     consecutiveDaysWorked: 0,
+    lowMoraleDays: 0,
     specialty,
   };
 }
