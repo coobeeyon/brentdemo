@@ -813,11 +813,10 @@
       "title": "Add volume and mute controls to SettingsScene",
       "description": "Add SFX volume slider and mute toggle to SettingsScene. Persist in localStorage with existing settings. Wire to AudioManager.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:10:42.974782083Z",
-      "updated_at": "2026-03-10T19:15:48.620347540Z"
+      "updated_at": "2026-03-10T19:16:36.288081200Z"
     },
     "lb-h7lm": {
       "id": "lb-h7lm",
