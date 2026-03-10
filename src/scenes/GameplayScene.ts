@@ -1091,13 +1091,25 @@ export class GameplayScene extends Phaser.Scene {
     addTarget(y, 'TOTAL REVENUE', `$${totalRevenue.toFixed(2)}`, `$${seasonDef.revenueTarget}`, metRevenue);
     y += 55;
 
-    const metRep = s.reputation >= seasonDef.reputationTarget;
-    const repStars = '★'.repeat(Math.round(s.reputation)) + '☆'.repeat(5 - Math.round(s.reputation));
-    addTarget(y, 'REPUTATION', `${repStars} (${s.reputation.toFixed(1)})`, `${seasonDef.reputationTarget.toFixed(1)}+`, metRep);
+    // In franchise mode, show aggregate reputation
+    const effectiveRep = (seasonDef.isFranchise && s.franchiseMode)
+      ? s.getFranchiseStats().totalReputation
+      : s.reputation;
+    const metRep = effectiveRep >= seasonDef.reputationTarget;
+    const repStars = '★'.repeat(Math.round(effectiveRep)) + '☆'.repeat(5 - Math.round(effectiveRep));
+    addTarget(y, 'REPUTATION', `${repStars} (${effectiveRep.toFixed(1)})`, `${seasonDef.reputationTarget.toFixed(1)}+`, metRep);
     y += 55;
 
+    // Franchise location target
+    if (seasonDef.isFranchise && seasonDef.locationTarget) {
+      const locationCount = s.franchiseMode ? s.getFranchiseStats().locationCount : 1;
+      const metLocations = locationCount >= seasonDef.locationTarget;
+      addTarget(y, 'LOCATIONS OPENED', `${locationCount}`, `${seasonDef.locationTarget}`, metLocations);
+      y += 55;
+    }
+
     // Season stats summary
-    const seasonReports = s.dayReports.slice(-seasonDef.daysPerSeason);
+    const seasonReports = s.loc.dayReports.slice(-seasonDef.daysPerSeason);
     const totalServed = seasonReports.reduce((sum, r) => sum + r.customersServed, 0);
     const totalLost = seasonReports.reduce((sum, r) => sum + r.customersLost, 0);
 
@@ -1105,7 +1117,7 @@ export class GameplayScene extends Phaser.Scene {
       `Days Played: ${seasonDef.daysPerSeason}`,
       `Customers Served: ${totalServed}`,
       `Customers Lost: ${totalLost}`,
-      `Final Balance: $${s.money.toFixed(2)}`,
+      `Final Balance: $${s.loc.money.toFixed(2)}`,
     ].join('\n'), {
       fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7', lineSpacing: 4,
     });

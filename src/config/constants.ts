@@ -198,6 +198,10 @@ export interface SeasonDef {
   reputationTarget: number;  // minimum reputation at season end
   startingMoney: number;     // money player starts with (or carries over)
   unlockFlavors?: string[];  // new flavors unlocked at season start
+  // Franchise mode (Season 5+)
+  isFranchise?: boolean;     // activates multi-location mode
+  locationTarget?: number;   // number of locations required to win
+  locationSetupCost?: number; // cost to open each new location
 }
 
 export const SEASON_CATALOG: SeasonDef[] = [
@@ -248,12 +252,15 @@ export const SEASON_CATALOG: SeasonDef[] = [
     season: 5,
     name: 'Franchise Launch',
     setting: 'Franchise HQ',
-    description: 'The ultimate challenge: launch your franchise. Prove you can build a brand.',
-    daysPerSeason: 18,
-    revenueTarget: 6000,
-    reputationTarget: 4.0,
-    startingMoney: 3000,
+    description: 'Launch your franchise! Open 3 locations and hit aggregate revenue targets across all stores.',
+    daysPerSeason: 21,
+    revenueTarget: 8000,
+    reputationTarget: 3.5,
+    startingMoney: 4000,
     unlockFlavors: ['matcha', 'rocky_road'],
+    isFranchise: true,
+    locationTarget: 3,
+    locationSetupCost: 1500,
   },
 ];
 

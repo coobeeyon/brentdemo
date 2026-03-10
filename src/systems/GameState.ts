@@ -799,14 +799,23 @@ export class GameState {
 
   /** Check season result: 'win', 'soft_fail', or 'hard_fail' */
   getSeasonResult(): 'win' | 'soft_fail' | 'hard_fail' {
-    if (this.money < -100) return 'hard_fail'; // bankrupt
+    if (this.loc.money < -100) return 'hard_fail'; // bankrupt
 
     const seasonDef = this.getSeasonDef();
     if (!seasonDef) return 'soft_fail';
 
     const metRevenue = this.seasonRevenue >= seasonDef.revenueTarget;
-    const metReputation = this.reputation >= seasonDef.reputationTarget;
 
+    // In franchise mode, use aggregate reputation and check location target
+    if (seasonDef.isFranchise && this.franchiseMode) {
+      const stats = this.getFranchiseStats();
+      const metReputation = stats.totalReputation >= seasonDef.reputationTarget;
+      const metLocations = stats.locationCount >= (seasonDef.locationTarget ?? 1);
+      if (metRevenue && metReputation && metLocations) return 'win';
+      return 'soft_fail';
+    }
+
+    const metReputation = this.reputation >= seasonDef.reputationTarget;
     if (metRevenue && metReputation) return 'win';
     return 'soft_fail';
   }
@@ -826,8 +835,8 @@ export class GameState {
         }
       }
 
-      // Season 5: activate franchise mode
-      if (this.season === 5 && !this.franchiseMode) {
+      // Activate franchise mode when entering a franchise season
+      if (seasonDef.isFranchise && !this.franchiseMode) {
         this.initFranchiseMode();
       }
     }
