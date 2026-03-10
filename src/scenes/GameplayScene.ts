@@ -89,6 +89,21 @@ export class GameplayScene extends Phaser.Scene {
       this.showClosureNotice();
     }
 
+    // Launch tutorial for new players on Day 1
+    if (!isLoadingSave && this.gameState.day === 1) {
+      const tutorialSeen = this.registry.get('tutorialSeen') as boolean;
+      let seenInStorage = false;
+      try {
+        seenInStorage = localStorage.getItem('icecream_tutorial_seen') === 'true';
+      } catch {
+        // localStorage may not be available
+      }
+      if (!tutorialSeen && !seenInStorage) {
+        this.scene.launch('TutorialScene');
+        this.scene.pause();
+      }
+    }
+
     // Keyboard shortcuts
     this.input.keyboard!.on('keydown-ESC', () => {
       this.scene.launch('PauseScene');

@@ -81,6 +81,16 @@ export class ShopScene extends Phaser.Scene {
     this.add.text(colX.qty, headerY, 'QTY', headerStyle);
     this.add.text(colX.buy, headerY, '', headerStyle);
 
+    // Supply guidance hint for new players (Day 1, low stock)
+    const totalStock = this.gameState.ingredients.reduce((sum, i) => sum + i.quantity, 0);
+    if (this.gameState.day <= 3 || totalStock < 30) {
+      this.add.text(GAME_WIDTH / 2, panelY + 83, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
+        fontFamily: 'Arial',
+        fontSize: '12px',
+        color: '#F1C40F',
+      }).setOrigin(0.5);
+    }
+
     // Item rows
     SHOP_CATALOG.forEach((item, i) => {
       this.createShopRow(item, i, panelX, panelY + 120, colX);
@@ -130,10 +140,15 @@ export class ShopScene extends Phaser.Scene {
     });
     row.add(nameText);
 
-    // Current stock
+    // Current stock with low-stock warning
     const existing = this.gameState.ingredients.find(i => i.id === item.id);
-    const stockText = this.add.text(colX.stock, y + 8, `${existing?.quantity ?? 0}`, {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+    const currentQty = existing?.quantity ?? 0;
+    const isBaseIngredient = ['milk', 'sugar', 'vanilla_extract', 'cocoa', 'strawberries'].includes(item.id);
+    const isLow = isBaseIngredient && currentQty < 10;
+    const stockLabel = isLow ? `${currentQty} ⚠` : `${currentQty}`;
+    const stockColor = isLow ? '#E74C3C' : '#FFF';
+    const stockText = this.add.text(colX.stock, y + 8, stockLabel, {
+      fontFamily: 'Arial', fontSize: '14px', color: stockColor,
     });
     row.add(stockText);
 
