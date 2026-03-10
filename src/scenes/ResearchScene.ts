@@ -80,9 +80,9 @@ export class ResearchScene extends Phaser.Scene {
     this.renderNodes(panelX, panelY, panelW);
 
     // Scroll with mouse wheel
-    this.input.on('wheel', (_pointer: Phaser.Input.Pointer, _gx: number[], _gy: number[], _gz: number[], _event: Event, dy: number) => {
+    this.input.on('wheel', (_pointer: Phaser.Input.Pointer, _currentlyOver: Phaser.GameObjects.GameObject[], _deltaX: number, deltaY: number) => {
       if (this.maxScrollY <= 0) return;
-      this.scrollY = Phaser.Math.Clamp(this.scrollY + dy * 0.5, 0, this.maxScrollY);
+      this.scrollY = Phaser.Math.Clamp(this.scrollY + deltaY * 0.5, 0, this.maxScrollY);
       this.renderNodes(panelX, panelY, panelW);
     });
 
@@ -208,7 +208,7 @@ export class ResearchScene extends Phaser.Scene {
 
     // Calculate max scroll
     const totalHeight = nodes.length * 93;
-    const visibleHeight = panelY + 600 - 180 - startY + panelY;
-    this.maxScrollY = Math.max(0, totalHeight - visibleHeight);
+    const contentH = 600 - 180; // panelH - header/footer space
+    this.maxScrollY = Math.max(0, totalHeight - contentH);
   }
 }
