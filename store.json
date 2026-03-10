@@ -1325,8 +1325,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T18:04:33.179791836Z",
-      "updated_at": "2026-03-10T18:04:33.179791836Z"
+      "updated_at": "2026-03-10T18:04:40.519006335Z"
     },
     "lb-st3l": {
       "id": "lb-st3l",
