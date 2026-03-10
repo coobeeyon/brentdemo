@@ -1864,7 +1864,7 @@ export class GameplayScene extends Phaser.Scene {
     addLine(`Final Reputation: ${'★'.repeat(Math.round(s.loc.reputation))}${'☆'.repeat(5 - Math.round(s.loc.reputation))}`, '#FFDC00');
 
     // Buttons
-    const retryBtn = this.add.text(-120, panelH / 2 - 45, 'Retry', {
+    const retryBtn = this.add.text(-120, panelH / 2 - 45, 'Retry Challenge', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#F39C12', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
