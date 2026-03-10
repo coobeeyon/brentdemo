@@ -1285,8 +1285,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 3,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:54:06.771010867Z",
-      "updated_at": "2026-03-10T15:54:06.771010867Z"
+      "updated_at": "2026-03-10T15:54:59.059136794Z"
     },
     "lb-uva1": {
       "id": "lb-uva1",
