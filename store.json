@@ -39,6 +39,16 @@
       "created_at": "2026-03-10T10:40:44.374937425Z",
       "updated_at": "2026-03-10T10:56:17.552390078Z"
     },
+    "lb-0n2d": {
+      "id": "lb-0n2d",
+      "title": "customerArrive/Leave SFX defined but never called",
+      "description": "AudioManager defines customerArrive() and customerLeave() SFX methods, and lb-sazy spec requires wiring these to gameplay events. But there are zero call sites — neither CustomerManager nor GameplayScene triggers these. Wire customerArrive() when a customer joins the queue, and customerLeave() when patience expires and they leave unhappy.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T19:20:24.441049202Z",
+      "updated_at": "2026-03-10T19:20:24.441049202Z"
+    },
     "lb-1q4b": {
       "id": "lb-1q4b",
       "title": "Save/load game system",
