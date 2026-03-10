@@ -382,6 +382,11 @@ export class CustomerManager {
     return this.queue.length;
   }
 
+  /** Get a read-only view of the current queue */
+  getQueue(): readonly Customer[] {
+    return this.queue;
+  }
+
   /** Average satisfaction (patience ratio) of served customers, 0-1 */
   getAverageSatisfaction(): number {
     return this.customersServed > 0 ? this.satisfactionSum / this.customersServed : 0.5;
