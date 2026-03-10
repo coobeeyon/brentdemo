@@ -286,8 +286,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T10:47:10.169944671Z",
-      "updated_at": "2026-03-10T10:47:10.169944671Z"
+      "updated_at": "2026-03-10T10:48:55.072810688Z"
     },
     "lb-fbl1": {
       "id": "lb-fbl1",
