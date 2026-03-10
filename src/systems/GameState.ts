@@ -113,6 +113,11 @@ export interface LoyalCustomer {
   lastVisitDay: number;
 }
 
+export interface WastedIngredient {
+  name: string;
+  quantity: number;
+}
+
 export interface DayReport {
   day: number;
   revenue: number;
@@ -122,6 +127,7 @@ export interface DayReport {
   satisfactionScore: number;
   criticReview?: CriticReview;
   reputationChange: number;
+  waste?: WastedIngredient[];
 }
 
 /** Catering contract — accepted during prep, fulfilled at end of day */
@@ -200,6 +206,9 @@ export interface LocationState {
 
   // VIP perks
   vipSatisfied: number;
+
+  // Transient: waste from expired ingredients at start of today (not serialized)
+  _todayWaste?: WastedIngredient[];
 }
 
 export interface ActiveCampaign {
@@ -1593,11 +1602,18 @@ export class GameState {
       loc.dailyRevenue = 0;
       loc.dailyExpenses = 0;
 
-      // Expire ingredients
-      loc.ingredients = loc.ingredients.map(ing => ({
+      // Expire ingredients and track waste
+      const updatedIngredients = loc.ingredients.map(ing => ({
         ...ing,
         expiresInDays: ing.expiresInDays - 1,
-      })).filter(ing => ing.expiresInDays > 0 && ing.quantity > 0);
+      }));
+      const expiredWaste: WastedIngredient[] = updatedIngredients
+        .filter(ing => ing.expiresInDays <= 0 && ing.quantity > 0)
+        .map(ing => ({ name: ing.name, quantity: ing.quantity }));
+      loc.ingredients = updatedIngredients.filter(ing => ing.expiresInDays > 0 && ing.quantity > 0);
+
+      // Store waste for display in today's end-of-day report
+      loc._todayWaste = expiredWaste;
 
       // Deduct staff wages
       const totalWages = loc.staff.reduce((sum, s) => sum + s.wage, 0);

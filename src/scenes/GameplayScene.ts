@@ -1072,6 +1072,7 @@ export class GameplayScene extends Phaser.Scene {
       satisfactionScore: satisfaction,
       criticReview,
       reputationChange: repChange,
+      waste: s.loc._todayWaste,
     });
 
     // Show end-of-day report
@@ -1158,6 +1159,18 @@ export class GameplayScene extends Phaser.Scene {
       });
       report.add(cateringText);
       y += 25;
+    }
+
+    // Waste log (ingredients that expired overnight)
+    const waste = s.loc._todayWaste;
+    if (waste && waste.length > 0) {
+      const wasteItems = waste.map(w => `${w.name} x${w.quantity}`).join(', ');
+      const wasteText = this.add.text(leftX, y, `🗑 SPOILED: ${wasteItems}`, {
+        fontFamily: 'Arial', fontSize: '13px', color: '#E67E22',
+        wordWrap: { width: panelW - 60 },
+      });
+      report.add(wasteText);
+      y += 22;
     }
 
     // Separator
