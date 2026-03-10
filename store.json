@@ -149,6 +149,16 @@
       "created_at": "2026-03-09T18:04:26.564299764Z",
       "updated_at": "2026-03-09T18:11:17.690700913Z"
     },
+    "lb-b6u3": {
+      "id": "lb-b6u3",
+      "title": "Data model: LocationState and multi-location GameState refactor",
+      "description": "Add LocationState interface containing per-location data (money pool, reputation, equipment, staff, inventory, recipes). Refactor GameState to hold locations[] array and currentLocationId. All existing single-location properties that become per-location should be nested inside LocationState. Add franchise-level aggregates (totalFranchiseRevenue, overallReputation). Ensure backwards compat: when locations[] is empty/missing, treat current flat state as location 0.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T10:40:41.716976785Z",
+      "updated_at": "2026-03-10T10:40:41.716976785Z"
+    },
     "lb-be71": {
       "id": "lb-be71",
       "title": "Menu editor for setting prices and toggling flavors",
@@ -808,6 +818,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-b6u3",
+      "to_id": "lb-3l93",
       "dep_type": "parent"
     }
   ]
