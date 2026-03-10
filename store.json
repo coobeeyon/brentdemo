@@ -738,6 +738,16 @@
       "created_at": "2026-03-10T10:40:44.106104541Z",
       "updated_at": "2026-03-10T10:59:56.781253550Z"
     },
+    "lb-pcny": {
+      "id": "lb-pcny",
+      "title": "Implement loyalty point redemption discounts",
+      "description": "Allow loyal customers to redeem accumulated points for discounts. Add redemption logic in customer ordering and display in MarketingScene.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T12:39:58.277369862Z",
+      "updated_at": "2026-03-10T12:39:58.277369862Z"
+    },
     "lb-pct9": {
       "id": "lb-pct9",
       "title": "Staff Management",
@@ -1307,6 +1317,11 @@
     },
     {
       "from_id": "lb-8osg",
+      "to_id": "lb-dxxj",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-pcny",
       "to_id": "lb-dxxj",
       "dep_type": "parent"
     }
