@@ -325,7 +325,7 @@ export class GameplayScene extends Phaser.Scene {
       }
       this.add.text(x, 305, flavor.name, {
         fontFamily: 'Arial',
-        fontSize: '11px',
+        fontSize: scaledFontSize(this, 11),
         color: '#555',
       }).setOrigin(0.5, 0);
     });
@@ -333,14 +333,14 @@ export class GameplayScene extends Phaser.Scene {
     // Queue area label
     this.add.text(GAME_WIDTH / 2, 440, '— Customer Queue —', {
       fontFamily: 'Arial',
-      fontSize: '16px',
+      fontSize: scaledFontSize(this, 16),
       color: '#999',
     }).setOrigin(0.5);
 
     // Serve button
     this.serveButton = this.add.text(GAME_WIDTH / 2, 360, '🍦 Serve Next [Enter]', {
       fontFamily: 'Arial',
-      fontSize: '20px',
+      fontSize: scaledFontSize(this, 20),
       color: '#FFF',
       backgroundColor: '#3498DB',
       padding: { x: 16, y: 8 },
@@ -416,7 +416,7 @@ export class GameplayScene extends Phaser.Scene {
 
     // Emergency resupply button (shown during serve phase when out of stock)
     this.emergencyResupplyBtn = this.add.text(10, GAME_HEIGHT - 50, '🚚 Emergency Resupply (1.5x cost)', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
       backgroundColor: '#C0392B',
       padding: { x: 10, y: 6 },
     }).setOrigin(0, 1).setInteractive({ useHandCursor: true }).setVisible(false);
@@ -449,7 +449,7 @@ export class GameplayScene extends Phaser.Scene {
 
       const equipBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 180, '🔧 Equipment', {
         fontFamily: 'Arial',
-        fontSize: '22px',
+        fontSize: scaledFontSize(this, 22),
         color: '#FFF',
         backgroundColor: '#2980B9',
         padding: { x: 20, y: 8 },
@@ -463,7 +463,7 @@ export class GameplayScene extends Phaser.Scene {
 
       const shopBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 120, '🛒 Buy Ingredients', {
         fontFamily: 'Arial',
-        fontSize: '22px',
+        fontSize: scaledFontSize(this, 22),
         color: '#FFF',
         backgroundColor: '#8E44AD',
         padding: { x: 20, y: 8 },
@@ -482,7 +482,7 @@ export class GameplayScene extends Phaser.Scene {
         // Store is closed — show skip day button instead
         const skipBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, '⏭ Skip Day (Store Closed)', {
           fontFamily: 'Arial',
-          fontSize: '22px',
+          fontSize: scaledFontSize(this, 22),
           color: '#FFF',
           backgroundColor: '#7F8C8D',
           padding: { x: 24, y: 10 },
@@ -498,7 +498,7 @@ export class GameplayScene extends Phaser.Scene {
       } else {
         const openBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, '🔔 Open Store', {
           fontFamily: 'Arial',
-          fontSize: '24px',
+          fontSize: scaledFontSize(this, 24),
           color: '#FFF',
           backgroundColor: '#27AE60',
           padding: { x: 24, y: 10 },
@@ -516,7 +516,7 @@ export class GameplayScene extends Phaser.Scene {
         if (activeEvt && activeEvt.def.id === GameEventId.LOCAL_FAIR) {
           const boothBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 240, '🎪 Set Up Pop-Up Booth', {
             fontFamily: 'Arial',
-            fontSize: '20px',
+            fontSize: scaledFontSize(this, 20),
             color: '#FFF',
             backgroundColor: '#D35400',
             padding: { x: 18, y: 8 },
@@ -539,7 +539,7 @@ export class GameplayScene extends Phaser.Scene {
 
       const invText = this.add.text(GAME_WIDTH - 20, 70, 'Inventory:\n' + invSummary, {
         fontFamily: 'Arial',
-        fontSize: '13px',
+        fontSize: scaledFontSize(this, 13),
         color: '#333',
         backgroundColor: '#FFFFFFCC',
         padding: { x: 10, y: 8 },
@@ -610,7 +610,7 @@ export class GameplayScene extends Phaser.Scene {
           `Days: ${this.gameState.seasonDay} / ${curSeasonDef.daysPerSeason}`,
         ];
         const progressText = this.add.text(GAME_WIDTH / 2, 70, progressLines.join('\n'), {
-          fontFamily: 'Arial', fontSize: '13px', color: '#333',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#333',
           backgroundColor: '#D5F5E3CC', padding: { x: 10, y: 8 },
           lineSpacing: 3, align: 'center',
         }).setOrigin(0.5, 0);
@@ -669,7 +669,7 @@ export class GameplayScene extends Phaser.Scene {
 
       const costText = this.add.text(20, 70, costLines.join('\n'), {
         fontFamily: 'Arial',
-        fontSize: '13px',
+        fontSize: scaledFontSize(this, 13),
         color: '#333',
         backgroundColor: '#FFFFFFCC',
         padding: { x: 10, y: 8 },
@@ -793,12 +793,12 @@ export class GameplayScene extends Phaser.Scene {
     notif.add(bg);
 
     const title = this.add.text(0, -18, `${event.def.icon} ${event.def.name}`, {
-      fontFamily: 'Arial', fontSize: '15px', color: '#F1C40F', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#F1C40F', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
     notif.add(title);
 
     const desc = this.add.text(0, 2, text, {
-      fontFamily: 'Arial', fontSize: '11px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#BDC3C7',
       wordWrap: { width: 340 },
     }).setOrigin(0.5, 0);
     notif.add(desc);
@@ -871,12 +871,12 @@ export class GameplayScene extends Phaser.Scene {
       notif.add(bg);
 
       const title = this.add.text(0, -23, `💡 ${tip.title}`, {
-        fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#F1C40F', fontStyle: 'bold',
       }).setOrigin(0.5, 0);
       notif.add(title);
 
       const body = this.add.text(0, -4, tip.body, {
-        fontFamily: 'Arial', fontSize: '11px', color: '#ECF0F1',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#ECF0F1',
         wordWrap: { width: 370 }, lineSpacing: 2,
       }).setOrigin(0.5, 0);
       notif.add(body);
@@ -921,12 +921,12 @@ export class GameplayScene extends Phaser.Scene {
     notif.add(bg);
 
     const title = this.add.text(0, -14, `Milestone${milestones.length > 1 ? 's' : ''} Complete!`, {
-      fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#F1C40F', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
     notif.add(title);
 
     const names = this.add.text(0, 4, milestones.join(', ') + ' (+RP)', {
-      fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#BDC3C7',
     }).setOrigin(0.5, 0);
     notif.add(names);
 
@@ -970,12 +970,12 @@ export class GameplayScene extends Phaser.Scene {
     notif.add(bg);
 
     const title = this.add.text(0, -18, `📝 Critic Review: ${stars}`, {
-      fontFamily: 'Arial', fontSize: '14px', color,
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color,
     }).setOrigin(0.5, 0);
     notif.add(title);
 
     const quote = this.add.text(0, 2, `"${msg}"`, {
-      fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7', fontStyle: 'italic',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#BDC3C7', fontStyle: 'italic',
     }).setOrigin(0.5, 0);
     notif.add(quote);
 
@@ -1018,14 +1018,14 @@ export class GameplayScene extends Phaser.Scene {
     notif.add(bg);
 
     const titleText = this.add.text(0, -18, `${icon} ${title} (Score: ${result.score}/100)`, {
-      fontFamily: 'Arial', fontSize: '15px', color, fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color, fontStyle: 'bold',
     }).setOrigin(0.5, 0);
     notif.add(titleText);
 
     let yOff = 6;
     for (const v of result.violations.slice(0, 5)) {
       const vText = this.add.text(0, yOff, `• ${v}`, {
-        fontFamily: 'Arial', fontSize: '11px', color: '#BDC3C7',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#BDC3C7',
         wordWrap: { width: 370 },
       }).setOrigin(0.5, 0);
       notif.add(vText);
@@ -1034,7 +1034,7 @@ export class GameplayScene extends Phaser.Scene {
 
     if (!passed && result.closureDays > 0) {
       const closureText = this.add.text(0, yOff + 4, `⛔ Store closed for ${result.closureDays} day(s)!`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#E74C3C', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#E74C3C', fontStyle: 'bold',
       }).setOrigin(0.5, 0);
       notif.add(closureText);
     }
@@ -1064,7 +1064,7 @@ export class GameplayScene extends Phaser.Scene {
     // During prepare phase, show a notice that the store is closed
     const days = this.gameState.loc.closureDaysRemaining;
     const notif = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, `⛔ STORE CLOSED\nHealth inspection failure\n${days} day(s) remaining`, {
-      fontFamily: 'Arial', fontSize: '24px', color: '#E74C3C',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 24), color: '#E74C3C',
       backgroundColor: '#00000088', padding: { x: 20, y: 16 },
       align: 'center', lineSpacing: 6,
     }).setOrigin(0.5).setName('closureNotice');
@@ -1162,7 +1162,7 @@ export class GameplayScene extends Phaser.Scene {
 
     // Title
     const titleText = this.add.text(0, -panelH / 2 + 20, `— Day ${s.day} Report —`, {
-      fontFamily: 'Arial', fontSize: '22px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
     report.add(titleText);
 
@@ -1170,8 +1170,8 @@ export class GameplayScene extends Phaser.Scene {
     const leftX = -panelW / 2 + 30;
     const rightX = 20;
     let y = -panelH / 2 + 60;
-    const labelStyle = { fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6' };
-    const valueStyle = { fontFamily: 'Arial', fontSize: '16px', color: '#FFF' };
+    const labelStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#95A5A6' };
+    const valueStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF' };
     const profitColor = s.profit >= 0 ? '#2ECC40' : '#E74C3C';
 
     const addStat = (x: number, yPos: number, label: string, value: string, color?: string) => {
@@ -1195,7 +1195,7 @@ export class GameplayScene extends Phaser.Scene {
       const criticStars = '★'.repeat(criticReview.rating) + '☆'.repeat(5 - criticReview.rating);
       const criticColor = criticReview.rating >= 4 ? '#2ECC71' : criticReview.rating >= 3 ? '#F39C12' : '#E74C3C';
       const criticLabel = this.add.text(leftX, y, `📝 CRITIC REVIEW: ${criticStars}`, {
-        fontFamily: 'Arial', fontSize: '14px', color: criticColor, fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: criticColor, fontStyle: 'bold',
       });
       report.add(criticLabel);
       y += 25;
@@ -1204,7 +1204,7 @@ export class GameplayScene extends Phaser.Scene {
     // Show weather in report
     const weather = this.gameState.getWeatherDef();
     const weatherLabel = this.add.text(leftX, y, `${weather.icon} WEATHER: ${weather.name}`, {
-      fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7',
     });
     report.add(weatherLabel);
     y += 25;
@@ -1212,7 +1212,7 @@ export class GameplayScene extends Phaser.Scene {
     // Show active event in report
     if (activeEvent) {
       const eventLabel = this.add.text(leftX, y, `${activeEvent.def.icon} EVENT: ${activeEvent.def.name}`, {
-        fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#F1C40F', fontStyle: 'bold',
       });
       report.add(eventLabel);
       y += 25;
@@ -1224,7 +1224,7 @@ export class GameplayScene extends Phaser.Scene {
       let cateringLabel = `🍨 CATERING: ${cateringResult.fulfilled} fulfilled (+$${cateringResult.revenue.toFixed(2)})`;
       if (cateringResult.failed > 0) cateringLabel += ` | ${cateringResult.failed} failed`;
       const cateringText = this.add.text(leftX, y, cateringLabel, {
-        fontFamily: 'Arial', fontSize: '14px', color: cateringColor, fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: cateringColor, fontStyle: 'bold',
       });
       report.add(cateringText);
       y += 25;
@@ -1235,7 +1235,7 @@ export class GameplayScene extends Phaser.Scene {
     if (waste && waste.length > 0) {
       const wasteItems = waste.map(w => `${w.name} x${w.quantity}`).join(', ');
       const wasteText = this.add.text(leftX, y, `🗑 SPOILED: ${wasteItems}`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#E67E22',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#E67E22',
         wordWrap: { width: panelW - 60 },
       });
       report.add(wasteText);
@@ -1279,7 +1279,7 @@ export class GameplayScene extends Phaser.Scene {
       const chartH = 80;
 
       const chartLabel = this.add.text(0, y, 'Revenue Trend (Last 7 Days)', {
-        fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
       }).setOrigin(0.5, 0);
       report.add(chartLabel);
       y += 20;
@@ -1306,7 +1306,7 @@ export class GameplayScene extends Phaser.Scene {
 
         // Day label
         const dayLabel = this.add.text(bx + barWidth / 2, y + chartH - 6, `D${r.day}`, {
-          fontFamily: 'Arial', fontSize: '9px', color: '#7F8C8D',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 9), color: '#7F8C8D',
         }).setOrigin(0.5, 0);
         report.add(dayLabel);
       });
@@ -1317,7 +1317,7 @@ export class GameplayScene extends Phaser.Scene {
     // Next day button
     const nextBtn = this.add.text(0, panelH / 2 - 40, 'Next Day →', {
       fontFamily: 'Arial',
-      fontSize: '22px',
+      fontSize: scaledFontSize(this, 22),
       color: '#FFF',
       backgroundColor: '#3498DB',
       padding: { x: 20, y: 8 },
