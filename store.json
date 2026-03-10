@@ -1582,11 +1582,10 @@
       "title": "Ambient audio volume ignores live settings changes",
       "description": "AudioManager.startAmbience() bakes the current volume into the GainNode at call time. When the user later changes volume or toggles mute via SettingsScene, the active ambient GainNode is not updated. The ambient hum continues at the old level even after muting. Fix: when setVolume/setMuted is called, update ambientNodes.gain.gain.setValueAtTime() to reflect the new effective volume.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:20:28.086394424Z",
-      "updated_at": "2026-03-10T19:22:57.241567606Z"
+      "updated_at": "2026-03-10T19:23:38.895316821Z"
     },
     "lb-th5b": {
       "id": "lb-th5b",
