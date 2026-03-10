@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, SupplierDef, SUPPLIER_CATALOG, BULK_DISCOUNT_TIERS } from '../config/constants';
 import { GameState, getGameState, Ingredient } from '../systems/GameState';
 
 interface ShopItem {
@@ -35,6 +35,7 @@ export class ShopScene extends Phaser.Scene {
   private moneyText!: Phaser.GameObjects.Text;
   private itemRows: Phaser.GameObjects.Container[] = [];
   private isEmergency = false;
+  private currentSupplier: SupplierDef = SUPPLIER_CATALOG[1]; // default: Main Street
 
   constructor() {
     super({ key: 'ShopScene' });
@@ -55,9 +56,9 @@ export class ShopScene extends Phaser.Scene {
 
     // Panel
     const panelX = GAME_WIDTH / 2 - 300;
-    const panelY = 30;
+    const panelY = 10;
     const panelW = 600;
-    const panelH = 660;
+    const panelH = 700;
 
     const panel = this.add.graphics();
     panel.fillStyle(this.isEmergency ? 0x4A1A2E : 0x2C3E50, 1);
@@ -71,15 +72,53 @@ export class ShopScene extends Phaser.Scene {
       color: this.isEmergency ? '#E74C3C' : '#FFF',
     }).setOrigin(0.5);
 
+    // Supplier selector tabs
+    const supplierY = panelY + 52;
+    const tabWidth = 180;
+    const tabStartX = GAME_WIDTH / 2 - (SUPPLIER_CATALOG.length * tabWidth) / 2;
+    const supplierTabs: Phaser.GameObjects.Text[] = [];
+
+    SUPPLIER_CATALOG.forEach((supplier, idx) => {
+      const tabX = tabStartX + idx * tabWidth + tabWidth / 2;
+      const isActive = supplier.id === this.currentSupplier.id;
+      const tab = this.add.text(tabX, supplierY, `${supplier.icon} ${supplier.name}`, {
+        fontFamily: 'Arial',
+        fontSize: '13px',
+        color: isActive ? '#FFF' : '#95A5A6',
+        backgroundColor: isActive ? '#2980B9' : '#1A252F',
+        padding: { x: 8, y: 4 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+      tab.on('pointerdown', () => {
+        this.currentSupplier = supplier;
+        this.scene.restart(); // re-render with new supplier
+      });
+
+      supplierTabs.push(tab);
+    });
+
+    // Supplier description
+    const descText = this.currentSupplier.qualityBonus > 0
+      ? `${this.currentSupplier.description} (+${Math.round(this.currentSupplier.qualityBonus * 100)}% quality)`
+      : this.currentSupplier.description;
+    this.add.text(GAME_WIDTH / 2, supplierY + 18, descText, {
+      fontFamily: 'Arial', fontSize: '11px', color: '#7F8C8D',
+    }).setOrigin(0.5);
+
     // Balance display
-    this.moneyText = this.add.text(GAME_WIDTH / 2, panelY + 60, '', {
+    this.moneyText = this.add.text(GAME_WIDTH / 2, panelY + 82, '', {
       fontFamily: 'Arial',
       fontSize: '20px',
       color: '#2ECC40',
     }).setOrigin(0.5);
 
+    // Bulk discount info
+    this.add.text(GAME_WIDTH / 2, panelY + 102, 'Bulk: 3+ batches → 10% off  |  5+ batches → 20% off', {
+      fontFamily: 'Arial', fontSize: '11px', color: '#F39C12',
+    }).setOrigin(0.5);
+
     // Column headers
-    const headerY = panelY + 95;
+    const headerY = panelY + 118;
     const colX = { name: panelX + 20, stock: panelX + 180, price: panelX + 280, qty: panelX + 380, buy: panelX + 500 };
 
     const headerStyle = { fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6' };
@@ -92,16 +131,20 @@ export class ShopScene extends Phaser.Scene {
     // Supply guidance hint for new players (Day 1, low stock)
     const totalStock = this.gameState.ingredients.reduce((sum, i) => sum + i.quantity, 0);
     if (this.gameState.day <= 3 || totalStock < 30) {
-      this.add.text(GAME_WIDTH / 2, panelY + 82, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
+      this.add.text(GAME_WIDTH / 2, panelY + 132, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
         fontFamily: 'Arial',
         fontSize: '12px',
         color: '#F1C40F',
       }).setOrigin(0.5);
     }
 
+    // Filter catalog by current supplier's excluded ingredients
+    const excluded = new Set(this.currentSupplier.excludedIngredients ?? []);
+    const filteredCatalog = SHOP_CATALOG.filter(item => !excluded.has(item.id));
+
     // Item rows
-    SHOP_CATALOG.forEach((item, i) => {
-      this.createShopRow(item, i, panelX, panelY + 120, colX);
+    filteredCatalog.forEach((item, i) => {
+      this.createShopRow(item, i, panelX, panelY + 148, colX);
     });
 
     // Close button
@@ -133,13 +176,13 @@ export class ShopScene extends Phaser.Scene {
     startY: number,
     colX: Record<string, number>,
   ): void {
-    const y = startY + index * 42;
+    const y = startY + index * 38;
     const row = this.add.container(0, 0);
 
     // Row background
     const rowBg = this.add.graphics();
     rowBg.fillStyle(index % 2 === 0 ? 0x34495E : 0x2C3E50, 1);
-    rowBg.fillRect(panelX + 10, y - 3, 580, 38);
+    rowBg.fillRect(panelX + 10, y - 3, 580, 34);
     row.add(rowBg);
 
     // Name with expiry hint
@@ -202,7 +245,8 @@ export class ShopScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     buyBtn.on('pointerdown', () => {
-      const totalCost = actualPrice * qty;
+      const discount = this.getBulkDiscount(qty);
+      const totalCost = actualPrice * qty * (1 - discount);
       if (this.gameState.money >= totalCost) {
         this.gameState.money -= totalCost;
         this.gameState.dailyExpenses += totalCost;
@@ -221,6 +265,12 @@ export class ShopScene extends Phaser.Scene {
             costPer: actualPrice / item.bulkSize,
             expiresInDays: item.expiresInDays,
           });
+        }
+
+        // Track supplier quality bonus for serving phase
+        if (this.currentSupplier.qualityBonus > 0) {
+          const existing = (this.registry.get('supplierQualityBonus') as number) ?? 0;
+          this.registry.set('supplierQualityBonus', Math.max(existing, this.currentSupplier.qualityBonus));
         }
 
         stockText.setText(`${this.gameState.ingredients.find(i => i.id === item.id)?.quantity ?? 0}`);
@@ -246,11 +296,21 @@ export class ShopScene extends Phaser.Scene {
     const seed = this.hashCode(ingredientId + day.toString());
     // Range: 0.75 to 1.35
     const baseMult = 0.75 + (Math.abs(seed) % 60) / 100;
+    // Supplier pricing
+    const supplierMult = this.currentSupplier.priceMult;
     // Apply event price modifier (supply shortage / bulk discount)
     const eventMult = (this.registry.get('eventIngredientPriceMult') as number) ?? 1.0;
     // Emergency resupply markup
     const emergencyMult = this.isEmergency ? EMERGENCY_MARKUP : 1.0;
-    return baseMult * eventMult * emergencyMult;
+    return baseMult * supplierMult * eventMult * emergencyMult;
+  }
+
+  /** Get bulk discount fraction for a given quantity */
+  private getBulkDiscount(qty: number): number {
+    for (const [minQty, discount] of BULK_DISCOUNT_TIERS) {
+      if (qty >= minQty) return discount;
+    }
+    return 0;
   }
 
   private hashCode(str: string): number {

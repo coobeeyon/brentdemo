@@ -46,6 +46,52 @@ export const NUT_INGREDIENTS = ['nuts'];
 export const BASE_SCOOP_PRICE = 3.00;
 export const BASE_TOPPING_PRICE = 0.50;
 
+// Suppliers
+export interface SupplierDef {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  priceMult: number;        // multiplier on base ingredient prices
+  qualityBonus: number;     // bonus to customer satisfaction from fresh ingredients
+  /** Some suppliers don't stock everything */
+  excludedIngredients?: string[];
+}
+
+export const SUPPLIER_CATALOG: SupplierDef[] = [
+  {
+    id: 'budget_mart',
+    name: 'Budget Mart',
+    description: 'Cheapest prices, but no premium ingredients.',
+    icon: '🏷️',
+    priceMult: 0.80,
+    qualityBonus: 0,
+    excludedIngredients: ['vanilla_extract', 'caramel', 'fruit'],
+  },
+  {
+    id: 'main_street',
+    name: 'Main Street Supply',
+    description: 'Standard prices, everything in stock.',
+    icon: '🏪',
+    priceMult: 1.0,
+    qualityBonus: 0,
+  },
+  {
+    id: 'premium_farms',
+    name: 'Premium Farms',
+    description: 'Higher prices, but premium quality boosts satisfaction.',
+    icon: '🌾',
+    priceMult: 1.25,
+    qualityBonus: 0.10,
+  },
+];
+
+/** Bulk discount tiers: [minQty, discountFraction] */
+export const BULK_DISCOUNT_TIERS: [number, number][] = [
+  [5, 0.20],  // 5+ batches: 20% off
+  [3, 0.10],  // 3+ batches: 10% off
+];
+
 // Flavor Catalog
 export interface FlavorDef {
   id: string;

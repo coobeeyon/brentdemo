@@ -193,7 +193,8 @@ export class CustomerManager {
       : this.gameState.getEquipmentEffects();
     const staffEffects = this.gameState.getStaffEffects();
     const researchFx = this.gameState.getResearchEffects();
-    const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus + (researchFx.qualityBonus ?? 0);
+    const supplierQuality = (this.scene.registry.get('supplierQualityBonus') as number) ?? 0;
+    const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus + (researchFx.qualityBonus ?? 0) + supplierQuality;
     const patienceRatio = customer.patience / customer.maxPatience;
     let revenue = customer.serve(totalQualityBonus);
     // Apply event revenue multiplier
