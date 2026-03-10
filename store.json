@@ -603,11 +603,10 @@
       "title": "ShopScene: supply guidance tip overlaps column headers",
       "description": "In ShopScene.create(), the supply guidance tip is placed at panelY + 132 (center, 12px font) and column headers at panelY + 118 (14px font). Their vertical extents overlap (~128-142 for headers, ~136-148 for tip). Occurs when day <= 3 or totalStock < 30. Fix: move tip below items start, or push item rows down to accommodate it.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T11:41:25.634909473Z",
-      "updated_at": "2026-03-10T11:44:40.880176076Z"
+      "updated_at": "2026-03-10T11:45:22.740185613Z"
     },
     "lb-ogiw": {
       "id": "lb-ogiw",
