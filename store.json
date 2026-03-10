@@ -604,11 +604,10 @@
       "title": "Add seasonal specialty flavors (pumpkin spice, peppermint)",
       "description": "Add seasonal specialty flavors mentioned in spec but not yet in catalog",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T14:31:00.731741135Z",
-      "updated_at": "2026-03-10T14:32:55.093769243Z"
+      "updated_at": "2026-03-10T14:34:10.364166308Z"
     },
     "lb-if57": {
       "id": "lb-if57",
