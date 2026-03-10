@@ -130,7 +130,7 @@ export class RecipeScene extends Phaser.Scene {
       // Delete button
       const delBtn = this.add.text(panelX + panelW - 45, y + 25, 'X', {
         fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
-        backgroundColor: '#C0392B', padding: { x: 8, y: 4 },
+        backgroundColor: '#C0392B', padding: { x: 10, y: 8 },
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       delBtn.on('pointerdown', () => {
@@ -180,7 +180,7 @@ export class RecipeScene extends Phaser.Scene {
 
     const nameDisplay = this.add.text(fx + 60, fy, state.name, {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
-      backgroundColor: '#34495E', padding: { x: 8, y: 2 },
+      backgroundColor: '#34495E', padding: { x: 10, y: 8 },
     }).setInteractive({ useHandCursor: true });
     this.formContainer.add(nameDisplay);
 
@@ -201,7 +201,7 @@ export class RecipeScene extends Phaser.Scene {
     }));
     const flavorDisplay = this.add.text(fx + 60, fy, availableFlavors[0]?.name ?? 'None', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
-      backgroundColor: '#34495E', padding: { x: 8, y: 2 },
+      backgroundColor: '#34495E', padding: { x: 10, y: 8 },
     }).setInteractive({ useHandCursor: true });
     this.formContainer.add(flavorDisplay);
 
@@ -217,7 +217,7 @@ export class RecipeScene extends Phaser.Scene {
     }));
     const styleDisplay = this.add.text(fx + 60, fy, availableStyles[0]?.name ?? 'Cone', {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
-      backgroundColor: '#34495E', padding: { x: 8, y: 2 },
+      backgroundColor: '#34495E', padding: { x: 10, y: 8 },
     }).setInteractive({ useHandCursor: true });
     this.formContainer.add(styleDisplay);
 

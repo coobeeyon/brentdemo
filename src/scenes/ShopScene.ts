@@ -102,10 +102,10 @@ export class ShopScene extends Phaser.Scene {
       const isActive = supplier.id === this.currentSupplier.id;
       const tab = this.add.text(tabX, supplierY, `${supplier.icon} ${supplier.name}`, {
         fontFamily: 'Arial',
-        fontSize: scaledFontSize(this, 13),
+        fontSize: scaledFontSize(this, 14),
         color: isActive ? '#FFF' : '#95A5A6',
         backgroundColor: isActive ? '#2980B9' : '#1A252F',
-        padding: { x: 8, y: 4 },
+        padding: { x: 10, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
       tab.on('pointerdown', () => {
@@ -260,7 +260,7 @@ export class ShopScene extends Phaser.Scene {
       fontSize: scaledFontSize(this, 16),
       color: '#FFF',
       backgroundColor: '#27AE60',
-      padding: { x: 12, y: 4 },
+      padding: { x: 14, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     const updateBuyLabel = () => {
