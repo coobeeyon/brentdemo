@@ -523,11 +523,10 @@
       "title": "Build AudioManager with procedural SFX generation",
       "description": "Create src/systems/AudioManager.ts using Web Audio API to generate procedural sound effects. No audio files needed. Singleton pattern, accessible from any scene. Include methods for common SFX: click, purchase, serve, cash register, error, success, notification.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 1,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T19:10:42.951708011Z",
-      "updated_at": "2026-03-10T19:10:47.958828547Z"
+      "updated_at": "2026-03-10T19:11:51.208024217Z"
     },
     "lb-c6a6": {
       "id": "lb-c6a6",
