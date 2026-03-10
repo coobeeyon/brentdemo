@@ -843,11 +843,10 @@
       "title": "Expand tutorial to cover pricing, reputation, and staff basics",
       "description": "The tutorial currently only covers buying ingredients and serving. Add steps explaining: (1) the menu editor and suggested price tool, (2) how reputation/stars work and affect customer flow, (3) how to hire and assign staff from the pause menu. Keep it concise - just awareness, not deep dives.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:16:24.072048710Z",
-      "updated_at": "2026-03-10T12:16:31.236999966Z"
+      "updated_at": "2026-03-10T12:17:24.270645442Z"
     },
     "lb-v5nj": {
       "id": "lb-v5nj",
