@@ -828,6 +828,16 @@
       "created_at": "2026-03-09T18:04:16.246377599Z",
       "updated_at": "2026-03-09T18:11:22.546234548Z"
     },
+    "lb-sgoc": {
+      "id": "lb-sgoc",
+      "title": "Fix build script: tsc not on PATH",
+      "description": "package.json build script uses bare tsc which fails when not on PATH. Use npx tsc instead.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 1,
+      "created_at": "2026-03-10T12:40:00.678105231Z",
+      "updated_at": "2026-03-10T12:40:00.678105231Z"
+    },
     "lb-st3l": {
       "id": "lb-st3l",
       "title": "Customer loyalty system",
@@ -1337,6 +1347,11 @@
     },
     {
       "from_id": "lb-ae53",
+      "to_id": "lb-dxxj",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-sgoc",
       "to_id": "lb-dxxj",
       "dep_type": "parent"
     }
