@@ -1,4 +1,4 @@
-import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign, LoyalCustomer, Recipe, LocationState } from './GameState';
+import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign, LoyalCustomer, Recipe, LocationState, CateringContract } from './GameState';
 import { WeatherType, HealthInspectionResult, DecorThemeId, SeatingId, SignageId } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
@@ -50,6 +50,7 @@ interface SerializedGameState {
   totalRevenue: number;
   loyalCustomers: LoyalCustomer[];
   recipes: Recipe[];
+  cateringContracts?: CateringContract[];
 
   // Multi-location franchise (v9+)
   franchiseMode?: boolean;
@@ -88,6 +89,7 @@ interface SerializedLocationState {
   recipes: Recipe[];
   loyalCustomers: LoyalCustomer[];
   weather: WeatherType;
+  cateringContracts?: CateringContract[];
 }
 
 const SAVE_VERSION = 10;

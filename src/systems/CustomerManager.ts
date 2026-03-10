@@ -12,6 +12,7 @@ export interface ServeResult {
   revenue: number;
   dietaryViolation: boolean;
   violationType?: string;   // e.g. 'Vegan' or 'Nut-Free'
+  loyaltyDiscount?: boolean;
 }
 
 export class CustomerManager {
