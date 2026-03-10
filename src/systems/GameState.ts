@@ -53,6 +53,7 @@ import {
   CATERING_PRICE_PER_SCOOP,
   CATERING_CLIENTS,
   CATERING_REP_BONUS,
+  VIP_PERK_THRESHOLDS,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -196,6 +197,9 @@ export interface LocationState {
 
   // Catering
   cateringContracts: CateringContract[];
+
+  // VIP perks
+  vipSatisfied: number;
 }
 
 export interface ActiveCampaign {
@@ -290,6 +294,9 @@ export class GameState {
 
   // Catering
   cateringContracts: CateringContract[] = [];
+
+  // VIP perks
+  vipSatisfied: number = 0;
 
   // Story mode
   seasonDay: number = 1;              // day within current season
@@ -756,6 +763,7 @@ export class GameState {
       loyalCustomers: [...this.loyalCustomers],
       weather: this.weather,
       cateringContracts: [...this.cateringContracts],
+      vipSatisfied: this.vipSatisfied,
     };
 
     this.locations = [firstLocation];
@@ -806,6 +814,7 @@ export class GameState {
       loyalCustomers: [],
       weather: WeatherType.SUNNY,
       cateringContracts: [],
+      vipSatisfied: 0,
     };
 
     this.locations.push(loc);
@@ -1191,6 +1200,21 @@ export class GameState {
     }
 
     return { revenue, fulfilled, failed };
+  }
+
+  /** Record a satisfied VIP customer */
+  recordVipSatisfaction(): void {
+    this.loc.vipSatisfied++;
+  }
+
+  /** Get active VIP perks based on satisfaction count */
+  getVipPerks(): { premiumPricing: boolean; wordOfMouth: boolean; eliteClientele: boolean } {
+    const count = this.loc.vipSatisfied;
+    return {
+      premiumPricing: count >= VIP_PERK_THRESHOLDS.PREMIUM_PRICING,
+      wordOfMouth: count >= VIP_PERK_THRESHOLDS.WORD_OF_MOUTH,
+      eliteClientele: count >= VIP_PERK_THRESHOLDS.ELITE_CLIENTELE,
+    };
   }
 
   /** Check if a research node's prerequisites are met */
@@ -1605,6 +1629,11 @@ export class GameState {
       // Tick down closure days from failed inspections
       if (loc.closureDaysRemaining > 0) {
         loc.closureDaysRemaining--;
+      }
+
+      // VIP Word of Mouth perk: +0.1 daily reputation bonus
+      if (this.getVipPerks().wordOfMouth) {
+        loc.reputation = Math.min(5, loc.reputation + 0.1);
       }
     }
 

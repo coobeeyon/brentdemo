@@ -51,6 +51,7 @@ interface SerializedGameState {
   loyalCustomers: LoyalCustomer[];
   recipes: Recipe[];
   cateringContracts?: CateringContract[];
+  vipSatisfied?: number;
 
   // Multi-location franchise (v9+)
   franchiseMode?: boolean;
@@ -90,6 +91,7 @@ interface SerializedLocationState {
   loyalCustomers: LoyalCustomer[];
   weather: WeatherType;
   cateringContracts?: CateringContract[];
+  vipSatisfied?: number;
 }
 
 const SAVE_VERSION = 10;
@@ -140,6 +142,7 @@ export class SaveManager {
           loyalCustomers: gameState.loyalCustomers,
           recipes: gameState.recipes,
           cateringContracts: gameState.cateringContracts,
+          vipSatisfied: gameState.vipSatisfied,
           franchiseMode: gameState.franchiseMode,
           currentLocationId: gameState.currentLocationId,
           locations: gameState.franchiseMode
@@ -175,6 +178,7 @@ export class SaveManager {
                 loyalCustomers: loc.loyalCustomers,
                 weather: loc.weather,
                 cateringContracts: loc.cateringContracts,
+                vipSatisfied: loc.vipSatisfied,
               }))
             : undefined,
         },
@@ -243,6 +247,7 @@ export class SaveManager {
       gameState.loyalCustomers = s.loyalCustomers ?? [];
       gameState.recipes = s.recipes ?? [];
       gameState.cateringContracts = s.cateringContracts ?? [];
+      gameState.vipSatisfied = s.vipSatisfied ?? 0;
 
       // Multi-location franchise (v9+)
       gameState.franchiseMode = s.franchiseMode ?? false;
@@ -285,6 +290,7 @@ export class SaveManager {
           loyalCustomers: loc.loyalCustomers ?? [],
           weather: loc.weather ?? 'sunny' as WeatherType,
           cateringContracts: loc.cateringContracts ?? [],
+          vipSatisfied: loc.vipSatisfied ?? 0,
         }));
       } else {
         gameState.locations = [];

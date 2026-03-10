@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD, VIP_PERK_THRESHOLDS } from '../config/constants';
 import { ChallengeDef } from './ChallengeScene';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
@@ -226,6 +226,40 @@ export class GameplayScene extends Phaser.Scene {
           ease: 'Power2',
           onComplete: () => loyalText.destroy(),
         });
+      }
+
+      // Show VIP perk unlock notification
+      if (result.vipSatisfied) {
+        const vipCount = this.gameState.loc.vipSatisfied;
+        let perkMsg = '';
+        if (vipCount === VIP_PERK_THRESHOLDS.PREMIUM_PRICING) {
+          perkMsg = 'VIP Perk unlocked: Premium Pricing (+10% revenue)';
+        } else if (vipCount === VIP_PERK_THRESHOLDS.WORD_OF_MOUTH) {
+          perkMsg = 'VIP Perk unlocked: Word of Mouth (+0.1 rep/day)';
+        } else if (vipCount === VIP_PERK_THRESHOLDS.ELITE_CLIENTELE) {
+          perkMsg = 'VIP Perk unlocked: Elite Clientele (2x VIP visits)';
+        }
+        if (perkMsg) {
+          const perkText = this.add.text(
+            GAME_WIDTH / 2, 340,
+            perkMsg,
+            {
+              fontFamily: 'Arial',
+              fontSize: scaledFontSize(this, 15),
+              color: '#FFD700',
+              fontStyle: 'bold',
+            }
+          ).setOrigin(0.5);
+
+          this.tweens.add({
+            targets: perkText,
+            y: 290,
+            alpha: 0,
+            duration: 2500,
+            ease: 'Power2',
+            onComplete: () => perkText.destroy(),
+          });
+        }
       }
     }
   }

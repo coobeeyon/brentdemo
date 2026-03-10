@@ -40,6 +40,13 @@ export const CATERING_CLIENTS = [
   'Community Fair', 'Sports Team', 'Corporate Lunch', 'Neighborhood BBQ',
 ];
 
+// VIP perks — unlock at satisfaction thresholds
+export const VIP_PERK_THRESHOLDS = {
+  PREMIUM_PRICING: 3,    // customers tolerate 10% higher prices
+  WORD_OF_MOUTH: 7,      // +0.1 daily reputation bonus
+  ELITE_CLIENTELE: 15,   // VIP spawn rate doubles (5% → 10%)
+} as const;
+
 // Starting resources
 export const STARTING_MONEY = 500;
 export const STARTING_REPUTATION = 2.5; // out of 5 stars

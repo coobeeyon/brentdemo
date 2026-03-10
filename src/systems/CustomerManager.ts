@@ -13,6 +13,7 @@ export interface ServeResult {
   dietaryViolation: boolean;
   violationType?: string;   // e.g. 'Vegan' or 'Nut-Free'
   loyaltyDiscount?: boolean;
+  vipSatisfied?: boolean;
 }
 
 export class CustomerManager {
@@ -123,7 +124,12 @@ export class CustomerManager {
     const availableStyles = this.gameState.getAvailableStyles();
     // Check for forced customer type (e.g. VIP Reception challenge)
     const forcedTypeStr = this.scene.registry.get('forcedCustomerType') as string;
-    const forcedType = forcedTypeStr ? (forcedTypeStr as CustomerType) : undefined;
+    let forcedType = forcedTypeStr ? (forcedTypeStr as CustomerType) : undefined;
+
+    // Elite Clientele VIP perk: extra 5% chance to spawn VIP (doubles effective rate)
+    if (!forcedType && this.gameState.getVipPerks().eliteClientele && Math.random() < 0.05) {
+      forcedType = CustomerType.VIP;
+    }
 
     const customer = new Customer(this.scene, x, y, weightedFlavors, this.gameState.menuPrices, availableToppings, availableStyles, forcedType);
 
@@ -222,6 +228,10 @@ export class CustomerManager {
     if (decorPriceTolerance > 0) {
       revenue *= (1 + decorPriceTolerance);
     }
+    // VIP Premium Pricing perk: customers tolerate 10% higher prices
+    if (this.gameState.getVipPerks().premiumPricing) {
+      revenue *= 1.10;
+    }
     // Apply loyalty tip bonus
     const loyaltyFx = this.gameState.getLoyaltyEffects();
     if (loyaltyFx.tipBonus > 0) {
@@ -276,6 +286,11 @@ export class CustomerManager {
       this.onCriticReview?.(review);
     }
 
+    // Record VIP satisfaction (served with decent patience = satisfied)
+    if (customer.type === CustomerType.VIP && patienceRatio > 0.3 && !dietaryViolation) {
+      this.gameState.recordVipSatisfaction();
+    }
+
     // Map restriction enum to display label
     const violationLabels: Record<string, string> = {
       vegan: 'Vegan',
@@ -287,6 +302,7 @@ export class CustomerManager {
       dietaryViolation,
       violationType: dietaryViolation ? violationLabels[customer.dietaryRestriction] : undefined,
       loyaltyDiscount,
+      vipSatisfied: customer.type === CustomerType.VIP && patienceRatio > 0.3 && !dietaryViolation,
     };
   }
 
