@@ -26,6 +26,8 @@ import {
   SHIFT_HOURS,
   StaffSpecialty,
   SPECIALTY_BONUS,
+  LOYALTY_REDEMPTION_COST,
+  LOYALTY_DISCOUNT_PERCENT,
   DecorThemeId,
   DECOR_CATALOG,
   DecorThemeDef,
@@ -1061,6 +1063,18 @@ export class GameState {
   /** Get top loyal customers sorted by visits */
   getTopCustomers(count: number = 10): LoyalCustomer[] {
     return [...this.loyalCustomers].sort((a, b) => b.visits - a.visits).slice(0, count);
+  }
+
+  /** Try to redeem loyalty points for a returning customer. Returns discount multiplier (0.75 if redeemed, 1.0 if not). */
+  tryLoyaltyRedemption(): { redeemed: boolean; discount: number; customerName: string | null } {
+    // Find a loyal customer with enough points who visited today
+    const eligible = this.loyalCustomers.find(
+      lc => lc.lastVisitDay === this.day && lc.points >= LOYALTY_REDEMPTION_COST
+    );
+    if (!eligible) return { redeemed: false, discount: 1.0, customerName: null };
+
+    eligible.points -= LOYALTY_REDEMPTION_COST;
+    return { redeemed: true, discount: 1.0 - LOYALTY_DISCOUNT_PERCENT, customerName: eligible.name };
   }
 
   /** Get loyalty bonus: more loyal customers = slight patience/tip boost */

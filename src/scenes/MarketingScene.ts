@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, CAMPAIGN_CATALOG, CampaignId } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, CAMPAIGN_CATALOG, CampaignId, LOYALTY_REDEMPTION_COST, LOYALTY_DISCOUNT_PERCENT } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
 
 export class MarketingScene extends Phaser.Scene {
@@ -91,11 +91,17 @@ export class MarketingScene extends Phaser.Scene {
         });
       }
 
+      // Redemption info
+      this.add.text(x, y + 40, `Customers redeem ${LOYALTY_REDEMPTION_COST} pts for a ${Math.round(LOYALTY_DISCOUNT_PERCENT * 100)}% discount`, {
+        fontFamily: 'Arial', fontSize: '11px', color: '#F1C40F',
+      });
+
       // Top customers list
-      let cy = y + 44;
+      let cy = y + 58;
       for (const lc of topCustomers) {
         const flavorName = this.gameState.loc.flavors.find(f => f.id === lc.favoriteFlavor)?.name ?? lc.favoriteFlavor;
-        this.add.text(x, cy, `${lc.name} — ${lc.visits} visits, ${lc.points} pts, loves ${flavorName}`, {
+        const redeemReady = lc.points >= LOYALTY_REDEMPTION_COST ? ' 🎁' : '';
+        this.add.text(x, cy, `${lc.name} — ${lc.visits} visits, ${lc.points} pts, loves ${flavorName}${redeemReady}`, {
           fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7',
         });
         cy += 18;

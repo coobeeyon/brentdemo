@@ -196,6 +196,29 @@ export class GameplayScene extends Phaser.Scene {
           onComplete: () => warningText.destroy(),
         });
       }
+
+      // Show loyalty discount indicator
+      if (result.loyaltyDiscount) {
+        const loyalText = this.add.text(
+          GAME_WIDTH / 2, 365,
+          '🎁 Loyalty discount applied!',
+          {
+            fontFamily: 'Arial',
+            fontSize: '14px',
+            color: '#F1C40F',
+            fontStyle: 'bold',
+          }
+        ).setOrigin(0.5);
+
+        this.tweens.add({
+          targets: loyalText,
+          y: 315,
+          alpha: 0,
+          duration: 1500,
+          ease: 'Power2',
+          onComplete: () => loyalText.destroy(),
+        });
+      }
     }
   }
 

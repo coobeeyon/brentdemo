@@ -246,9 +246,17 @@ export class CustomerManager {
     this.repositionQueue();
 
     // Register loyalty (regular customers only, with good patience)
+    let loyaltyDiscount = false;
     if (customer.type === CustomerType.REGULAR && patienceRatio > 0.3) {
       const favFlavor = customer.order.items[0]?.flavorId ?? 'vanilla';
       this.gameState.registerLoyalCustomer(favFlavor);
+
+      // Check if a loyal customer redeems points for a discount
+      const redemption = this.gameState.tryLoyaltyRedemption();
+      if (redemption.redeemed) {
+        revenue *= redemption.discount;
+        loyaltyDiscount = true;
+      }
     }
 
     // Handle critic review
@@ -273,6 +281,7 @@ export class CustomerManager {
       revenue,
       dietaryViolation,
       violationType: dietaryViolation ? violationLabels[customer.dietaryRestriction] : undefined,
+      loyaltyDiscount,
     };
   }
 

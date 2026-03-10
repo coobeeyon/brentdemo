@@ -24,6 +24,10 @@ export const SPEED_PAUSED = 0;
 // Inventory thresholds
 export const LOW_STOCK_THRESHOLD = 10;
 
+// Loyalty redemption
+export const LOYALTY_REDEMPTION_COST = 10;     // points required to redeem
+export const LOYALTY_DISCOUNT_PERCENT = 0.25;  // 25% discount when redeemed
+
 // Starting resources
 export const STARTING_MONEY = 500;
 export const STARTING_REPUTATION = 2.5; // out of 5 stars
