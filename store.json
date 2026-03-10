@@ -833,11 +833,10 @@
       "title": "Fix build script: tsc not on PATH",
       "description": "package.json build script uses bare tsc which fails when not on PATH. Use npx tsc instead.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 1,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:40:00.678105231Z",
-      "updated_at": "2026-03-10T12:40:06.260248471Z"
+      "updated_at": "2026-03-10T12:40:07.165218903Z"
     },
     "lb-st3l": {
       "id": "lb-st3l",
