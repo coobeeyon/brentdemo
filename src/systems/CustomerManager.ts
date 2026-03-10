@@ -8,6 +8,12 @@ const QUEUE_START_X = 240;
 const QUEUE_START_Y = 480;
 const QUEUE_SPACING = 70;
 
+export interface ServeResult {
+  revenue: number;
+  dietaryViolation: boolean;
+  violationType?: string;   // e.g. 'Vegan' or 'Nut-Free'
+}
+
 export class CustomerManager {
   private scene: Phaser.Scene;
   private gameState: GameState;
@@ -174,7 +180,7 @@ export class CustomerManager {
     });
   }
 
-  serveFirstCustomer(): number | null {
+  serveFirstCustomer(): ServeResult | null {
     if (this.queue.length === 0) return null;
 
     const customer = this.queue[0];
@@ -234,7 +240,8 @@ export class CustomerManager {
     this.queue.shift();
     this.customersServed++;
     // Dietary restriction violation: halve satisfaction (affects reputation)
-    const satisfactionPenalty = customer.orderViolatesRestriction() ? 0.5 : 1.0;
+    const dietaryViolation = customer.orderViolatesRestriction();
+    const satisfactionPenalty = dietaryViolation ? 0.5 : 1.0;
     this.satisfactionSum += patienceRatio * satisfactionPenalty;
     this.repositionQueue();
 
@@ -256,7 +263,17 @@ export class CustomerManager {
       this.onCriticReview?.(review);
     }
 
-    return revenue;
+    // Map restriction enum to display label
+    const violationLabels: Record<string, string> = {
+      vegan: 'Vegan',
+      nut_free: 'Nut-Free',
+    };
+
+    return {
+      revenue,
+      dietaryViolation,
+      violationType: dietaryViolation ? violationLabels[customer.dietaryRestriction] : undefined,
+    };
   }
 
   /** Critics rate based on patience (speed), quality (equipment+staff), and some randomness */

@@ -144,16 +144,17 @@ export class GameplayScene extends Phaser.Scene {
   private serveNextCustomer(): void {
     if (this.gameState.phase !== DayPhase.SERVE) return;
 
-    const revenue = this.customerManager.serveFirstCustomer();
-    if (revenue !== null) {
-      this.gameState.loc.dailyRevenue += revenue;
-      this.gameState.loc.money += revenue;
+    const result = this.customerManager.serveFirstCustomer();
+    if (result !== null) {
+      this.gameState.loc.dailyRevenue += result.revenue;
+      this.gameState.loc.money += result.revenue;
 
       // Show floating revenue text
-      const floatText = this.add.text(GAME_WIDTH / 2, 340, `+$${revenue.toFixed(2)}`, {
+      const revenueColor = result.dietaryViolation ? '#E67E22' : '#2ECC40';
+      const floatText = this.add.text(GAME_WIDTH / 2, 340, `+$${result.revenue.toFixed(2)}`, {
         fontFamily: 'Arial',
         fontSize: '22px',
-        color: '#2ECC40',
+        color: revenueColor,
         fontStyle: 'bold',
       }).setOrigin(0.5);
 
@@ -165,6 +166,29 @@ export class GameplayScene extends Phaser.Scene {
         ease: 'Power2',
         onComplete: () => floatText.destroy(),
       });
+
+      // Show dietary violation warning
+      if (result.dietaryViolation) {
+        const warningText = this.add.text(
+          GAME_WIDTH / 2, 370,
+          `⚠ ${result.violationType} violation — no tip!`,
+          {
+            fontFamily: 'Arial',
+            fontSize: '16px',
+            color: '#E74C3C',
+            fontStyle: 'bold',
+          }
+        ).setOrigin(0.5);
+
+        this.tweens.add({
+          targets: warningText,
+          y: 310,
+          alpha: 0,
+          duration: 1500,
+          ease: 'Power2',
+          onComplete: () => warningText.destroy(),
+        });
+      }
     }
   }
 
