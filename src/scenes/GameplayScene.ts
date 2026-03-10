@@ -1188,7 +1188,15 @@ export class GameplayScene extends Phaser.Scene {
         // Reset season state but keep equipment/staff
         s.seasonDay = 0;
         s.seasonRevenue = 0;
-        s.loc.money = seasonDef.startingMoney;
+        // In franchise mode, distribute startingMoney equally across all locations
+        if (s.franchiseMode && s.locations.length > 0) {
+          const perLocation = Math.floor(seasonDef.startingMoney / s.locations.length);
+          for (const loc of s.locations) {
+            loc.money = perLocation;
+          }
+        } else {
+          s.loc.money = seasonDef.startingMoney;
+        }
         s.startNewDay();
         SaveManager.save(s, 'auto', 'story');
         this.rollDailyEvent();
