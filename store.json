@@ -274,11 +274,10 @@
       "title": "Fix remaining GameState methods to use loc for franchise-mode consistency",
       "description": "startCampaign, buyDecor, buySeating, buySignage, takeLoan, makeLoanPayment all use this.money/this.dailyExpenses instead of this.loc.*. Same class of bug as lb-jql7.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T11:09:55.923360344Z",
-      "updated_at": "2026-03-10T11:09:58.932871196Z"
+      "updated_at": "2026-03-10T11:11:07.004320284Z"
     },
     "lb-e4hg": {
       "id": "lb-e4hg",
