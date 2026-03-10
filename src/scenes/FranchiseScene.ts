@@ -40,10 +40,29 @@ export class FranchiseScene extends Phaser.Scene {
     const statsY = panelY + 60;
     const statsStyle = { fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7' };
 
+    const consistency = this.gameState.getBrandConsistency();
+    const consistencyLabel = consistency.score === 1 ? '✓ Consistent'
+      : consistency.score > 0 ? '~ Partial' : '✗ Inconsistent';
+    const consistencyColor = consistency.score === 1 ? '#2ECC71'
+      : consistency.score > 0 ? '#F39C12' : '#E74C3C';
+
     this.add.text(panelX + 30, statsY,
       `Locations: ${stats.locationCount}  |  Total Staff: ${stats.totalStaff}  |  Avg Reputation: ${stats.totalReputation.toFixed(1)}★`,
       statsStyle
     );
+
+    // Brand consistency indicator
+    if (stats.locationCount > 1) {
+      const brandY = statsY + 20;
+      const details: string[] = [];
+      if (!consistency.decor) details.push('Decor');
+      if (!consistency.seating) details.push('Seating');
+      if (!consistency.signage) details.push('Signage');
+      const detailStr = details.length > 0 ? ` (mismatched: ${details.join(', ')})` : ' (+0.06★/day bonus)';
+      this.add.text(panelX + 30, brandY, `Brand: ${consistencyLabel}${detailStr}`, {
+        fontFamily: 'Arial', fontSize: '13px', color: consistencyColor,
+      });
+    }
 
     // Season targets
     const seasonDef = this.gameState.getSeasonDef();
@@ -57,7 +76,8 @@ export class FranchiseScene extends Phaser.Scene {
 
     // Content area
     this.contentContainer = this.add.container(0, 0);
-    this.buildLocationGrid(panelX, panelY + 90, panelW);
+    const gridStartY = stats.locationCount > 1 ? panelY + 110 : panelY + 90;
+    this.buildLocationGrid(panelX, gridStartY, panelW);
 
     // New location button
     if (seasonDef?.locationSetupCost) {
@@ -170,7 +190,7 @@ export class FranchiseScene extends Phaser.Scene {
 
       // Switch button (only for non-active locations)
       if (!isActive) {
-        const switchBtn = this.add.text(panelX + cardW - 10, y + 35, 'Switch →', {
+        const switchBtn = this.add.text(panelX + cardW - 10, y + 15, 'Switch →', {
           fontFamily: 'Arial', fontSize: '15px', color: '#FFF',
           backgroundColor: '#3498DB', padding: { x: 12, y: 6 },
         }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
@@ -180,6 +200,24 @@ export class FranchiseScene extends Phaser.Scene {
           this.scene.restart();
         });
         this.contentContainer.add(switchBtn);
+
+        // Transfer staff button: send one staff from active location to this one
+        const activeLoc = this.gameState.locations[this.gameState.currentLocationId];
+        if (activeLoc.staff.length > 1) {
+          const transferBtn = this.add.text(panelX + cardW - 10, y + 55, 'Send Staff →', {
+            fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+            backgroundColor: '#8E44AD', padding: { x: 10, y: 4 },
+          }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+
+          transferBtn.on('pointerdown', () => {
+            // Transfer the first unassigned (or last) staff member
+            const candidate = activeLoc.staff.find(s => !s.assigned) ?? activeLoc.staff[activeLoc.staff.length - 1];
+            if (candidate && this.gameState.transferStaff(candidate.id, this.gameState.currentLocationId, i)) {
+              this.scene.restart();
+            }
+          });
+          this.contentContainer.add(transferBtn);
+        }
       }
     });
   }

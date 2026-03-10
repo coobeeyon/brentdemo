@@ -611,7 +611,7 @@ export class GameState {
       tipBonus: 0,
     };
 
-    for (const campaign of this.activeCampaigns) {
+    for (const campaign of this.loc.activeCampaigns) {
       const def = CAMPAIGN_CATALOG.find(c => c.id === campaign.id);
       if (!def) continue;
       const fx = def.effects;
@@ -784,6 +784,64 @@ export class GameState {
       locationCount: this.locations.length,
       totalStaff: this.locations.reduce((sum, loc) => sum + loc.staff.length, 0),
     };
+  }
+
+  /** Get brand consistency score across all franchise locations.
+   *  Returns which aspects match and an overall score (0-1). */
+  getBrandConsistency(): { decor: boolean; seating: boolean; signage: boolean; score: number } {
+    if (!this.franchiseMode || this.locations.length <= 1) {
+      return { decor: true, seating: true, signage: true, score: 1 };
+    }
+    const decor = new Set(this.locations.map(l => l.currentDecor)).size === 1;
+    const seating = new Set(this.locations.map(l => l.currentSeating)).size === 1;
+    const signage = new Set(this.locations.map(l => l.currentSignage)).size === 1;
+    const matched = (decor ? 1 : 0) + (seating ? 1 : 0) + (signage ? 1 : 0);
+    return { decor, seating, signage, score: matched / 3 };
+  }
+
+  /** Apply cross-location franchise effects at start of day.
+   *  - Brand consistency bonus: +0.02 reputation/day per matching aspect
+   *  - Reputation spillover: each location pulls slightly toward the average */
+  applyFranchiseEffects(): void {
+    if (!this.franchiseMode || this.locations.length <= 1) return;
+
+    const consistency = this.getBrandConsistency();
+
+    // Brand consistency bonus: up to +0.06 reputation/day when fully consistent
+    const consistencyBonus = consistency.score * 0.06;
+
+    // Average reputation for spillover calculation
+    const avgRep = this.locations.reduce((sum, l) => sum + l.reputation, 0) / this.locations.length;
+
+    for (const loc of this.locations) {
+      // Apply consistency bonus
+      if (consistencyBonus > 0) {
+        loc.reputation = Math.min(5, loc.reputation + consistencyBonus);
+      }
+
+      // Reputation spillover: each location drifts 5% toward the average
+      const drift = (avgRep - loc.reputation) * 0.05;
+      loc.reputation = Math.max(0.5, Math.min(5, loc.reputation + drift));
+    }
+  }
+
+  /** Transfer a staff member from one location to another.
+   *  Returns true if successful. Staff morale drops by 10 on transfer. */
+  transferStaff(staffId: string, fromLocationId: number, toLocationId: number): boolean {
+    if (!this.franchiseMode) return false;
+    if (fromLocationId === toLocationId) return false;
+    const from = this.locations[fromLocationId];
+    const to = this.locations[toLocationId];
+    if (!from || !to) return false;
+
+    const staffIdx = from.staff.findIndex(s => s.id === staffId);
+    if (staffIdx === -1) return false;
+
+    const member = from.staff.splice(staffIdx, 1)[0];
+    member.morale = Math.max(0, member.morale - 10); // transfer stress
+    member.assigned = false; // unassign on transfer
+    to.staff.push(member);
+    return true;
   }
 
   /** Get the current season definition */
@@ -1380,6 +1438,9 @@ export class GameState {
     if (loc.closureDaysRemaining > 0) {
       loc.closureDaysRemaining--;
     }
+
+    // Apply franchise cross-location effects (brand consistency, reputation spillover)
+    this.applyFranchiseEffects();
 
     // Roll weather for the day
     this.rollWeather();
