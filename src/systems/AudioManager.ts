@@ -32,6 +32,8 @@ export function saveAudioSettings(settings: AudioSettings): void {
 export class AudioManager {
   private ctx: AudioContext | null = null;
   private settings: AudioSettings;
+  private ambientNodes: { oscs: OscillatorNode[]; gain: GainNode } | null = null;
+  private ambientType: string = '';
 
   constructor() {
     this.settings = loadAudioSettings();
@@ -226,6 +228,74 @@ export class AudioManager {
     notes.forEach((freq, i) => {
       setTimeout(() => this.playTone(freq, 0.12, 'sine', 0.2), i * 90);
     });
+  }
+
+  // --- Ambient Sound ---
+
+  /** Start a gentle ambient loop. Type: 'serve' (busy shop) or 'prep' (calm). */
+  startAmbience(type: 'serve' | 'prep'): void {
+    if (this.ambientType === type) return; // already playing this type
+    this.stopAmbience();
+
+    const ctx = this.getCtx();
+    if (!ctx) return;
+
+    this.ambientType = type;
+    const gain = ctx.createGain();
+    const baseVol = type === 'serve' ? 0.025 : 0.012;
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(baseVol * this.vol, ctx.currentTime + 0.5);
+    gain.connect(ctx.destination);
+
+    const oscs: OscillatorNode[] = [];
+
+    if (type === 'serve') {
+      // Busy shop: low hum + subtle high shimmer
+      const hum = ctx.createOscillator();
+      hum.type = 'sine';
+      hum.frequency.value = 120;
+      hum.connect(gain);
+      hum.start();
+      oscs.push(hum);
+
+      const shimmer = ctx.createOscillator();
+      shimmer.type = 'sine';
+      shimmer.frequency.value = 2400;
+      const shimmerGain = ctx.createGain();
+      shimmerGain.gain.value = 0.15; // relative to main gain
+      shimmer.connect(shimmerGain);
+      shimmerGain.connect(gain);
+      shimmer.start();
+      oscs.push(shimmer);
+    } else {
+      // Prep: very gentle low tone
+      const tone = ctx.createOscillator();
+      tone.type = 'sine';
+      tone.frequency.value = 80;
+      tone.connect(gain);
+      tone.start();
+      oscs.push(tone);
+    }
+
+    this.ambientNodes = { oscs, gain };
+  }
+
+  /** Stop ambient sound with a short fade-out. */
+  stopAmbience(): void {
+    if (!this.ambientNodes) return;
+    const { oscs, gain } = this.ambientNodes;
+    const ctx = this.getCtx();
+    if (ctx) {
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
+      setTimeout(() => {
+        oscs.forEach(o => { try { o.stop(); } catch { /* already stopped */ } });
+        gain.disconnect();
+      }, 400);
+    } else {
+      oscs.forEach(o => { try { o.stop(); } catch { /* already stopped */ } });
+    }
+    this.ambientNodes = null;
+    this.ambientType = '';
   }
 }
 

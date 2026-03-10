@@ -46,6 +46,9 @@ export class GameplayScene extends Phaser.Scene {
     this.eventManager = new EventManager();
     this.tipManager = new TipManager();
 
+    // Stop ambient audio when this scene shuts down
+    this.events.on('shutdown', () => getAudioManager(this).stopAmbience());
+
     // Apply day length setting
     const settings = this.registry.get('gameSettings') as { dayLength?: string } | undefined;
     if (settings?.dayLength && DAY_LENGTH_MS[settings.dayLength as DayLengthSetting]) {
@@ -681,7 +684,9 @@ export class GameplayScene extends Phaser.Scene {
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
         openBtn.on('pointerdown', () => {
-          getAudioManager(this).dayStart();
+          const audio = getAudioManager(this);
+          audio.dayStart();
+          audio.startAmbience('serve');
           this.gameState.phase = DayPhase.SERVE;
           this.serveButton.setVisible(true);
           prepContainer.destroy();
@@ -1255,7 +1260,9 @@ export class GameplayScene extends Phaser.Scene {
   }
 
   private onDayEnd(): void {
-    getAudioManager(this).dayEnd();
+    const audio = getAudioManager(this);
+    audio.stopAmbience();
+    audio.dayEnd();
     this.serveButton.setVisible(false);
     this.customerManager.clearQueue();
 
