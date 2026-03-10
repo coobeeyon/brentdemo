@@ -125,11 +125,10 @@
       "title": "Generate placeholder scoop textures for all flavors in BootScene",
       "description": "Only vanilla, chocolate, and strawberry have scoop textures. GameplayScene display case skips rendering for flavors without textures. Generate colored circle textures for all 21 flavors.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T13:52:53.789705265Z",
-      "updated_at": "2026-03-10T13:52:58.062230259Z"
+      "updated_at": "2026-03-10T13:53:40.428462171Z"
     },
     "lb-5kk6": {
       "id": "lb-5kk6",
