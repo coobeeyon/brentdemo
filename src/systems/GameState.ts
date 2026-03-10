@@ -1392,52 +1392,71 @@ export class GameState {
   }
 
   startNewDay(): void {
-    // Track cumulative stats from previous day before resetting
-    this.seasonRevenue += this.loc.dailyRevenue;
-    this.totalRevenue += this.loc.dailyRevenue;
+    // Process ALL locations (in franchise mode) or just the single location
+    const allLocs: LocationState[] = this.franchiseMode && this.locations.length > 0
+      ? this.locations
+      : [this as any];
 
+    const savedLocationId = this.currentLocationId;
+
+    for (let i = 0; i < allLocs.length; i++) {
+      const loc = allLocs[i];
+
+      // Track cumulative stats from previous day before resetting
+      this.seasonRevenue += loc.dailyRevenue;
+      this.totalRevenue += loc.dailyRevenue;
+
+      // Reset daily counters
+      loc.dailyRevenue = 0;
+      loc.dailyExpenses = 0;
+
+      // Expire ingredients
+      loc.ingredients = loc.ingredients.map(ing => ({
+        ...ing,
+        expiresInDays: ing.expiresInDays - 1,
+      })).filter(ing => ing.expiresInDays > 0 && ing.quantity > 0);
+
+      // Deduct staff wages
+      const totalWages = loc.staff.reduce((sum, s) => sum + s.wage, 0);
+      loc.money -= totalWages;
+      loc.dailyExpenses += totalWages;
+
+      // Point this.loc at the current location so helper methods work correctly
+      if (this.franchiseMode) {
+        this.currentLocationId = i;
+      }
+
+      // Deduct equipment maintenance
+      const maintenance = this.getMaintenanceCost();
+      loc.money -= maintenance;
+      loc.dailyExpenses += maintenance;
+
+      // Degrade equipment
+      this.degradeEquipment();
+
+      // Update staff morale
+      this.updateStaffMorale();
+
+      // Tick down campaign durations
+      this.updateCampaigns();
+
+      // Accrue loan interest
+      this.accrueInterest();
+
+      // Tick down closure days from failed inspections
+      if (loc.closureDaysRemaining > 0) {
+        loc.closureDaysRemaining--;
+      }
+    }
+
+    // Restore active location
+    this.currentLocationId = savedLocationId;
+
+    // Advance global day counters (not per-location)
     this.day++;
     this.seasonDay++;
     this.currentHour = STORE_OPEN_HOUR;
     this.phase = DayPhase.PREPARE;
-
-    // Reset daily counters on the location-scoped source
-    this.loc.dailyRevenue = 0;
-    this.loc.dailyExpenses = 0;
-
-    // Expire ingredients
-    const loc = this.loc;
-    loc.ingredients = loc.ingredients.map(ing => ({
-      ...ing,
-      expiresInDays: ing.expiresInDays - 1,
-    })).filter(ing => ing.expiresInDays > 0 && ing.quantity > 0);
-
-    // Deduct staff wages
-    const totalWages = loc.staff.reduce((sum, s) => sum + s.wage, 0);
-    loc.money -= totalWages;
-    loc.dailyExpenses += totalWages;
-
-    // Deduct equipment maintenance
-    const maintenance = this.getMaintenanceCost();
-    loc.money -= maintenance;
-    loc.dailyExpenses += maintenance;
-
-    // Degrade equipment
-    this.degradeEquipment();
-
-    // Update staff morale
-    this.updateStaffMorale();
-
-    // Tick down campaign durations
-    this.updateCampaigns();
-
-    // Accrue loan interest
-    this.accrueInterest();
-
-    // Tick down closure days from failed inspections
-    if (loc.closureDaysRemaining > 0) {
-      loc.closureDaysRemaining--;
-    }
 
     // Apply franchise cross-location effects (brand consistency, reputation spillover)
     this.applyFranchiseEffects();
