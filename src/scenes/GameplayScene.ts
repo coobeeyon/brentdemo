@@ -1485,21 +1485,15 @@ export class GameplayScene extends Phaser.Scene {
           this.showStaffQuitNotices();
         });
       } else {
-        // Game complete! All 5 seasons done
-        const victoryText = this.add.text(0, y, '🏆 Congratulations! You completed all 5 seasons! 🏆', {
-          fontFamily: 'Arial', fontSize: '18px', color: '#FFD700', fontStyle: 'bold',
-          wordWrap: { width: panelW - 60 },
-        }).setOrigin(0.5, 0);
-        container.add(victoryText);
-
-        const menuBtn = this.add.text(0, panelH / 2 - 45, 'Main Menu', {
+        // Game complete! All 5 seasons done — transition to VictoryScene
+        const victoryBtn = this.add.text(0, panelH / 2 - 45, '🏆 View Victory!', {
           fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
-          backgroundColor: '#3498DB', padding: { x: 20, y: 8 },
+          backgroundColor: '#D4AC0D', padding: { x: 20, y: 8 },
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-        container.add(menuBtn);
+        container.add(victoryBtn);
 
-        menuBtn.on('pointerdown', () => {
-          this.scene.start('MainMenuScene');
+        victoryBtn.on('pointerdown', () => {
+          this.scene.start('VictoryScene');
         });
       }
     } else if (result === 'soft_fail') {
@@ -1541,15 +1535,15 @@ export class GameplayScene extends Phaser.Scene {
         this.scene.start('MainMenuScene');
       });
     } else {
-      // Hard fail — game over
-      const menuBtn = this.add.text(0, panelH / 2 - 45, 'Main Menu', {
+      // Hard fail — transition to GameOverScene
+      const gameOverBtn = this.add.text(0, panelH / 2 - 45, 'Continue', {
         fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
         backgroundColor: '#E74C3C', padding: { x: 20, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-      container.add(menuBtn);
+      container.add(gameOverBtn);
 
-      menuBtn.on('pointerdown', () => {
-        this.scene.start('MainMenuScene');
+      gameOverBtn.on('pointerdown', () => {
+        this.scene.start('GameOverScene');
       });
     }
   }
