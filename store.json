@@ -694,11 +694,10 @@
       "title": "Mid-season bankruptcy should trigger immediate game over",
       "description": "Spec says Hard Fail triggers when debt exceeds ability to pay. Currently getSeasonResult() is only called from showSeasonResults(), which only fires when isSeasonComplete() is true (final day). A player whose balance drops below -100 mid-season continues playing until the last day, then sees GameOverScene. Fix: in the end-of-day Next Day handler, add a bankruptcy check that calls showSeasonResults() immediately if any location has money less than -100, even if isSeasonComplete() is false. Must check all locations in franchise mode.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:38:44.844365697Z",
-      "updated_at": "2026-03-10T15:40:46.455922685Z"
+      "updated_at": "2026-03-10T15:41:38.184068290Z"
     },
     "lb-jql7": {
       "id": "lb-jql7",
