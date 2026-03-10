@@ -319,6 +319,16 @@
       "created_at": "2026-03-09T18:11:40.264459854Z",
       "updated_at": "2026-03-09T18:26:13.110362328Z"
     },
+    "lb-el96": {
+      "id": "lb-el96",
+      "title": "Hot fudge and caramel toppings not blocked for vegan customers",
+      "description": "toppingAllowed() in Customer.ts checks if the topping's ingredientId is in DAIRY_INGREDIENTS = ['milk', 'cream']. But hot fudge has ingredientId='hot_fudge' and caramel has ingredientId='caramel', neither of which is in DAIRY_INGREDIENTS. So vegan customers can be served hot fudge or caramel toppings without any dietary violation being detected. orderViolatesRestriction() returns false, no tip penalty, no warning shown. Fix: add 'hot_fudge' and 'caramel' to DAIRY_INGREDIENTS in constants.ts.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T12:12:38.993883371Z",
+      "updated_at": "2026-03-10T12:12:38.993883371Z"
+    },
     "lb-els5": {
       "id": "lb-els5",
       "title": "Emergency markup lost when switching supplier during resupply",
