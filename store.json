@@ -1133,10 +1133,10 @@
       "title": "Health inspection tied to player actions",
       "description": "Health inspections are random events not tied to player behavior. Add cleanliness score based on equipment maintenance, expired goods, etc.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
       "created_at": "2026-03-10T16:44:56.838060674Z",
-      "updated_at": "2026-03-10T16:44:56.838060674Z"
+      "updated_at": "2026-03-10T16:46:46.213573005Z"
     },
     "lb-rc41": {
       "id": "lb-rc41",
