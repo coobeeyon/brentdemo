@@ -225,23 +225,7 @@ export class ShopScene extends Phaser.Scene {
     }).setOrigin(0.5);
     row.add(qtyText);
 
-    const minusBtn = this.add.text(colX.qty, y + 10, '−', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#E74C3C',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    minusBtn.on('pointerdown', () => {
-      if (qty > 1) { qty--; qtyText.setText(`${qty}`); }
-    });
-    row.add(minusBtn);
-
-    const plusBtn = this.add.text(colX.qty + 50, y + 10, '+', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#2ECC71',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    plusBtn.on('pointerdown', () => {
-      if (qty < 10) { qty++; qtyText.setText(`${qty}`); }
-    });
-    row.add(plusBtn);
-
-    // Buy button
+    // Buy button (declared early so updateBuyLabel can reference it)
     const buyBtn = this.add.text(colX.buy, y + 10, 'Buy', {
       fontFamily: 'Arial',
       fontSize: '16px',
@@ -249,6 +233,33 @@ export class ShopScene extends Phaser.Scene {
       backgroundColor: '#27AE60',
       padding: { x: 12, y: 4 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    const updateBuyLabel = () => {
+      const discount = this.getBulkDiscount(qty);
+      const total = actualPrice * qty * (1 - discount);
+      if (discount > 0) {
+        buyBtn.setText(`Buy $${total.toFixed(2)} (${Math.round(discount * 100)}% off)`);
+      } else {
+        buyBtn.setText(`Buy $${(actualPrice * qty).toFixed(2)}`);
+      }
+    };
+    updateBuyLabel();
+
+    const minusBtn = this.add.text(colX.qty, y + 10, '−', {
+      fontFamily: 'Arial', fontSize: '18px', color: '#E74C3C',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    minusBtn.on('pointerdown', () => {
+      if (qty > 1) { qty--; qtyText.setText(`${qty}`); updateBuyLabel(); }
+    });
+    row.add(minusBtn);
+
+    const plusBtn = this.add.text(colX.qty + 50, y + 10, '+', {
+      fontFamily: 'Arial', fontSize: '18px', color: '#2ECC71',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    plusBtn.on('pointerdown', () => {
+      if (qty < 10) { qty++; qtyText.setText(`${qty}`); updateBuyLabel(); }
+    });
+    row.add(plusBtn);
 
     buyBtn.on('pointerdown', () => {
       const discount = this.getBulkDiscount(qty);
@@ -279,7 +290,11 @@ export class ShopScene extends Phaser.Scene {
           this.registry.set('supplierQualityBonus', Math.max(existing, this.currentSupplier.qualityBonus));
         }
 
-        stockText.setText(`${this.gameState.ingredients.find(i => i.id === item.id)?.quantity ?? 0}`);
+        // Refresh stock display with low-stock re-evaluation
+        const newQty = this.gameState.ingredients.find(i => i.id === item.id)?.quantity ?? 0;
+        const newIsLow = isBaseIngredient && newQty < 10;
+        stockText.setText(newIsLow ? `${newQty} ⚠` : `${newQty}`);
+        stockText.setColor(newIsLow ? '#E74C3C' : '#FFF');
         this.updateDisplay();
 
         // Flash feedback
