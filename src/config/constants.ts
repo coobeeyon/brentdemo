@@ -155,6 +155,9 @@ export const FLAVOR_CATALOG: FlavorDef[] = [
   { id: 'birthday_cake', name: 'Birthday Cake', ingredients: ['milk', 'sugar', 'vanilla_extract', 'sprinkles'], popularity: 0.7, starter: false },
   { id: 'caramel_swirl', name: 'Caramel Swirl', ingredients: ['milk', 'sugar', 'caramel'], popularity: 0.65, starter: false },
   { id: 'blueberry', name: 'Blueberry', ingredients: ['milk', 'sugar', 'fruit'], popularity: 0.5, starter: false },
+  // Seasonal specialty flavors
+  { id: 'pumpkin_spice', name: 'Pumpkin Spice', ingredients: ['milk', 'sugar', 'vanilla_extract'], popularity: 0.7, starter: false },
+  { id: 'peppermint', name: 'Peppermint', ingredients: ['milk', 'sugar'], popularity: 0.65, starter: false },
 ];
 
 // Toppings
@@ -786,6 +789,15 @@ export const RESEARCH_CATALOG: ResearchNodeDef[] = [
     cost: 10,
     prerequisites: ['flavor_premium'],
     effects: { unlockFlavors: ['rocky_road', 'coconut', 'lemon_sorbet', 'caramel_swirl'] },
+  },
+  {
+    id: 'flavor_seasonal',
+    name: 'Seasonal Specialties',
+    description: 'Unlock limited-time seasonal flavors: Pumpkin Spice and Peppermint.',
+    category: ResearchCategory.FLAVORS,
+    cost: 7,
+    prerequisites: ['flavor_premium'],
+    effects: { unlockFlavors: ['pumpkin_spice', 'peppermint'] },
   },
 
   // Equipment branch

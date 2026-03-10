@@ -69,6 +69,8 @@ export class BootScene extends Phaser.Scene {
       birthday_cake: 0xFFC1CC,
       caramel_swirl: 0xDAA520,
       blueberry: 0x6A5ACD,
+      pumpkin_spice: 0xE07020,
+      peppermint: 0xF0C0C0,
     };
 
     for (const [id, color] of Object.entries(flavorColors)) {
