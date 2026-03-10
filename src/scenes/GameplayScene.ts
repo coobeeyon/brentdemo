@@ -7,6 +7,7 @@ import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager'
 import { SaveManager } from '../systems/SaveManager';
 import { TipManager } from '../systems/TipManager';
 import { uiColor, uiColorNum, scaledFontSize } from '../systems/UIUtils';
+import { DAY_LENGTH_MS, DayLengthSetting } from './SettingsScene';
 
 export class GameplayScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -37,6 +38,12 @@ export class GameplayScene extends Phaser.Scene {
     this.customerManager = new CustomerManager(this, this.gameState);
     this.eventManager = new EventManager();
     this.tipManager = new TipManager();
+
+    // Apply day length setting
+    const settings = this.registry.get('gameSettings') as { dayLength?: string } | undefined;
+    if (settings?.dayLength && DAY_LENGTH_MS[settings.dayLength as DayLengthSetting]) {
+      this.gameState.dayDurationMs = DAY_LENGTH_MS[settings.dayLength as DayLengthSetting];
+    }
 
     const isLoadingSave = this.registry.get('loadSave') as boolean;
     const gameMode = this.registry.get('gameMode') as string ?? 'story';

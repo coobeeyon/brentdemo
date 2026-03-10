@@ -3,14 +3,24 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 
 const SETTINGS_KEY = 'icecream_settings';
 
+export type DayLengthSetting = 'short' | 'normal' | 'long';
+
 export interface GameSettings {
   colorblindMode: boolean;
   textSize: 'small' | 'medium' | 'large';
+  dayLength: DayLengthSetting;
 }
+
+export const DAY_LENGTH_MS: Record<DayLengthSetting, number> = {
+  short: 3 * 60 * 1000,   // 3 minutes
+  normal: 5 * 60 * 1000,  // 5 minutes
+  long: 10 * 60 * 1000,   // 10 minutes
+};
 
 const DEFAULT_SETTINGS: GameSettings = {
   colorblindMode: false,
   textSize: 'medium',
+  dayLength: 'normal',
 };
 
 /** Global text size multiplier based on setting */
@@ -60,7 +70,7 @@ export class SettingsScene extends Phaser.Scene {
     const panelX = GAME_WIDTH / 2 - 250;
     const panelY = GAME_HEIGHT / 2 - 200;
     const panelW = 500;
-    const panelH = 400;
+    const panelH = 470;
 
     const panel = this.add.graphics();
     panel.fillStyle(0x2C3E50, 1);
@@ -124,6 +134,33 @@ export class SettingsScene extends Phaser.Scene {
         this.scene.restart();
       });
       sx += 50;
+    }
+
+    y += 70;
+
+    // --- Day Length ---
+    this.add.text(panelX + 30, y, 'Day Length', labelStyle);
+    this.add.text(panelX + 30, y + 24, 'How long each in-game day lasts in real time', descStyle);
+
+    const dayLengths: Array<DayLengthSetting> = ['short', 'normal', 'long'];
+    const dayLengthLabels: Record<DayLengthSetting, string> = { short: '3m', normal: '5m', long: '10m' };
+    let dx = panelX + panelW - 170;
+
+    for (const dl of dayLengths) {
+      const isActive = this.settings.dayLength === dl;
+      const dlBtn = this.add.text(dx, y + 5, dayLengthLabels[dl], {
+        fontFamily: 'Arial', fontSize: '16px', fontStyle: 'bold',
+        color: isActive ? '#2ECC71' : '#BDC3C7',
+        backgroundColor: isActive ? '#1A5276' : '#34495E',
+        padding: { x: 10, y: 4 },
+      }).setInteractive({ useHandCursor: true });
+
+      dlBtn.on('pointerdown', () => {
+        this.settings.dayLength = dl;
+        this.applyAndSave();
+        this.scene.restart();
+      });
+      dx += 55;
     }
 
     y += 70;
