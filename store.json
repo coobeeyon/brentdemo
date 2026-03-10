@@ -914,6 +914,11 @@
       "from_id": "lb-ogiw",
       "to_id": "lb-b6u3",
       "dep_type": "blocks"
+    },
+    {
+      "from_id": "lb-xtgt",
+      "to_id": "lb-b6u3",
+      "dep_type": "blocks"
     }
   ]
 }
