@@ -34,6 +34,7 @@ export class AudioManager {
   private settings: AudioSettings;
   private ambientNodes: { oscs: OscillatorNode[]; gain: GainNode } | null = null;
   private ambientType: string = '';
+  private ambientBaseVol: number = 0;
 
   constructor() {
     this.settings = loadAudioSettings();
@@ -65,11 +66,20 @@ export class AudioManager {
   setVolume(v: number): void {
     this.settings.sfxVolume = Math.max(0, Math.min(1, v));
     saveAudioSettings(this.settings);
+    this.updateAmbientVolume();
   }
 
   setMuted(m: boolean): void {
     this.settings.muted = m;
     saveAudioSettings(this.settings);
+    this.updateAmbientVolume();
+  }
+
+  private updateAmbientVolume(): void {
+    if (!this.ambientNodes) return;
+    const ctx = this.getCtx();
+    if (!ctx) return;
+    this.ambientNodes.gain.gain.setValueAtTime(this.ambientBaseVol * this.vol, ctx.currentTime);
   }
 
   // --- Tone helpers ---
@@ -243,6 +253,7 @@ export class AudioManager {
     this.ambientType = type;
     const gain = ctx.createGain();
     const baseVol = type === 'serve' ? 0.025 : 0.012;
+    this.ambientBaseVol = baseVol;
     gain.gain.setValueAtTime(0, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(baseVol * this.vol, ctx.currentTime + 0.5);
     gain.connect(ctx.destination);
