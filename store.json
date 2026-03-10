@@ -794,11 +794,10 @@
       "title": "Fix ResearchScene broken scroll: wrong wheel event signature and bad maxScrollY calc",
       "description": "The wheel event callback had 6 params instead of 4 (Phaser passes pointer, currentlyOver, deltaX, deltaY), so deltaY was always undefined. Also fixed maxScrollY using incorrect formula that depended on panel position.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T17:48:25.748482067Z",
-      "updated_at": "2026-03-10T17:48:30.278921674Z"
+      "updated_at": "2026-03-10T17:48:41.834398361Z"
     },
     "lb-jql7": {
       "id": "lb-jql7",
