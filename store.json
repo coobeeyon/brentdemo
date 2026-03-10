@@ -1103,11 +1103,10 @@
       "title": "Soft fail has no continue-with-reduced-score path to next season",
       "description": "SPEC: 'Soft Fail: miss targets but stay solvent — replay the season or accept a reduced score.' Current implementation only offers Retry Season or Main Menu. There is no option to accept a reduced score and advance. Players who cannot beat a season can never progress past it. Add a third button (e.g. 'Continue Anyway') that advances to the next season without a win bonus.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:06:36.669060169Z",
-      "updated_at": "2026-03-10T15:07:41.811521331Z"
+      "updated_at": "2026-03-10T15:08:59.556215218Z"
     },
     "lb-swfj": {
       "id": "lb-swfj",
