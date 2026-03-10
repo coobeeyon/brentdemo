@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, TOPPING_CATALOG, SERVING_STYLE_CATALOG, BASE_SCOOP_PRICE } from '../config/constants';
 import { GameState, getGameState, Recipe } from '../systems/GameState';
+import { scaledFontSize } from '../systems/UIUtils';
 
 export class RecipeScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -33,11 +34,11 @@ export class RecipeScene extends Phaser.Scene {
 
     // Title
     this.add.text(GAME_WIDTH / 2, panelY + 20, 'Signature Recipes', {
-      fontFamily: 'Arial', fontSize: '26px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 26), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
     this.add.text(GAME_WIDTH / 2, panelY + 52, `${this.gameState.loc.recipes.length}/10 recipes`, {
-      fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#95A5A6',
     }).setOrigin(0.5, 0);
 
     this.contentContainer = this.add.container(0, 0);
@@ -47,7 +48,7 @@ export class RecipeScene extends Phaser.Scene {
     // New Recipe button
     if (this.gameState.loc.recipes.length < 10) {
       const newBtn = this.add.text(GAME_WIDTH / 2 - 80, panelY + panelH - 75, '+ New Recipe', {
-        fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF',
         backgroundColor: '#27AE60', padding: { x: 14, y: 6 },
       }).setInteractive({ useHandCursor: true });
 
@@ -60,7 +61,7 @@ export class RecipeScene extends Phaser.Scene {
 
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2 + 80, panelY + panelH - 75, 'Close', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 14, y: 6 },
     }).setInteractive({ useHandCursor: true });
 
@@ -85,7 +86,7 @@ export class RecipeScene extends Phaser.Scene {
 
     if (this.gameState.loc.recipes.length === 0) {
       const hint = this.add.text(GAME_WIDTH / 2, panelY + 100, 'No recipes yet. Create signature recipes\nto attract customers and charge premium prices!', {
-        fontFamily: 'Arial', fontSize: '14px', color: '#95A5A6', align: 'center',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#95A5A6', align: 'center',
       }).setOrigin(0.5, 0);
       this.contentContainer.add(hint);
       return;
@@ -102,7 +103,7 @@ export class RecipeScene extends Phaser.Scene {
       const avgRating = this.gameState.getRecipeRating(recipe);
       const stars = recipe.timesSold >= 3 ? ` ${'*'.repeat(Math.round(avgRating * 5))}` : '';
       const nameText = this.add.text(panelX + 35, y + 8, `${recipe.name}${stars}`, {
-        fontFamily: 'Arial', fontSize: '16px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF', fontStyle: 'bold',
       });
       this.contentContainer.add(nameText);
 
@@ -115,20 +116,20 @@ export class RecipeScene extends Phaser.Scene {
       }).join(', ');
       const desc = `${flavorName} ${styleDef?.name ?? recipe.style}${toppingNames ? ' + ' + toppingNames : ''}`;
       const descText = this.add.text(panelX + 35, y + 30, desc, {
-        fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#BDC3C7',
         wordWrap: { width: panelW - 200 },
       });
       this.contentContainer.add(descText);
 
       // Stats
       const statsText = this.add.text(panelX + 35, y + 50, `$${recipe.price.toFixed(2)} | Sold: ${recipe.timesSold}`, {
-        fontFamily: 'Arial', fontSize: '11px', color: '#7FDBFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7FDBFF',
       });
       this.contentContainer.add(statsText);
 
       // Delete button
       const delBtn = this.add.text(panelX + panelW - 45, y + 25, 'X', {
-        fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
         backgroundColor: '#C0392B', padding: { x: 8, y: 4 },
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
@@ -156,7 +157,7 @@ export class RecipeScene extends Phaser.Scene {
     let fy = panelY + 85;
 
     this.formContainer.add(this.add.text(fx, fy, 'Create New Recipe', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#F1C40F', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#F1C40F', fontStyle: 'bold',
     }));
     fy += 30;
 
@@ -174,11 +175,11 @@ export class RecipeScene extends Phaser.Scene {
 
     // Name
     this.formContainer.add(this.add.text(fx, fy, 'Name:', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7',
     }));
 
     const nameDisplay = this.add.text(fx + 60, fy, state.name, {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 8, y: 2 },
     }).setInteractive({ useHandCursor: true });
     this.formContainer.add(nameDisplay);
@@ -196,10 +197,10 @@ export class RecipeScene extends Phaser.Scene {
 
     // Flavor selector
     this.formContainer.add(this.add.text(fx, fy, 'Flavor:', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7',
     }));
     const flavorDisplay = this.add.text(fx + 60, fy, availableFlavors[0]?.name ?? 'None', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 8, y: 2 },
     }).setInteractive({ useHandCursor: true });
     this.formContainer.add(flavorDisplay);
@@ -212,10 +213,10 @@ export class RecipeScene extends Phaser.Scene {
 
     // Style selector
     this.formContainer.add(this.add.text(fx, fy, 'Style:', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7',
     }));
     const styleDisplay = this.add.text(fx + 60, fy, availableStyles[0]?.name ?? 'Cone', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 8, y: 2 },
     }).setInteractive({ useHandCursor: true });
     this.formContainer.add(styleDisplay);
@@ -228,13 +229,13 @@ export class RecipeScene extends Phaser.Scene {
 
     // Toppings (toggle)
     this.formContainer.add(this.add.text(fx, fy, 'Toppings (click to toggle):', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7',
     }));
     fy += 22;
 
     for (const topping of availableToppings) {
       const tBtn = this.add.text(fx + 10, fy, `[ ] ${topping.name}`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
       }).setInteractive({ useHandCursor: true });
       this.formContainer.add(tBtn);
 
@@ -267,14 +268,14 @@ export class RecipeScene extends Phaser.Scene {
     };
 
     const priceText = this.add.text(fx, fy, `Suggested price: $${calcPrice().toFixed(2)} (15% recipe premium)`, {
-      fontFamily: 'Arial', fontSize: '13px', color: '#F1C40F',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#F1C40F',
     });
     this.formContainer.add(priceText);
     fy += 30;
 
     // Create button
     const createBtn = this.add.text(fx, fy, 'Create Recipe', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF',
       backgroundColor: '#27AE60', padding: { x: 14, y: 6 },
     }).setInteractive({ useHandCursor: true });
     this.formContainer.add(createBtn);
@@ -295,7 +296,7 @@ export class RecipeScene extends Phaser.Scene {
 
     // Cancel button
     const cancelBtn = this.add.text(fx + 160, fy, 'Cancel', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF',
       backgroundColor: '#7F8C8D', padding: { x: 14, y: 6 },
     }).setInteractive({ useHandCursor: true });
     this.formContainer.add(cancelBtn);

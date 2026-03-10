@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, EQUIPMENT_CATALOG, EquipmentDef, EquipmentId, EquipmentEffects } from '../config/constants';
 import { GameState, getGameState, OwnedEquipment } from '../systems/GameState';
+import { scaledFontSize } from '../systems/UIUtils';
 
 export class EquipmentScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -34,20 +35,20 @@ export class EquipmentScene extends Phaser.Scene {
     const titleSuffix = this.gameState.franchiseMode ? ` — ${this.gameState.locationName}` : '';
     this.add.text(GAME_WIDTH / 2, panelY + 25, `Equipment & Upgrades${titleSuffix}`, {
       fontFamily: 'Arial',
-      fontSize: '28px',
+      fontSize: scaledFontSize(this, 28),
       color: '#FFF',
     }).setOrigin(0.5);
 
     // Balance display
     this.moneyText = this.add.text(GAME_WIDTH / 2 - 120, panelY + 60, '', {
       fontFamily: 'Arial',
-      fontSize: '18px',
+      fontSize: scaledFontSize(this, 18),
       color: '#2ECC40',
     }).setOrigin(0, 0.5);
 
     this.maintenanceText = this.add.text(GAME_WIDTH / 2 + 120, panelY + 60, '', {
       fontFamily: 'Arial',
-      fontSize: '14px',
+      fontSize: scaledFontSize(this, 14),
       color: '#E67E22',
     }).setOrigin(1, 0.5);
 
@@ -58,7 +59,7 @@ export class EquipmentScene extends Phaser.Scene {
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 35, '← Back', {
       fontFamily: 'Arial',
-      fontSize: '20px',
+      fontSize: scaledFontSize(this, 20),
       color: '#FFF',
       backgroundColor: '#E74C3C',
       padding: { x: 20, y: 8 },
@@ -105,20 +106,20 @@ export class EquipmentScene extends Phaser.Scene {
     // Equipment name and description
     this.contentContainer.add(
       this.add.text(panelX + 20, y + 8, def.name, {
-        fontFamily: 'Arial', fontSize: '17px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 17), color: '#FFF', fontStyle: 'bold',
       })
     );
 
     this.contentContainer.add(
       this.add.text(panelX + 20, y + 30, def.description, {
-        fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6',
       })
     );
 
     // Current tier info
     const tierLabel = currentTier === 0 ? 'Not owned' : `Tier ${currentTier}: ${currentTierDef?.name ?? ''}`;
     const tierText = this.add.text(panelX + 20, y + 52, tierLabel, {
-      fontFamily: 'Arial', fontSize: '13px', color: currentTier === 0 ? '#7F8C8D' : '#3498DB',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: currentTier === 0 ? '#7F8C8D' : '#3498DB',
     });
     this.contentContainer.add(tierText);
 
@@ -131,7 +132,7 @@ export class EquipmentScene extends Phaser.Scene {
     if (owned?.broken) {
       const repairCost = this.getRepairCost(def.id);
       const repairBtn = this.add.text(panelX + 450, y + 48, `Repair $${repairCost}`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
         backgroundColor: '#E67E22', padding: { x: 8, y: 3 },
       }).setInteractive({ useHandCursor: true });
 
@@ -151,7 +152,7 @@ export class EquipmentScene extends Phaser.Scene {
       // Broken indicator
       this.contentContainer.add(
         this.add.text(panelX + 440, y + 10, 'BROKEN', {
-          fontFamily: 'Arial', fontSize: '14px', color: '#E74C3C', fontStyle: 'bold',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#E74C3C', fontStyle: 'bold',
         })
       );
     }
@@ -162,7 +163,7 @@ export class EquipmentScene extends Phaser.Scene {
       const discountedCost = Math.round(nextTier.cost * (1 - (researchFx.equipmentDiscount ?? 0)));
       const btnLabel = currentTier === 0 ? `Buy $${discountedCost}` : `Upgrade $${discountedCost}`;
       const upgradeBtn = this.add.text(panelX + rowW - 20, y + 15, btnLabel, {
-        fontFamily: 'Arial', fontSize: '15px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF',
         backgroundColor: '#27AE60', padding: { x: 12, y: 5 },
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
@@ -180,7 +181,7 @@ export class EquipmentScene extends Phaser.Scene {
       if (nextInfo) {
         this.contentContainer.add(
           this.add.text(panelX + rowW - 20, y + 50, `Next: ${nextTier.name} — ${nextInfo}`, {
-            fontFamily: 'Arial', fontSize: '11px', color: '#7F8C8D',
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7F8C8D',
           }).setOrigin(1, 0)
         );
       }
@@ -189,7 +190,7 @@ export class EquipmentScene extends Phaser.Scene {
     } else if (currentTier > 0) {
       this.contentContainer.add(
         this.add.text(panelX + rowW - 20, y + 20, 'MAX TIER', {
-          fontFamily: 'Arial', fontSize: '14px', color: '#F39C12', fontStyle: 'bold',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#F39C12', fontStyle: 'bold',
         }).setOrigin(1, 0)
       );
     }
@@ -213,7 +214,7 @@ export class EquipmentScene extends Phaser.Scene {
 
     this.contentContainer.add(
       this.add.text(x + barW + 5, y - 1, `${Math.round(owned.condition)}%`, {
-        fontFamily: 'Arial', fontSize: '11px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#95A5A6',
       })
     );
   }

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, BASE_SCOOP_PRICE, BASE_PATIENCE_MS } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
+import { scaledFontSize } from '../systems/UIUtils';
 
 interface BoothCustomer {
   container: Phaser.GameObjects.Container;
@@ -68,11 +69,11 @@ export class PopUpBoothScene extends Phaser.Scene {
     }
 
     this.add.text(GAME_WIDTH / 2, 60, '🎪 Pop-Up Booth Setup', {
-      fontFamily: 'Arial', fontSize: '28px', color: '#FFD700', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 28), color: '#FFD700', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     this.add.text(GAME_WIDTH / 2, 100, 'Pick 3 flavors for your booth menu (60 second rush!)', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#BDC3C7',
     }).setOrigin(0.5);
 
     const unlocked = this.gameState.flavors.filter(f => f.unlocked);
@@ -81,11 +82,11 @@ export class PopUpBoothScene extends Phaser.Scene {
     const startY = 160;
 
     const selectedDisplay = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 100, 'Selected: none', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
     }).setOrigin(0.5);
 
     const goBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, 'Start Booth!', {
-      fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF',
       backgroundColor: '#555', padding: { x: 20, y: 10 },
     }).setOrigin(0.5);
 
@@ -98,7 +99,7 @@ export class PopUpBoothScene extends Phaser.Scene {
       const y = startY + row * 60;
 
       const btn = this.add.text(x, y, `🍨 ${flavor.name}`, {
-        fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF',
         backgroundColor: '#2C3E50', padding: { x: 12, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -151,7 +152,7 @@ export class PopUpBoothScene extends Phaser.Scene {
 
     // Cancel button
     const cancelBtn = this.add.text(GAME_WIDTH - 20, 20, 'Cancel', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#E74C3C',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#E74C3C',
       backgroundColor: '#2C3E5088', padding: { x: 10, y: 6 },
     }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
@@ -189,7 +190,7 @@ export class PopUpBoothScene extends Phaser.Scene {
 
     // Booth sign
     this.add.text(GAME_WIDTH / 2, 215, '🍦 ICE CREAM BOOTH 🍦', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF', fontStyle: 'bold',
       backgroundColor: '#E74C3C88', padding: { x: 12, y: 4 },
     }).setOrigin(0.5);
 
@@ -198,29 +199,29 @@ export class PopUpBoothScene extends Phaser.Scene {
       const flavor = this.gameState.flavors.find(f => f.id === id);
       const x = GAME_WIDTH / 2 - 100 + i * 100;
       this.add.text(x, 300, `🍨 ${flavor?.name ?? id}`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
       }).setOrigin(0.5);
     });
 
     // Timer
     this.timerText = this.add.text(GAME_WIDTH / 2, 30, '60s', {
-      fontFamily: 'Arial', fontSize: '36px', color: '#FFD700', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 36), color: '#FFD700', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     // Stats
     this.statsText = this.add.text(20, 20, 'Served: 0 | Revenue: $0.00', {
-      fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
       backgroundColor: '#00000066', padding: { x: 8, y: 4 },
     });
 
     // Queue area label
     this.add.text(GAME_WIDTH / 2, 380, '— Fair Customers —', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#666',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#666',
     }).setOrigin(0.5);
 
     // Serve button
     this.serveBtn = this.add.text(GAME_WIDTH / 2, 350, '🍦 Serve! [Enter]', {
-      fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF',
       backgroundColor: '#3498DB', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -311,7 +312,7 @@ export class PopUpBoothScene extends Phaser.Scene {
     container.add(bubble);
 
     const orderText = this.add.text(0, -29, flavor?.name.slice(0, 6) ?? '???', {
-      fontFamily: 'Arial', fontSize: '10px', color: '#333',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 10), color: '#333',
     }).setOrigin(0.5);
     container.add(orderText);
 
@@ -377,7 +378,7 @@ export class PopUpBoothScene extends Phaser.Scene {
     if (!canServe) {
       // Flash red text
       const warn = this.add.text(GAME_WIDTH / 2, 300, 'Out of ingredients!', {
-        fontFamily: 'Arial', fontSize: '18px', color: '#E74C3C', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#E74C3C', fontStyle: 'bold',
       }).setOrigin(0.5);
       this.tweens.add({
         targets: warn, alpha: 0, y: 280, duration: 800,
@@ -413,7 +414,7 @@ export class PopUpBoothScene extends Phaser.Scene {
 
     // Floating revenue
     const floatText = this.add.text(GAME_WIDTH / 2, 330, `+$${revenue.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '20px', color: '#2ECC40', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#2ECC40', fontStyle: 'bold',
     }).setOrigin(0.5);
     this.tweens.add({
       targets: floatText, y: 280, alpha: 0, duration: 800,
@@ -460,7 +461,7 @@ export class PopUpBoothScene extends Phaser.Scene {
     panel.strokeRoundedRect(cx - panelW / 2, cy - panelH / 2, panelW, panelH, 15);
 
     this.add.text(cx, cy - panelH / 2 + 25, '🎪 Booth Results!', {
-      fontFamily: 'Arial', fontSize: '26px', color: '#FFD700', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 26), color: '#FFD700', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     let y = cy - panelH / 2 + 70;
@@ -468,7 +469,7 @@ export class PopUpBoothScene extends Phaser.Scene {
 
     const addLine = (text: string, color: string) => {
       this.add.text(leftX, y, text, {
-        fontFamily: 'Arial', fontSize: '18px', color,
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color,
       });
       y += 30;
     };
@@ -500,7 +501,7 @@ export class PopUpBoothScene extends Phaser.Scene {
     }
 
     const closeBtn = this.add.text(cx, cy + panelH / 2 - 40, 'Back to Store', {
-      fontFamily: 'Arial', fontSize: '22px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 22), color: '#FFF',
       backgroundColor: '#3498DB', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 

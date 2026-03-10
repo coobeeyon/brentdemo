@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DECOR_CATALOG, DecorThemeId } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
+import { scaledFontSize } from '../systems/UIUtils';
 
 export class DecorScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -29,16 +30,16 @@ export class DecorScene extends Phaser.Scene {
     panel.fillRoundedRect(panelX, panelY, panelW, panelH, 15);
 
     this.add.text(GAME_WIDTH / 2, panelY + 25, '🎨 Store Decor', {
-      fontFamily: 'Arial', fontSize: '28px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 28), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
     const currentDef = this.gameState.getDecorDef();
     this.add.text(GAME_WIDTH / 2, panelY + 60, `Current: ${currentDef.icon} ${currentDef.name} | Ambiance: ${currentDef.ambiance}/100`, {
-      fontFamily: 'Arial', fontSize: '14px', color: '#F1C40F',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#F1C40F',
     }).setOrigin(0.5, 0);
 
     this.add.text(GAME_WIDTH / 2, panelY + 80, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '14px', color: '#2ECC40',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#2ECC40',
     }).setOrigin(0.5, 0);
 
     this.contentContainer = this.add.container(0, 0);
@@ -46,7 +47,7 @@ export class DecorScene extends Phaser.Scene {
 
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 35, 'Close', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -81,20 +82,20 @@ export class DecorScene extends Phaser.Scene {
 
       // Theme icon + name
       const nameText = this.add.text(panelX + 35, y + 8, `${theme.icon} ${theme.name}`, {
-        fontFamily: 'Arial', fontSize: '17px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 17), color: '#FFF', fontStyle: 'bold',
       });
       this.contentContainer.add(nameText);
 
       // Description
       const descText = this.add.text(panelX + 35, y + 30, theme.description, {
-        fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6',
         wordWrap: { width: panelW - 200 },
       });
       this.contentContainer.add(descText);
 
       // Stats
       const statsText = this.add.text(panelX + 35, y + 52, `Ambiance: ${theme.ambiance} | Patience: +${Math.round((theme.patienceMult - 1) * 100)}% | Price tolerance: +${Math.round(theme.priceTolerance * 100)}%`, {
-        fontFamily: 'Arial', fontSize: '11px', color: '#7FDBFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7FDBFF',
       });
       this.contentContainer.add(statsText);
 
@@ -120,7 +121,7 @@ export class DecorScene extends Phaser.Scene {
       }
 
       const actionBtn = this.add.text(panelX + panelW - 45, y + 30, btnText, {
-        fontFamily: 'Arial', fontSize: '15px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF',
         backgroundColor: btnColor, padding: { x: 10, y: 5 },
       }).setOrigin(1, 0.5).setInteractive({ useHandCursor: clickable });
 

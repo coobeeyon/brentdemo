@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, LOW_STOCK_THRESHOLD } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
-import { uiColor } from '../systems/UIUtils';
+import { uiColor, scaledFontSize } from '../systems/UIUtils';
 
 export class FranchiseScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -33,13 +33,13 @@ export class FranchiseScene extends Phaser.Scene {
 
     // Title
     this.add.text(GAME_WIDTH / 2, panelY + 25, 'Franchise Overview', {
-      fontFamily: 'Arial', fontSize: '28px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 28), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     // Aggregate stats bar
     const stats = this.gameState.getFranchiseStats();
     const statsY = panelY + 60;
-    const statsStyle = { fontFamily: 'Arial', fontSize: '14px', color: '#BDC3C7' };
+    const statsStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#BDC3C7' };
 
     const consistency = this.gameState.getBrandConsistency();
     const consistencyLabel = consistency.score === 1 ? '✓ Consistent'
@@ -61,7 +61,7 @@ export class FranchiseScene extends Phaser.Scene {
       if (!consistency.signage) details.push('Signage');
       const detailStr = details.length > 0 ? ` (mismatched: ${details.join(', ')})` : ' (+0.06★/day bonus)';
       this.add.text(panelX + 30, brandY, `Brand: ${consistencyLabel}${detailStr}`, {
-        fontFamily: 'Arial', fontSize: '13px', color: consistencyColor,
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: consistencyColor,
       });
     }
 
@@ -85,7 +85,7 @@ export class FranchiseScene extends Phaser.Scene {
       const cost = seasonDef.locationSetupCost;
       const canAfford = this.gameState.loc.money >= cost;
       const newLocBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 80, `+ Open New Location ($${cost})`, {
-        fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
         backgroundColor: canAfford ? '#27AE60' : '#7F8C8D',
         padding: { x: 16, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -108,7 +108,7 @@ export class FranchiseScene extends Phaser.Scene {
 
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 35, '← Back', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#E74C3C', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -145,13 +145,13 @@ export class FranchiseScene extends Phaser.Scene {
       const nameLabel = isActive ? `📍 ${loc.name} (Active)` : loc.name;
       this.contentContainer.add(
         this.add.text(panelX + 45, y + 10, nameLabel, {
-          fontFamily: 'Arial', fontSize: '18px', color: isActive ? '#3498DB' : '#FFF', fontStyle: 'bold',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: isActive ? '#3498DB' : '#FFF', fontStyle: 'bold',
         })
       );
 
       // Stats row 1: money, revenue, expenses
       const row1Y = y + 38;
-      const statStyle = { fontFamily: 'Arial', fontSize: '13px', color: '#BDC3C7' };
+      const statStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#BDC3C7' };
       this.contentContainer.add(
         this.add.text(panelX + 45, row1Y,
           `Balance: $${loc.money.toFixed(0)}  |  Revenue: $${loc.dailyRevenue.toFixed(0)}  |  Expenses: $${loc.dailyExpenses.toFixed(0)}`,
@@ -184,7 +184,7 @@ export class FranchiseScene extends Phaser.Scene {
       if (alerts.length > 0) {
         this.contentContainer.add(
           this.add.text(panelX + 45, y + 78, `⚠ ${alerts.join('  •  ')}`, {
-            fontFamily: 'Arial', fontSize: '11px', color: '#F39C12',
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#F39C12',
           })
         );
       }
@@ -192,7 +192,7 @@ export class FranchiseScene extends Phaser.Scene {
       // Switch button (only for non-active locations)
       if (!isActive) {
         const switchBtn = this.add.text(panelX + cardW - 10, y + 15, 'Switch →', {
-          fontFamily: 'Arial', fontSize: '15px', color: '#FFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF',
           backgroundColor: '#3498DB', padding: { x: 12, y: 6 },
         }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
@@ -206,7 +206,7 @@ export class FranchiseScene extends Phaser.Scene {
         const activeLoc = this.gameState.locations[this.gameState.currentLocationId];
         if (activeLoc.staff.length > 1) {
           const transferBtn = this.add.text(panelX + cardW - 10, y + 55, 'Send Staff →', {
-            fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
             backgroundColor: '#8E44AD', padding: { x: 10, y: 4 },
           }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, LOAN_CATALOG } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
+import { scaledFontSize } from '../systems/UIUtils';
 
 export class LoanScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -29,11 +30,11 @@ export class LoanScene extends Phaser.Scene {
     panel.fillRoundedRect(panelX, panelY, panelW, panelH, 15);
 
     this.add.text(GAME_WIDTH / 2, panelY + 25, '🏦 Loans', {
-      fontFamily: 'Arial', fontSize: '28px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 28), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
     this.add.text(GAME_WIDTH / 2, panelY + 60, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '16px', color: '#2ECC40',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#2ECC40',
     }).setOrigin(0.5, 0);
 
     this.contentContainer = this.add.container(0, 0);
@@ -41,7 +42,7 @@ export class LoanScene extends Phaser.Scene {
 
     // Close button
     const closeBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 35, 'Close', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -71,14 +72,14 @@ export class LoanScene extends Phaser.Scene {
     let y = panelY + 95;
 
     const headerText = this.add.text(GAME_WIDTH / 2, y, '📋 Active Loan', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#F1C40F', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#F1C40F', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
     this.contentContainer.add(headerText);
     y += 35;
 
     const isOverdue = this.gameState.loc.loanDaysRemaining <= 0;
-    const labelStyle = { fontFamily: 'Arial', fontSize: '15px', color: '#95A5A6' };
-    const valueStyle = { fontFamily: 'Arial', fontSize: '17px', color: '#FFF' };
+    const labelStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#95A5A6' };
+    const valueStyle = { fontFamily: 'Arial', fontSize: scaledFontSize(this, 17), color: '#FFF' };
 
     const addRow = (label: string, value: string, color?: string) => {
       const l = this.add.text(leftX, y, label, labelStyle);
@@ -94,7 +95,7 @@ export class LoanScene extends Phaser.Scene {
 
     if (isOverdue) {
       const warningText = this.add.text(GAME_WIDTH / 2, y + 5, '⚠ Overdue loans accrue double interest\nand cause daily reputation loss!', {
-        fontFamily: 'Arial', fontSize: '13px', color: '#E74C3C',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#E74C3C',
         align: 'center', lineSpacing: 4,
       }).setOrigin(0.5, 0);
       this.contentContainer.add(warningText);
@@ -113,7 +114,7 @@ export class LoanScene extends Phaser.Scene {
         panelX + 40 + i * 125, y,
         `Pay $${amount}`,
         {
-          fontFamily: 'Arial', fontSize: '16px',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 16),
           color: canAfford ? '#FFF' : '#666',
           backgroundColor: canAfford ? '#27AE60' : '#34495E',
           padding: { x: 12, y: 6 },
@@ -134,7 +135,7 @@ export class LoanScene extends Phaser.Scene {
     // Pay all button
     if (payAllAmount > 0) {
       const payAllBtn = this.add.text(GAME_WIDTH / 2, y, `Pay All ($${payAllAmount.toFixed(2)})`, {
-        fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
         backgroundColor: '#2ECC71', padding: { x: 16, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -150,7 +151,7 @@ export class LoanScene extends Phaser.Scene {
     let y = panelY + 95;
 
     const headerText = this.add.text(GAME_WIDTH / 2, y, 'Choose a loan:', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#95A5A6',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#95A5A6',
     }).setOrigin(0.5, 0);
     this.contentContainer.add(headerText);
     y += 35;
@@ -163,23 +164,23 @@ export class LoanScene extends Phaser.Scene {
       this.contentContainer.add(cardBg);
 
       const nameText = this.add.text(panelX + 40, y + 10, `${loan.name} — $${loan.amount}`, {
-        fontFamily: 'Arial', fontSize: '18px', color: '#FFF', fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF', fontStyle: 'bold',
       });
       this.contentContainer.add(nameText);
 
       const descText = this.add.text(panelX + 40, y + 34, loan.description, {
-        fontFamily: 'Arial', fontSize: '12px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#95A5A6',
         wordWrap: { width: panelW - 200 },
       });
       this.contentContainer.add(descText);
 
       const detailText = this.add.text(panelX + 40, y + 55, `${(loan.interestRate * 100).toFixed(1)}% daily interest • ${loan.durationDays} days to repay • Total: ~$${(loan.amount * (1 + loan.interestRate * loan.durationDays)).toFixed(0)}`, {
-        fontFamily: 'Arial', fontSize: '11px', color: '#F39C12',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#F39C12',
       });
       this.contentContainer.add(detailText);
 
       const takeBtn = this.add.text(panelX + panelW - 50, y + 35, 'Take Loan', {
-        fontFamily: 'Arial', fontSize: '15px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 15), color: '#FFF',
         backgroundColor: '#E67E22', padding: { x: 10, y: 5 },
       }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
 

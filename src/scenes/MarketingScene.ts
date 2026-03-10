@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, CAMPAIGN_CATALOG, CampaignId, LOYALTY_REDEMPTION_COST, LOYALTY_DISCOUNT_PERCENT } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
-import { uiColor } from '../systems/UIUtils';
+import { uiColor, scaledFontSize } from '../systems/UIUtils';
 
 export class MarketingScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -30,12 +30,12 @@ export class MarketingScene extends Phaser.Scene {
 
     // Title
     this.add.text(GAME_WIDTH / 2, panelY + 25, 'Marketing Campaigns', {
-      fontFamily: 'Arial', fontSize: '26px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 26), color: '#FFF', fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
     // Balance
     this.add.text(GAME_WIDTH / 2, panelY + 60, `Balance: $${this.gameState.loc.money.toFixed(2)}`, {
-      fontFamily: 'Arial', fontSize: '16px', color: uiColor(this, 'green'),
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: uiColor(this, 'green'),
     }).setOrigin(0.5, 0);
 
     // Campaign cards
@@ -50,7 +50,7 @@ export class MarketingScene extends Phaser.Scene {
 
     // Back button
     const backBtn = this.add.text(GAME_WIDTH / 2, panelY + panelH - 40, '← Back', {
-      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -69,7 +69,7 @@ export class MarketingScene extends Phaser.Scene {
   private renderLoyaltySection(x: number, y: number, width: number): void {
     // Section header
     this.add.text(x, y, 'Loyal Customers', {
-      fontFamily: 'Arial', fontSize: '18px', color: uiColor(this, 'yellow'), fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: uiColor(this, 'yellow'), fontStyle: 'bold',
     });
 
     const topCustomers = this.gameState.getTopCustomers(5);
@@ -77,7 +77,7 @@ export class MarketingScene extends Phaser.Scene {
 
     if (topCustomers.length === 0) {
       this.add.text(x, y + 25, 'No loyal customers yet. Serve customers well to build loyalty!', {
-        fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
       });
     } else {
       // Show effects summary
@@ -88,13 +88,13 @@ export class MarketingScene extends Phaser.Scene {
 
       if (effectParts.length > 0) {
         this.add.text(x, y + 24, `Loyalty bonuses: ${effectParts.join(' | ')}`, {
-          fontFamily: 'Arial', fontSize: '11px', color: '#7FDBFF',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7FDBFF',
         });
       }
 
       // Redemption info
       this.add.text(x, y + 40, `Customers redeem ${LOYALTY_REDEMPTION_COST} pts for a ${Math.round(LOYALTY_DISCOUNT_PERCENT * 100)}% discount`, {
-        fontFamily: 'Arial', fontSize: '11px', color: uiColor(this, 'yellow'),
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: uiColor(this, 'yellow'),
       });
 
       // Top customers list
@@ -103,7 +103,7 @@ export class MarketingScene extends Phaser.Scene {
         const flavorName = this.gameState.loc.flavors.find(f => f.id === lc.favoriteFlavor)?.name ?? lc.favoriteFlavor;
         const redeemReady = lc.points >= LOYALTY_REDEMPTION_COST ? ' 🎁' : '';
         this.add.text(x, cy, `${lc.name} — ${lc.visits} visits, ${lc.points} pts, loves ${flavorName}${redeemReady}`, {
-          fontFamily: 'Arial', fontSize: '12px', color: '#BDC3C7',
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#BDC3C7',
         });
         cy += 18;
       }
@@ -131,12 +131,12 @@ export class MarketingScene extends Phaser.Scene {
 
     // Icon + name
     this.add.text(x + 15, y + 10, `${def.icon} ${def.name}`, {
-      fontFamily: 'Arial', fontSize: '18px', color: '#FFF', fontStyle: 'bold',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF', fontStyle: 'bold',
     });
 
     // Description
     this.add.text(x + 15, y + 35, def.description, {
-      fontFamily: 'Arial', fontSize: '13px', color: '#BDC3C7',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#BDC3C7',
       wordWrap: { width: width - 170 },
     });
 
@@ -154,27 +154,27 @@ export class MarketingScene extends Phaser.Scene {
     }
 
     this.add.text(x + 15, y + 65, effectParts.join(' | '), {
-      fontFamily: 'Arial', fontSize: '11px', color: '#7FDBFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#7FDBFF',
     });
 
     // Duration
     this.add.text(x + 15, y + 78, `Duration: ${def.durationDays} days`, {
-      fontFamily: 'Arial', fontSize: '11px', color: '#95A5A6',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#95A5A6',
     });
 
     // Right side: cost/status + button
     if (isActive) {
       this.add.text(x + width - 15, y + 15, 'ACTIVE', {
-        fontFamily: 'Arial', fontSize: '14px', color: uiColor(this, 'green'), fontStyle: 'bold',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: uiColor(this, 'green'), fontStyle: 'bold',
       }).setOrigin(1, 0);
 
       this.add.text(x + width - 15, y + 40, `${active!.daysRemaining} days left`, {
-        fontFamily: 'Arial', fontSize: '13px', color: '#BDC3C7',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#BDC3C7',
       }).setOrigin(1, 0);
     } else {
       const btnColor = canAfford ? '#27AE60' : '#7F8C8D';
       const btn = this.add.text(x + width - 15, y + 20, `$${discountedCost}`, {
-        fontFamily: 'Arial', fontSize: '18px', color: '#FFF',
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
         backgroundColor: btnColor, padding: { x: 12, y: 6 },
       }).setOrigin(1, 0);
 
