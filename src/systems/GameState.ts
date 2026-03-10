@@ -588,17 +588,18 @@ export class GameState {
     if (!def) return false;
 
     // Can't run the same campaign twice simultaneously
-    if (this.activeCampaigns.some(c => c.id === campaignId)) return false;
+    const loc = this.loc;
+    if (loc.activeCampaigns.some(c => c.id === campaignId)) return false;
 
     // Apply research discounts
     const rFx = this.getResearchEffects();
     const discountedCost = Math.round(def.cost * (1 - (rFx.campaignDiscount ?? 0)));
-    if (this.money < discountedCost) return false;
+    if (loc.money < discountedCost) return false;
 
-    this.money -= discountedCost;
-    this.dailyExpenses += discountedCost;
+    loc.money -= discountedCost;
+    loc.dailyExpenses += discountedCost;
     const bonusDays = rFx.campaignDurationBonus ?? 0;
-    this.activeCampaigns.push({ id: campaignId, daysRemaining: def.durationDays + bonusDays });
+    loc.activeCampaigns.push({ id: campaignId, daysRemaining: def.durationDays + bonusDays });
     return true;
   }
 
@@ -1049,24 +1050,25 @@ export class GameState {
 
   /** Get current decor definition */
   getDecorDef(): DecorThemeDef {
-    return DECOR_CATALOG.find(d => d.id === this.currentDecor) ?? DECOR_CATALOG[0];
+    return DECOR_CATALOG.find(d => d.id === this.loc.currentDecor) ?? DECOR_CATALOG[0];
   }
 
   /** Purchase and apply a decor theme */
   purchaseDecor(decorId: DecorThemeId): boolean {
-    if (this.unlockedDecor.includes(decorId)) {
+    const loc = this.loc;
+    if (loc.unlockedDecor.includes(decorId)) {
       // Already owned — just switch
-      this.currentDecor = decorId;
+      loc.currentDecor = decorId;
       return true;
     }
 
     const def = DECOR_CATALOG.find(d => d.id === decorId);
-    if (!def || this.money < def.cost) return false;
+    if (!def || loc.money < def.cost) return false;
 
-    this.money -= def.cost;
-    this.dailyExpenses += def.cost;
-    this.unlockedDecor.push(decorId);
-    this.currentDecor = decorId;
+    loc.money -= def.cost;
+    loc.dailyExpenses += def.cost;
+    loc.unlockedDecor.push(decorId);
+    loc.currentDecor = decorId;
     return true;
   }
 
@@ -1087,79 +1089,83 @@ export class GameState {
 
   /** Get current seating definition */
   getSeatingDef(): SeatingDef {
-    return SEATING_CATALOG.find(s => s.id === this.currentSeating) ?? SEATING_CATALOG[0];
+    return SEATING_CATALOG.find(s => s.id === this.loc.currentSeating) ?? SEATING_CATALOG[0];
   }
 
   /** Purchase and apply a seating arrangement */
   purchaseSeating(seatingId: SeatingId): boolean {
-    if (this.unlockedSeating.includes(seatingId)) {
+    const loc = this.loc;
+    if (loc.unlockedSeating.includes(seatingId)) {
       // Already owned — just switch
-      this.currentSeating = seatingId;
+      loc.currentSeating = seatingId;
       return true;
     }
 
     const def = SEATING_CATALOG.find(s => s.id === seatingId);
-    if (!def || this.money < def.cost) return false;
+    if (!def || loc.money < def.cost) return false;
 
-    this.money -= def.cost;
-    this.dailyExpenses += def.cost;
-    this.unlockedSeating.push(seatingId);
-    this.currentSeating = seatingId;
+    loc.money -= def.cost;
+    loc.dailyExpenses += def.cost;
+    loc.unlockedSeating.push(seatingId);
+    loc.currentSeating = seatingId;
     return true;
   }
 
   /** Get current signage definition */
   getSignageDef(): SignageDef {
-    return SIGNAGE_CATALOG.find(s => s.id === this.currentSignage) ?? SIGNAGE_CATALOG[0];
+    return SIGNAGE_CATALOG.find(s => s.id === this.loc.currentSignage) ?? SIGNAGE_CATALOG[0];
   }
 
   /** Purchase and apply a signage option */
   purchaseSignage(signageId: SignageId): boolean {
-    if (this.unlockedSignage.includes(signageId)) {
-      this.currentSignage = signageId;
+    const loc = this.loc;
+    if (loc.unlockedSignage.includes(signageId)) {
+      loc.currentSignage = signageId;
       return true;
     }
 
     const def = SIGNAGE_CATALOG.find(s => s.id === signageId);
-    if (!def || this.money < def.cost) return false;
+    if (!def || loc.money < def.cost) return false;
 
-    this.money -= def.cost;
-    this.dailyExpenses += def.cost;
-    this.unlockedSignage.push(signageId);
-    this.currentSignage = signageId;
+    loc.money -= def.cost;
+    loc.dailyExpenses += def.cost;
+    loc.unlockedSignage.push(signageId);
+    loc.currentSignage = signageId;
     return true;
   }
 
   /** Take out a loan */
   takeLoan(loanId: string): boolean {
+    const loc = this.loc;
     // Can't take a loan if one is already active
-    if (this.loanAmount > 0) return false;
+    if (loc.loanAmount > 0) return false;
 
     const def = LOAN_CATALOG.find(l => l.id === loanId);
     if (!def) return false;
 
-    this.loanAmount = def.amount;
-    this.loanInterestRate = def.interestRate;
-    this.loanDaysRemaining = def.durationDays;
-    this.money += def.amount;
+    loc.loanAmount = def.amount;
+    loc.loanInterestRate = def.interestRate;
+    loc.loanDaysRemaining = def.durationDays;
+    loc.money += def.amount;
     return true;
   }
 
   /** Make a payment on the active loan. Returns actual amount paid. */
   makeLoanPayment(amount: number): number {
-    if (this.loanAmount <= 0) return 0;
-    const payment = Math.min(amount, this.loanAmount, this.money);
+    const loc = this.loc;
+    if (loc.loanAmount <= 0) return 0;
+    const payment = Math.min(amount, loc.loanAmount, loc.money);
     if (payment <= 0) return 0;
 
-    this.money -= payment;
-    this.dailyExpenses += payment;
-    this.loanAmount = Math.max(0, this.loanAmount - payment);
+    loc.money -= payment;
+    loc.dailyExpenses += payment;
+    loc.loanAmount = Math.max(0, loc.loanAmount - payment);
 
     // If fully repaid, clear loan state
-    if (this.loanAmount <= 0) {
-      this.loanAmount = 0;
-      this.loanInterestRate = 0;
-      this.loanDaysRemaining = 0;
+    if (loc.loanAmount <= 0) {
+      loc.loanAmount = 0;
+      loc.loanInterestRate = 0;
+      loc.loanDaysRemaining = 0;
     }
 
     return payment;
