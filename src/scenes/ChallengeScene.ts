@@ -379,29 +379,29 @@ export class ChallengeScene extends Phaser.Scene {
     gameState.season = 1;
     gameState.seasonDay = 1;
     gameState.seasonRevenue = 0;
-    gameState.money = ch.startingMoney;
-    gameState.reputation = 2.5;
-    gameState.dayReports = [];
+    gameState.loc.money = ch.startingMoney;
+    gameState.loc.reputation = 2.5;
+    gameState.loc.dayReports = [];
     gameState.totalCustomersServed = 0;
     gameState.totalRevenue = 0;
-    gameState.activeCampaigns = [];
-    gameState.loanAmount = 0;
-    gameState.closureDaysRemaining = 0;
-    gameState.recipes = [];
+    gameState.loc.activeCampaigns = [];
+    gameState.loc.loanAmount = 0;
+    gameState.loc.closureDaysRemaining = 0;
+    gameState.loc.recipes = [];
     gameState.loyalCustomers = [];
-    gameState.staff = [];
+    gameState.loc.staff = [];
     gameState.researchPoints = 0;
     gameState.unlockedResearch = new Set();
     gameState.completedMilestones = new Set();
 
     // Apply flavor constraints
     if (ch.constraints.allowedFlavors) {
-      for (const flavor of gameState.flavors) {
+      for (const flavor of gameState.loc.flavors) {
         flavor.unlocked = ch.constraints.allowedFlavors.includes(flavor.id);
       }
     } else {
       // Reset to starters only
-      for (const flavor of gameState.flavors) {
+      for (const flavor of gameState.loc.flavors) {
         const catalogEntry = { vanilla: true, chocolate: true, strawberry: true } as Record<string, boolean>;
         flavor.unlocked = !!catalogEntry[flavor.id];
       }
@@ -409,17 +409,17 @@ export class ChallengeScene extends Phaser.Scene {
 
     // Apply limited ingredients
     if (ch.constraints.limitedIngredients) {
-      for (const ing of gameState.ingredients) {
+      for (const ing of gameState.loc.ingredients) {
         ing.quantity = Math.min(ing.quantity, 10);
       }
     }
 
     // Apply price cap via menu prices
     if (ch.constraints.maxPrice) {
-      for (const flavor of gameState.flavors) {
+      for (const flavor of gameState.loc.flavors) {
         if (flavor.unlocked) {
-          gameState.menuPrices.set(flavor.id, Math.min(
-            gameState.menuPrices.get(flavor.id) ?? 3.0,
+          gameState.loc.menuPrices.set(flavor.id, Math.min(
+            gameState.loc.menuPrices.get(flavor.id) ?? 3.0,
             ch.constraints.maxPrice
           ));
         }

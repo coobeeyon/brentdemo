@@ -335,7 +335,7 @@ export class GameplayScene extends Phaser.Scene {
     displayCase.strokeRoundedRect(GAME_WIDTH / 2 - 250, 260, 500, 40, 5);
 
     // Place flavor scoops in display
-    const flavors = this.gameState.flavors.filter(f => f.unlocked);
+    const flavors = this.gameState.loc.flavors.filter(f => f.unlocked);
     const spacing = 500 / (flavors.length + 1);
     flavors.forEach((flavor, i) => {
       const x = (GAME_WIDTH / 2 - 250) + spacing * (i + 1);
@@ -735,7 +735,7 @@ export class GameplayScene extends Phaser.Scene {
       }
 
       // Show inventory summary during prepare
-      const invSummary = this.gameState.ingredients
+      const invSummary = this.gameState.loc.ingredients
         .map(i => `${i.name}: ${i.quantity} (${i.expiresInDays}d)`)
         .join('\n');
 
@@ -992,7 +992,7 @@ export class GameplayScene extends Phaser.Scene {
     const notif = this.add.container(GAME_WIDTH / 2, 140);
     let text = event.def.description;
     if (event.trendingFlavorId) {
-      const flavorName = this.gameState.flavors.find(f => f.id === event.trendingFlavorId)?.name ?? event.trendingFlavorId;
+      const flavorName = this.gameState.loc.flavors.find(f => f.id === event.trendingFlavorId)?.name ?? event.trendingFlavorId;
       text = event.def.description.replace('A flavor', `"${flavorName}"`);
     }
 

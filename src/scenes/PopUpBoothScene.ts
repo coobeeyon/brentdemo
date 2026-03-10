@@ -76,7 +76,7 @@ export class PopUpBoothScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#BDC3C7',
     }).setOrigin(0.5);
 
-    const unlocked = this.gameState.flavors.filter(f => f.unlocked);
+    const unlocked = this.gameState.loc.flavors.filter(f => f.unlocked);
     const perRow = 5;
     const startX = GAME_WIDTH / 2 - (perRow - 1) * 70;
     const startY = 160;
@@ -114,7 +114,7 @@ export class PopUpBoothScene extends Phaser.Scene {
         }
 
         const names = this.selectedFlavors.map(id => {
-          const f = this.gameState.flavors.find(fl => fl.id === id);
+          const f = this.gameState.loc.flavors.find(fl => fl.id === id);
           return f?.name ?? id;
         });
         selectedDisplay.setText(`Selected: ${names.length > 0 ? names.join(', ') : 'none'}`);
@@ -136,7 +136,7 @@ export class PopUpBoothScene extends Phaser.Scene {
       this.selectedFlavors = unlocked.map(f => f.id);
       flavorBtns.forEach(btn => btn.setStyle({ backgroundColor: '#27AE60' }));
       const names = this.selectedFlavors.map(id => {
-        const f = this.gameState.flavors.find(fl => fl.id === id);
+        const f = this.gameState.loc.flavors.find(fl => fl.id === id);
         return f?.name ?? id;
       });
       selectedDisplay.setText(`Selected: ${names.join(', ')}`);
@@ -196,7 +196,7 @@ export class PopUpBoothScene extends Phaser.Scene {
 
     // Show selected flavors on counter
     this.selectedFlavors.forEach((id, i) => {
-      const flavor = this.gameState.flavors.find(f => f.id === id);
+      const flavor = this.gameState.loc.flavors.find(f => f.id === id);
       const x = GAME_WIDTH / 2 - 100 + i * 100;
       this.add.text(x, 300, `🍨 ${flavor?.name ?? id}`, {
         fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
@@ -287,8 +287,8 @@ export class PopUpBoothScene extends Phaser.Scene {
 
   private spawnBoothCustomer(): void {
     const flavorId = this.selectedFlavors[Math.floor(Math.random() * this.selectedFlavors.length)];
-    const flavor = this.gameState.flavors.find(f => f.id === flavorId);
-    const price = this.gameState.menuPrices.get(flavorId) ?? BASE_SCOOP_PRICE;
+    const flavor = this.gameState.loc.flavors.find(f => f.id === flavorId);
+    const price = this.gameState.loc.menuPrices.get(flavorId) ?? BASE_SCOOP_PRICE;
 
     const slotIndex = this.queue.length;
     const x = BOOTH_QUEUE_X + slotIndex * BOOTH_QUEUE_SPACING;
@@ -363,12 +363,12 @@ export class PopUpBoothScene extends Phaser.Scene {
     if (customer.served || customer.left) return;
 
     // Check ingredients
-    const flavor = this.gameState.flavors.find(f => f.id === customer.flavorId);
+    const flavor = this.gameState.loc.flavors.find(f => f.id === customer.flavorId);
     if (!flavor) return;
 
     let canServe = true;
     for (const ingId of flavor.ingredients) {
-      const ing = this.gameState.ingredients.find(i => i.id === ingId);
+      const ing = this.gameState.loc.ingredients.find(i => i.id === ingId);
       if (!ing || ing.quantity < 1) {
         canServe = false;
         break;
@@ -389,7 +389,7 @@ export class PopUpBoothScene extends Phaser.Scene {
 
     // Deduct ingredients
     for (const ingId of flavor.ingredients) {
-      const ing = this.gameState.ingredients.find(i => i.id === ingId);
+      const ing = this.gameState.loc.ingredients.find(i => i.id === ingId);
       if (ing) ing.quantity -= 1;
     }
 
