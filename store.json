@@ -554,11 +554,10 @@
       "title": "runHealthInspection writes to top-level fields instead of loc in franchise mode",
       "description": "GameState.ts runHealthInspection() (around line 1487-1499) writes to this.reputation, this.lastInspectionDay, and this.closureDaysRemaining directly. In franchise mode these should write to this.loc.reputation, this.loc.lastInspectionDay, and this.loc.closureDaysRemaining. The LocationState interface has all three fields. This means health inspection results (reputation change and closure) don't affect the active location in Season 5.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T13:14:22.818231299Z",
-      "updated_at": "2026-03-10T13:15:02.898930180Z"
+      "updated_at": "2026-03-10T13:19:10.156150208Z"
     },
     "lb-kn50": {
       "id": "lb-kn50",
