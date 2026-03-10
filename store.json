@@ -164,11 +164,10 @@
       "title": "Vegan customers always violated in Season 1: no dairy-free starter flavor",
       "description": "All three starter flavors (vanilla, chocolate, strawberry) contain 'milk', which is in DAIRY_INGREDIENTS. Vegan customers (15% spawn rate) have an empty allowedFlavors pool and fall back to the full menu in generateOrder() (Customer.ts:~194). orderViolatesRestriction() then returns true for every vegan customer, causing 0 tip and 50% satisfaction throughout Season 1 — silently tanking reputation.\n\nlemon_sorbet is the only dairy-free flavor and is only available via research/events, so this can persist for the entire game.\n\nFix options (pick one):\n1. Add lemon_sorbet (or another dairy-free flavor) as a guaranteed starter or early Season 1 unlock.\n2. Skip assigning DietaryRestriction.VEGAN when no vegan-compatible flavor exists in availableFlavors.\n3. Treat the fallback path (allowedFlavors empty) as non-violating — the customer accepts what is available.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 1,
-      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T12:01:01.358440226Z",
-      "updated_at": "2026-03-10T12:01:50.231207102Z"
+      "updated_at": "2026-03-10T12:05:38.136052415Z"
     },
     "lb-a7v8": {
       "id": "lb-a7v8",
