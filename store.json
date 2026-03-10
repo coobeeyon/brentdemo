@@ -609,6 +609,16 @@
       "created_at": "2026-03-10T11:49:57.800292289Z",
       "updated_at": "2026-03-10T11:51:45.312941969Z"
     },
+    "lb-mrhq": {
+      "id": "lb-mrhq",
+      "title": "Sandbox mode: health inspection can still close store",
+      "description": "The spec requires sandbox mode to have 'no failure state', but health inspections are not bypassed. In GameplayScene.create() (lines 90-97), shouldTriggerInspection()/runHealthInspection() run unconditionally regardless of game mode. A failed inspection sets closureDaysRemaining > 0 and triggers showClosureNotice(), effectively closing the store in sandbox mode. Fix: skip the inspection trigger block when gameMode === 'sandbox', or zero out closureDaysRemaining after inspection in sandbox mode.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T12:25:24.641760930Z",
+      "updated_at": "2026-03-10T12:25:24.641760930Z"
+    },
     "lb-mzff": {
       "id": "lb-mzff",
       "title": "Supplier data model and catalog",
