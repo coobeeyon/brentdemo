@@ -950,9 +950,11 @@ export class GameplayScene extends Phaser.Scene {
 
   private showEventNotification(event: ActiveEvent): void {
     const notif = this.add.container(GAME_WIDTH / 2, 140);
-    const text = event.trendingFlavorId
-      ? `${event.def.description.replace('A flavor', `"${event.trendingFlavorId}"`)}`
-      : event.def.description;
+    let text = event.def.description;
+    if (event.trendingFlavorId) {
+      const flavorName = this.gameState.flavors.find(f => f.id === event.trendingFlavorId)?.name ?? event.trendingFlavorId;
+      text = event.def.description.replace('A flavor', `"${flavorName}"`);
+    }
 
     const bg = this.add.graphics();
     bg.fillStyle(0x34495E, 0.95);
