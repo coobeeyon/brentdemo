@@ -160,12 +160,14 @@ export class ShopScene extends Phaser.Scene {
     // Supply guidance hint for new players (Day 1, low stock)
     const loc = this.gameState.loc;
     const totalStock = loc.ingredients.reduce((sum, i) => sum + i.quantity, 0);
+    let itemsOffsetY = 148;
     if (this.gameState.day <= 3 || totalStock < 30) {
-      this.add.text(GAME_WIDTH / 2, panelY + 132, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
+      this.add.text(GAME_WIDTH / 2, panelY + 138, 'Tip: Buy at least milk, sugar, and one flavor extract to serve customers!', {
         fontFamily: 'Arial',
         fontSize: '12px',
         color: '#F1C40F',
       }).setOrigin(0.5);
+      itemsOffsetY = 158;
     }
 
     // Filter catalog by current supplier's excluded ingredients
@@ -174,7 +176,7 @@ export class ShopScene extends Phaser.Scene {
 
     // Item rows
     filteredCatalog.forEach((item, i) => {
-      this.createShopRow(item, i, panelX, panelY + 148, colX);
+      this.createShopRow(item, i, panelX, panelY + itemsOffsetY, colX);
     });
 
     // Close button
