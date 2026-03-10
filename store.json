@@ -599,6 +599,16 @@
       "created_at": "2026-03-09T18:04:26.573083979Z",
       "updated_at": "2026-03-09T18:29:16.170704225Z"
     },
+    "lb-i7uz": {
+      "id": "lb-i7uz",
+      "title": "Add seasonal specialty flavors (pumpkin spice, peppermint)",
+      "description": "Add seasonal specialty flavors mentioned in spec but not yet in catalog",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T14:31:00.731741135Z",
+      "updated_at": "2026-03-10T14:31:00.731741135Z"
+    },
     "lb-if57": {
       "id": "lb-if57",
       "title": "Initialize project with TypeScript, Phaser 3, Vite, and basic folder structure",
