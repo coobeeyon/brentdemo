@@ -899,11 +899,6 @@
       "from_id": "lb-dfd5",
       "to_id": "lb-3l93",
       "dep_type": "parent"
-    },
-    {
-      "from_id": "lb-dfd5",
-      "to_id": "lb-0hec",
-      "dep_type": "blocks"
     }
   ]
 }
