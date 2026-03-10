@@ -1543,11 +1543,10 @@
       "title": "Season 5 soft-fail has no accept-reduced-score ending",
       "description": "Spec says: 'Soft Fail: miss targets but stay solvent — replay the season or accept a reduced score.' For seasons 1-4, the Continue Anyway button lets the player advance with a reduced score. For season 5 there is no next season, so the button is hidden (guarded by nextSeasonDef existing). A player who soft-fails season 5 can only Retry Season or Main Menu — no path to accept a partial completion. Add a soft-fail ending screen for season 5 soft-fail (e.g., a modified version of VictoryScene showing partial completion) rather than silently routing to main menu.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T16:05:17.154442132Z",
-      "updated_at": "2026-03-10T16:06:30.775460964Z"
+      "updated_at": "2026-03-10T16:09:10.030598532Z"
     },
     "lb-zc6s": {
       "id": "lb-zc6s",
