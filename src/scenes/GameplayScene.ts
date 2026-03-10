@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD, VIP_PERK_THRESHOLDS } from '../config/constants';
 import { ChallengeDef } from './ChallengeScene';
-import { GameState, getGameState, CriticReview } from '../systems/GameState';
+import { GameState, getGameState, CriticReview, LocationState, DayReport } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager';
 import { SaveManager } from '../systems/SaveManager';
@@ -1636,15 +1636,15 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // Season stats summary — aggregate all locations in franchise mode
-    const allLocs: any[] = s.franchiseMode && s.locations.length > 0
+    const allLocs: LocationState[] = s.franchiseMode && s.locations.length > 0
       ? s.locations : [s.loc];
     let totalServed = 0;
     let totalLost = 0;
     let aggregateBalance = 0;
     for (const loc of allLocs) {
       const locReports = (loc.dayReports ?? []).slice(-seasonDef.daysPerSeason);
-      totalServed += locReports.reduce((sum: number, r: any) => sum + r.customersServed, 0);
-      totalLost += locReports.reduce((sum: number, r: any) => sum + r.customersLost, 0);
+      totalServed += locReports.reduce((sum: number, r: DayReport) => sum + r.customersServed, 0);
+      totalLost += locReports.reduce((sum: number, r: DayReport) => sum + r.customersLost, 0);
       aggregateBalance += loc.money;
     }
 
