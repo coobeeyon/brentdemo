@@ -388,7 +388,7 @@ export class ChallengeScene extends Phaser.Scene {
     gameState.loc.loanAmount = 0;
     gameState.loc.closureDaysRemaining = 0;
     gameState.loc.recipes = [];
-    gameState.loyalCustomers = [];
+    gameState.loc.loyalCustomers = [];
     gameState.loc.staff = [];
     gameState.researchPoints = 0;
     gameState.unlockedResearch = new Set();
