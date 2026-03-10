@@ -279,6 +279,16 @@
       "created_at": "2026-03-09T18:04:26.585547326Z",
       "updated_at": "2026-03-09T18:15:09.745533038Z"
     },
+    "lb-ct8e": {
+      "id": "lb-ct8e",
+      "title": "Redundant gameModeTutorialCheck variable in GameplayScene.create()",
+      "description": "In GameplayScene.create(), 'gameMode' is declared at the top of the method (line ~35). Later, 'gameModeTutorialCheck' is declared with the identical registry read (line ~70) and used only to gate the tutorial launch. Since both variables always hold the same value, gameModeTutorialCheck is dead code duplication. Replace gameModeTutorialCheck with the existing gameMode variable to avoid confusion.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T12:31:58.431936832Z",
+      "updated_at": "2026-03-10T12:31:58.431936832Z"
+    },
     "lb-d137": {
       "id": "lb-d137",
       "title": "Tutorial text contradicts emergency resupply feature",
