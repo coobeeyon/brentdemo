@@ -200,6 +200,16 @@
       "created_at": "2026-03-10T11:50:02.604998747Z",
       "updated_at": "2026-03-10T11:54:04.021041042Z"
     },
+    "lb-7az7": {
+      "id": "lb-7az7",
+      "title": "Apply scaledFontSize to all remaining hardcoded font sizes in GameplayScene",
+      "description": "GameplayScene still has ~34 hardcoded fontSize values (HUD, end-of-day report, event notifications, gameplay tips, etc.) that don't respect the text size accessibility setting. Convert all to use scaledFontSize().",
+      "item_type": "task",
+      "status": "open",
+      "priority": 4,
+      "created_at": "2026-03-10T15:03:04.913910701Z",
+      "updated_at": "2026-03-10T15:03:04.913910701Z"
+    },
     "lb-80wv": {
       "id": "lb-80wv",
       "title": "Show daily revenue tracker in HUD top bar",
