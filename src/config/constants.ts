@@ -3,7 +3,7 @@ export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
 
 // Time system
-export const DEFAULT_DAY_DURATION_MS = 10 * 60 * 1000; // 10 minutes real time per in-game day
+export const DEFAULT_DAY_DURATION_MS = 5 * 60 * 1000; // 5 minutes real time per in-game day
 export const HOURS_PER_DAY = 14; // Store open 8am-10pm
 export const STORE_OPEN_HOUR = 8;
 export const STORE_CLOSE_HOUR = 22;
@@ -144,8 +144,8 @@ export const SEASON_CATALOG: SeasonDef[] = [
     name: 'Humble Beginnings',
     setting: 'Hometown Stand',
     description: 'Start your ice cream journey at a small roadside stand. Learn the basics of running a shop.',
-    daysPerSeason: 14,
-    revenueTarget: 500,
+    daysPerSeason: 7,
+    revenueTarget: 300,
     reputationTarget: 2.0,
     startingMoney: STARTING_MONEY,
   },
@@ -154,8 +154,8 @@ export const SEASON_CATALOG: SeasonDef[] = [
     name: 'Beach Town',
     setting: 'Small Beach Town',
     description: 'Move to a busy beach town. Higher customer volume but more competition.',
-    daysPerSeason: 18,
-    revenueTarget: 1500,
+    daysPerSeason: 10,
+    revenueTarget: 800,
     reputationTarget: 2.5,
     startingMoney: 800,
     unlockFlavors: ['mint_chip', 'cookies_cream'],
@@ -165,8 +165,8 @@ export const SEASON_CATALOG: SeasonDef[] = [
     name: 'City Food Court',
     setting: 'City Food Court',
     description: 'Take on the big city. Manage multiple stations and face fierce competition.',
-    daysPerSeason: 21,
-    revenueTarget: 3000,
+    daysPerSeason: 12,
+    revenueTarget: 1800,
     reputationTarget: 3.0,
     startingMoney: 1200,
     unlockFlavors: ['mango', 'pistachio'],
@@ -176,8 +176,8 @@ export const SEASON_CATALOG: SeasonDef[] = [
     name: 'Resort Living',
     setting: 'Tourist Resort',
     description: 'Serve premium VIP clientele at a luxury resort. High expectations, high rewards.',
-    daysPerSeason: 21,
-    revenueTarget: 5000,
+    daysPerSeason: 14,
+    revenueTarget: 3000,
     reputationTarget: 3.5,
     startingMoney: 2000,
     unlockFlavors: ['salted_caramel', 'lavender'],
@@ -187,8 +187,8 @@ export const SEASON_CATALOG: SeasonDef[] = [
     name: 'Franchise Launch',
     setting: 'Franchise HQ',
     description: 'The ultimate challenge: launch your franchise. Prove you can build a brand.',
-    daysPerSeason: 28,
-    revenueTarget: 10000,
+    daysPerSeason: 18,
+    revenueTarget: 6000,
     reputationTarget: 4.0,
     startingMoney: 3000,
     unlockFlavors: ['matcha', 'rocky_road'],
