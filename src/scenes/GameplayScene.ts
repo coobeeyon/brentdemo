@@ -1512,10 +1512,10 @@ export class GameplayScene extends Phaser.Scene {
         });
       }
     } else if (result === 'soft_fail') {
-      // Retry or continue options
-      const retryBtn = this.add.text(-80, panelH / 2 - 45, 'Retry Season', {
-        fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
-        backgroundColor: '#F39C12', padding: { x: 16, y: 8 },
+      // Retry, continue anyway, or main menu options
+      const retryBtn = this.add.text(-130, panelH / 2 - 45, 'Retry Season', {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
+        backgroundColor: '#F39C12', padding: { x: 12, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       container.add(retryBtn);
 
@@ -1540,9 +1540,29 @@ export class GameplayScene extends Phaser.Scene {
         this.showStaffQuitNotices();
       });
 
-      const menuBtn = this.add.text(100, panelH / 2 - 45, 'Main Menu', {
-        fontFamily: 'Arial', fontSize: scaledFontSize(this, 20), color: '#FFF',
-        backgroundColor: '#34495E', padding: { x: 16, y: 8 },
+      // "Continue Anyway" — advance to next season without win bonus
+      const nextSeasonDef = SEASON_CATALOG.find(sd => sd.season === seasonDef.season + 1);
+      if (nextSeasonDef) {
+        const continueBtn = this.add.text(0, panelH / 2 - 45, 'Continue Anyway →', {
+          fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
+          backgroundColor: '#8E44AD', padding: { x: 12, y: 8 },
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        container.add(continueBtn);
+
+        continueBtn.on('pointerdown', () => {
+          container.destroy();
+          s.advanceSeason();
+          s.startNewDay();
+          SaveManager.save(s, 'auto', 'story');
+          this.rollDailyEvent();
+          this.updatePhaseUI();
+          this.showStaffQuitNotices();
+        });
+      }
+
+      const menuBtn = this.add.text(130, panelH / 2 - 45, 'Main Menu', {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), color: '#FFF',
+        backgroundColor: '#34495E', padding: { x: 12, y: 8 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       container.add(menuBtn);
 
