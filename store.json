@@ -1533,11 +1533,10 @@
       "title": "Daily challenge rotation system",
       "description": "Implement date-based daily rotation for challenge mode. The spec says 'daily community challenges' but currently all 6 challenges are always available. Add a 'Challenge of the Day' that rotates based on the current date, using a deterministic seed so all players get the same daily challenge.",
       "item_type": "feature",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T16:27:45.802744710Z",
-      "updated_at": "2026-03-10T16:27:55.847194034Z"
+      "updated_at": "2026-03-10T16:29:07.759796927Z"
     },
     "lb-ypij": {
       "id": "lb-ypij",
