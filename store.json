@@ -107,8 +107,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 1,
+      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T13:14:18.030367724Z",
-      "updated_at": "2026-03-10T13:14:18.030367724Z"
+      "updated_at": "2026-03-10T13:14:56.307376417Z"
     },
     "lb-5a3z": {
       "id": "lb-5a3z",
