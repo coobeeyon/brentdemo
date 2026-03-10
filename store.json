@@ -817,6 +817,16 @@
       "priority": 2,
       "created_at": "2026-03-09T18:11:40.258997798Z",
       "updated_at": "2026-03-09T18:23:45.841072142Z"
+    },
+    "lb-yx8r": {
+      "id": "lb-yx8r",
+      "title": "supplierQualityBonus wiped when switching supplier tabs mid-shop",
+      "description": "In ShopScene.create(), the supplierQualityBonus registry key is unconditionally reset to 0 at the start of every non-emergency create() call. When a player buys from Premium Farms (earning the 0.10 quality bonus) and then clicks another supplier tab, scene.restart() triggers create() again, which resets supplierQualityBonus to 0. The player paid the 25% price premium but loses the bonus. Fix: only reset supplierQualityBonus when the shop is freshly opened (not on tab-switch restarts). Track a shopJustOpened registry flag set by the caller before launching ShopScene, and only reset the bonus when that flag is present.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T11:27:56.530936350Z",
+      "updated_at": "2026-03-10T11:27:56.530936350Z"
     }
   },
   "deps": [
