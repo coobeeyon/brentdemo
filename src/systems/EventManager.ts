@@ -130,11 +130,11 @@ const EVENT_CATALOG: GameEventDef[] = [
   {
     id: GameEventId.CHARITY_DRIVE,
     name: 'Charity Drive',
-    description: 'Donate 10% of today\'s revenue for a reputation boost!',
+    description: 'A local charity asks for donations — choose how much to give!',
     icon: '💝',
     minDay: 5,
     chance: 0.07,
-    effects: { revenueMult: 0.9, reputationBonus: 0.3 },
+    effects: {}, // Effects are player-chosen via CharityDriveScene
   },
   {
     id: GameEventId.LOCAL_FAIR,

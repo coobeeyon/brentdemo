@@ -713,6 +713,25 @@ export class GameplayScene extends Phaser.Scene {
           boothBtn.on('pointerout', () => boothBtn.setStyle({ backgroundColor: '#D35400' }));
           prepContainer.add(boothBtn);
         }
+
+        // Charity Drive button when event is active
+        if (activeEvt && activeEvt.def.id === GameEventId.CHARITY_DRIVE) {
+          const charityBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 240, '💝 Charity Drive', {
+            fontFamily: 'Arial',
+            fontSize: scaledFontSize(this, 20),
+            color: '#FFF',
+            backgroundColor: '#C0392B',
+            padding: { x: 18, y: 8 },
+          }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+          charityBtn.on('pointerdown', () => {
+            this.scene.launch('CharityDriveScene');
+            this.scene.pause();
+          });
+          charityBtn.on('pointerover', () => charityBtn.setStyle({ backgroundColor: '#E74C3C' }));
+          charityBtn.on('pointerout', () => charityBtn.setStyle({ backgroundColor: '#C0392B' }));
+          prepContainer.add(charityBtn);
+        }
       }
 
       // Show inventory summary during prepare
@@ -963,6 +982,9 @@ export class GameplayScene extends Phaser.Scene {
     // Store ingredient price multiplier in registry for ShopScene access
     const effects = this.eventManager.getEffects();
     this.registry.set('eventIngredientPriceMult', effects.ingredientPriceMult ?? 1.0);
+    // Reset charity donation choice for new day
+    this.registry.set('charityDonationPercent', 0);
+    this.registry.set('charityRepBonus', 0);
   }
 
   private showEventNotification(event: ActiveEvent): void {
@@ -1322,6 +1344,21 @@ export class GameplayScene extends Phaser.Scene {
       this.gameState.loc.money += cateringResult.revenue;
     }
 
+    // Apply charity donation if player chose to donate
+    const charityDonationPercent = this.registry.get('charityDonationPercent') as number ?? 0;
+    const charityRepBonus = this.registry.get('charityRepBonus') as number ?? 0;
+    let charityDonationAmount = 0;
+    if (charityDonationPercent > 0 && this.gameState.loc.dailyRevenue > 0) {
+      charityDonationAmount = this.gameState.loc.dailyRevenue * charityDonationPercent;
+      this.gameState.loc.dailyRevenue -= charityDonationAmount;
+      this.gameState.loc.money -= charityDonationAmount;
+      if (charityRepBonus > 0) {
+        this.gameState.loc.reputation = Math.max(0.5, Math.min(5,
+          this.gameState.loc.reputation + charityRepBonus));
+        repChange += charityRepBonus;
+      }
+    }
+
     // Record day report with full stats
     const s = this.gameState;
     const satisfaction = total > 0 ? Math.round((served / total) * 100) : 0;
@@ -1420,6 +1457,15 @@ export class GameplayScene extends Phaser.Scene {
         fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: cateringColor, fontStyle: 'bold',
       });
       report.add(cateringText);
+      y += 25;
+    }
+
+    // Show charity donation in report
+    if (charityDonationAmount > 0) {
+      const charityText = this.add.text(leftX, y, `💝 CHARITY: -$${charityDonationAmount.toFixed(2)} donated (+${charityRepBonus.toFixed(2)} ★)`, {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#E74C3C', fontStyle: 'bold',
+      });
+      report.add(charityText);
       y += 25;
     }
 
