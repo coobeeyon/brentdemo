@@ -1298,6 +1298,16 @@
       "created_at": "2026-03-09T18:04:26.589673389Z",
       "updated_at": "2026-03-09T18:50:28.214734848Z"
     },
+    "lb-u98l": {
+      "id": "lb-u98l",
+      "title": "Display ambiance score in store customization UI",
+      "description": "Decor themes have ambiance values that affect patience and price tolerance, but the player never sees this score. Show the ambiance score in the decor/customization scenes so players understand the impact of their choices.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 3,
+      "created_at": "2026-03-10T16:27:50.401665865Z",
+      "updated_at": "2026-03-10T16:27:50.401665865Z"
+    },
     "lb-uje6": {
       "id": "lb-uje6",
       "title": "Customer dietary restrictions and flavor preferences",
