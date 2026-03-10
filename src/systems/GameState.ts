@@ -858,7 +858,14 @@ export class GameState {
 
   /** Check season result: 'win', 'soft_fail', or 'hard_fail' */
   getSeasonResult(): 'win' | 'soft_fail' | 'hard_fail' {
-    if (this.loc.money < -100) return 'hard_fail'; // bankrupt
+    // In franchise mode, check ALL locations for bankruptcy
+    if (this.franchiseMode) {
+      for (const loc of this.locations) {
+        if (loc.money < -100) return 'hard_fail';
+      }
+    } else if (this.loc.money < -100) {
+      return 'hard_fail'; // bankrupt
+    }
 
     const seasonDef = this.getSeasonDef();
     if (!seasonDef) return 'soft_fail';
