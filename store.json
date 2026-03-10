@@ -1105,8 +1105,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 3,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T15:06:36.669060169Z",
-      "updated_at": "2026-03-10T15:06:36.669060169Z"
+      "updated_at": "2026-03-10T15:07:41.811521331Z"
     },
     "lb-swfj": {
       "id": "lb-swfj",
