@@ -455,8 +455,9 @@
       "item_type": "feature",
       "status": "open",
       "priority": 3,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T10:21:58.375588412Z",
-      "updated_at": "2026-03-10T10:21:58.375588412Z"
+      "updated_at": "2026-03-10T10:30:01.688094208Z"
     },
     "lb-pct9": {
       "id": "lb-pct9",
