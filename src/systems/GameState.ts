@@ -781,7 +781,7 @@ export class GameState {
 
     return {
       dailyRevenue: this.locations.reduce((sum, loc) => sum + loc.dailyRevenue, 0),
-      totalReputation: this.locations.reduce((sum, loc) => sum + loc.reputation, 0) / this.locations.length,
+      totalReputation: this.locations.length > 0 ? this.locations.reduce((sum, loc) => sum + loc.reputation, 0) / this.locations.length : 0,
       locationCount: this.locations.length,
       totalStaff: this.locations.reduce((sum, loc) => sum + loc.staff.length, 0),
     };
