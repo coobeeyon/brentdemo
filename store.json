@@ -105,11 +105,10 @@
       "title": "Order error rate from staff accuracy",
       "description": "Spec says accuracy determines 'order error rate' but implementation only uses accuracy as quality/tip multiplier. Add chance of wrong order based on low accuracy: wrong flavor served, customer satisfaction penalty. Not high priority since accuracy already affects quality.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T14:14:35.009992109Z",
-      "updated_at": "2026-03-10T14:18:16.705182741Z"
+      "updated_at": "2026-03-10T14:19:54.201758982Z"
     },
     "lb-4hlh": {
       "id": "lb-4hlh",
