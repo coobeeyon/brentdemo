@@ -1642,7 +1642,7 @@ export class GameplayScene extends Phaser.Scene {
       this.scene.start('ChallengeScene');
     });
 
-    const lbBtn = this.add.text(0, panelH / 2 - 45, '🏆', {
+    const lbBtn = this.add.text(0, panelH / 2 - 45, '🏆 Leaderboard', {
       fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
       backgroundColor: '#1A5276', padding: { x: 16, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
