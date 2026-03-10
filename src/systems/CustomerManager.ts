@@ -14,6 +14,7 @@ export interface ServeResult {
   violationType?: string;   // e.g. 'Vegan' or 'Nut-Free'
   loyaltyDiscount?: boolean;
   vipSatisfied?: boolean;
+  orderError?: boolean;
 }
 
 export class CustomerManager {
@@ -252,12 +253,19 @@ export class CustomerManager {
       }
     }
 
+    // Order error check: low accuracy staff may get the order wrong
+    const orderError = Math.random() < this.gameState.getOrderErrorChance();
+    if (orderError) {
+      revenue *= 0.6; // wrong order = 40% revenue penalty (partial refund/remake)
+    }
+
     this.queue.shift();
     this.customersServed++;
     // Dietary restriction violation: halve satisfaction (affects reputation)
     const dietaryViolation = customer.orderViolatesRestriction();
+    const errorPenalty = orderError ? 0.6 : 1.0;
     const satisfactionPenalty = dietaryViolation ? 0.5 : 1.0;
-    this.satisfactionSum += patienceRatio * satisfactionPenalty;
+    this.satisfactionSum += patienceRatio * satisfactionPenalty * errorPenalty;
     this.repositionQueue();
 
     // Register loyalty (regular customers only, with good patience)
@@ -303,6 +311,7 @@ export class CustomerManager {
       violationType: dietaryViolation ? violationLabels[customer.dietaryRestriction] : undefined,
       loyaltyDiscount,
       vipSatisfied: customer.type === CustomerType.VIP && patienceRatio > 0.3 && !dietaryViolation,
+      orderError,
     };
   }
 

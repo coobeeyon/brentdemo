@@ -166,7 +166,7 @@ export class GameplayScene extends Phaser.Scene {
       this.gameState.loc.money += result.revenue;
 
       // Show floating revenue text
-      const revenueColor = result.dietaryViolation ? '#E67E22' : uiColor(this, 'green');
+      const revenueColor = (result.dietaryViolation || result.orderError) ? '#E67E22' : uiColor(this, 'green');
       const floatText = this.add.text(GAME_WIDTH / 2, 340, `+$${result.revenue.toFixed(2)}`, {
         fontFamily: 'Arial',
         fontSize: scaledFontSize(this, 22),
@@ -203,6 +203,30 @@ export class GameplayScene extends Phaser.Scene {
           duration: 1500,
           ease: 'Power2',
           onComplete: () => warningText.destroy(),
+        });
+      }
+
+      // Show order error warning
+      if (result.orderError) {
+        const revenueColor2 = '#E67E22';
+        const errorText = this.add.text(
+          GAME_WIDTH / 2, 370,
+          'Wrong order! Customer unhappy (-40% revenue)',
+          {
+            fontFamily: 'Arial',
+            fontSize: scaledFontSize(this, 14),
+            color: revenueColor2,
+            fontStyle: 'bold',
+          }
+        ).setOrigin(0.5);
+
+        this.tweens.add({
+          targets: errorText,
+          y: 310,
+          alpha: 0,
+          duration: 1500,
+          ease: 'Power2',
+          onComplete: () => errorText.destroy(),
         });
       }
 

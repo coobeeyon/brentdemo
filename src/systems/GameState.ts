@@ -479,6 +479,20 @@ export class GameState {
     };
   }
 
+  /** Chance of a wrong order based on staff accuracy (0-1). Low accuracy = more errors. */
+  getOrderErrorChance(): number {
+    const active = this.getActiveStaff();
+    if (active.length === 0) return 0.15; // no staff = 15% error chance
+
+    const avgAccuracy = active.reduce((sum, s) => {
+      const base = this.getEffectiveStat(s, s.accuracy);
+      return sum + base * (1 + this.getSpecialtyBonus(s, 'accuracy'));
+    }, 0) / active.length;
+
+    // Accuracy 10 → 0% error, accuracy 5 → 5%, accuracy 1 → 15%
+    return Math.max(0, 0.15 - avgAccuracy * 0.015);
+  }
+
   /** Update staff morale at end of day */
   updateStaffMorale(): void {
     const brokenCount = this.loc.equipment.filter(e => e.broken).length;
