@@ -164,11 +164,10 @@
       "title": "Add staff specialty system with task-specific bonuses",
       "description": "Add specialty field to StaffMember (scooping, blending, cashiering). Apply bonus multipliers when staff work on matching tasks. Show specialty in StaffScene UI.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:39:56.942490240Z",
-      "updated_at": "2026-03-10T12:40:07.865090316Z"
+      "updated_at": "2026-03-10T12:44:25.205792056Z"
     },
     "lb-9v3z": {
       "id": "lb-9v3z",
