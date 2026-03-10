@@ -1223,8 +1223,11 @@ export class GameplayScene extends Phaser.Scene {
     const seasonDef = s.getSeasonDef();
     if (!seasonDef) return;
 
-    // Include today's revenue in the total
-    const totalRevenue = s.seasonRevenue + s.loc.dailyRevenue;
+    // Include today's revenue in the total (sum all locations in franchise mode)
+    const pendingRevenue = s.franchiseMode && s.locations.length > 0
+      ? s.locations.reduce((sum, loc) => sum + loc.dailyRevenue, 0)
+      : s.loc.dailyRevenue;
+    const totalRevenue = s.seasonRevenue + pendingRevenue;
     const result = s.getSeasonResult();
 
     const container = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2);
