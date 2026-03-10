@@ -818,6 +818,16 @@
       "created_at": "2026-03-10T15:54:05.425141673Z",
       "updated_at": "2026-03-10T15:54:51.631916150Z"
     },
+    "lb-htc0": {
+      "id": "lb-htc0",
+      "title": "Fullscreen button in PauseScene is off-screen",
+      "description": "PauseScene has 15 buttons starting at y=120 with 44px spacing. Last button (Main Menu) is at y=736, and the fullscreen button is placed at y=790 — both beyond GAME_HEIGHT=720. The fullscreen button is never visible. Fix: either make the panel scrollable, reduce spacing, use a 2-column layout for secondary buttons, or move the fullscreen toggle to an overlay corner that doesn't depend on button list position.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T18:35:33.471744726Z",
+      "updated_at": "2026-03-10T18:35:33.471744726Z"
+    },
     "lb-hu03": {
       "id": "lb-hu03",
       "title": "Store Management & Menu System",
