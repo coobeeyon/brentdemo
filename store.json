@@ -833,11 +833,10 @@
       "title": "Season retry in franchise mode only resets current location money",
       "description": "In GameplayScene, the season retry path does: s.loc.money = seasonDef.startingMoney. In franchise mode this only resets the currently active location balance; other franchise locations retain their money. Meanwhile seasonRevenue is fully reset to 0. Fix: on season retry in franchise mode, reset all location balances (e.g. distribute startingMoney equally), or reset only seasonRevenue and leave money as-is with a note that this is intentional.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T11:27:58.464815257Z",
-      "updated_at": "2026-03-10T11:30:31.082826721Z"
+      "updated_at": "2026-03-10T11:30:58.412707132Z"
     }
   },
   "deps": [
