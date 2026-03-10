@@ -983,11 +983,10 @@
       "title": "LeaderboardScene reset confirm dialog ignores text size accessibility setting",
       "description": "showResetConfirm() in LeaderboardScene uses hardcoded font sizes ('18px', '14px') instead of scaledFontSize(this, N). All other text in LeaderboardScene correctly uses scaledFontSize. Fix by replacing the four hardcoded fontSize strings in showResetConfirm() with scaledFontSize calls: confirmBtn/cancelBtn/title text (18px -> scaledFontSize(this, 18)) and the warning text (14px -> scaledFontSize(this, 14)).",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T14:39:26.443688546Z",
-      "updated_at": "2026-03-10T14:39:58.646356244Z"
+      "updated_at": "2026-03-10T14:43:14.121001747Z"
     },
     "lb-rtw5": {
       "id": "lb-rtw5",
