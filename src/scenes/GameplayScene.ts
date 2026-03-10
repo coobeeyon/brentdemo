@@ -1256,6 +1256,21 @@ export class GameplayScene extends Phaser.Scene {
     addStat(rightX, y, 'BALANCE', `$${s.loc.money.toFixed(2)}`);
     y += 50;
 
+    // Low balance warning in story mode
+    const gameMode = this.registry.get('gameMode') as string ?? 'story';
+    if (gameMode === 'story' && s.loc.money < 0) {
+      const warningColor = s.loc.money < -50 ? uiColor(this, 'red') : uiColor(this, 'yellow');
+      const warningMsg = s.loc.money < -50
+        ? '⚠️ DANGER: Bankruptcy at -$100! Cut costs immediately!'
+        : '⚠️ Warning: Balance is negative. Risk of bankruptcy!';
+      const warning = this.add.text(0, y - 10, warningMsg, {
+        fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: warningColor, fontStyle: 'bold',
+        wordWrap: { width: panelW - 60 },
+      }).setOrigin(0.5, 0);
+      report.add(warning);
+      y += 22;
+    }
+
     // Mini revenue chart (last 7 days)
     const recentReports = s.dayReports.slice(-7);
     if (recentReports.length > 1) {
