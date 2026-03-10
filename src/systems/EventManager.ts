@@ -10,6 +10,16 @@ export enum GameEventId {
   BULK_DISCOUNT = 'bulk_discount',
   CHARITY_DRIVE = 'charity_drive',
   LOCAL_FAIR = 'local_fair',
+  // Season-specific events
+  NEIGHBORHOOD_COOKOUT = 'neighborhood_cookout',
+  BEACH_PARTY = 'beach_party',
+  SUNBURN_SURGE = 'sunburn_surge',
+  FOOD_COURT_RIVALRY = 'food_court_rivalry',
+  LUNCH_RUSH = 'lunch_rush',
+  VIP_GALA = 'vip_gala',
+  RESORT_FESTIVAL = 'resort_festival',
+  FRANCHISE_INSPECTION = 'franchise_inspection',
+  GRAND_OPENING_BUZZ = 'grand_opening_buzz',
 }
 
 export interface GameEventDef {
@@ -23,6 +33,8 @@ export interface GameEventDef {
   chance: number;
   /** Effects applied while event is active */
   effects: GameEventEffects;
+  /** If set, event only triggers during these seasons (1-5). Omit for all seasons. */
+  seasons?: number[];
 }
 
 export interface GameEventEffects {
@@ -51,6 +63,7 @@ export interface ActiveEvent {
 }
 
 const EVENT_CATALOG: GameEventDef[] = [
+  // === Universal events (all seasons) ===
   {
     id: GameEventId.SUMMER_RUSH,
     name: 'Summer Rush',
@@ -132,6 +145,106 @@ const EVENT_CATALOG: GameEventDef[] = [
     chance: 0.08,
     effects: { reputationBonus: 0.15 }, // small rep boost just for the fair being in town
   },
+
+  // === Season 1: Hometown Stand ===
+  {
+    id: GameEventId.NEIGHBORHOOD_COOKOUT,
+    name: 'Neighborhood Cookout',
+    description: 'The neighborhood is having a cookout! Everyone wants dessert.',
+    icon: '🍔',
+    minDay: 3,
+    chance: 0.12,
+    seasons: [1],
+    effects: { customerSpawnMult: 0.6, revenueMult: 1.1 },
+  },
+
+  // === Season 2: Beach Town ===
+  {
+    id: GameEventId.BEACH_PARTY,
+    name: 'Beach Party',
+    description: 'A massive beach party brings waves of customers and generous tips!',
+    icon: '🏖️',
+    minDay: 3,
+    chance: 0.10,
+    seasons: [2],
+    effects: { customerSpawnMult: 0.4, revenueMult: 1.2 },
+  },
+  {
+    id: GameEventId.SUNBURN_SURGE,
+    name: 'Sunburn Surge',
+    description: 'Sunburned beachgoers flock to your shop for cooling treats!',
+    icon: '🌞',
+    minDay: 5,
+    chance: 0.10,
+    seasons: [2],
+    effects: { customerSpawnMult: 0.6 },
+  },
+
+  // === Season 3: City Food Court ===
+  {
+    id: GameEventId.FOOD_COURT_RIVALRY,
+    name: 'Food Court Rivalry',
+    description: 'A rival shop is running aggressive promos. Fight back or lose customers!',
+    icon: '🥊',
+    minDay: 3,
+    chance: 0.10,
+    seasons: [3],
+    effects: { customerSpawnMult: 1.6, reputationBonus: -0.1 },
+  },
+  {
+    id: GameEventId.LUNCH_RUSH,
+    name: 'Office Lunch Rush',
+    description: 'Office workers flood the food court during lunch — huge demand!',
+    icon: '🏢',
+    minDay: 4,
+    chance: 0.12,
+    seasons: [3],
+    effects: { customerSpawnMult: 0.4 },
+  },
+
+  // === Season 4: Tourist Resort ===
+  {
+    id: GameEventId.VIP_GALA,
+    name: 'VIP Gala Night',
+    description: 'A resort gala brings wealthy VIP customers with premium expectations.',
+    icon: '🥂',
+    minDay: 3,
+    chance: 0.10,
+    seasons: [4],
+    effects: { customerSpawnMult: 0.7, revenueMult: 1.3 },
+  },
+  {
+    id: GameEventId.RESORT_FESTIVAL,
+    name: 'Resort Festival',
+    description: 'The resort festival draws huge crowds — big reputation opportunity!',
+    icon: '🎆',
+    minDay: 5,
+    chance: 0.08,
+    seasons: [4],
+    effects: { customerSpawnMult: 0.5, reputationBonus: 0.25 },
+  },
+
+  // === Season 5: Franchise Launch ===
+  {
+    id: GameEventId.FRANCHISE_INSPECTION,
+    name: 'Franchise Inspection',
+    description: 'Corporate is checking brand consistency. Maintain standards for a bonus!',
+    icon: '📋',
+    minDay: 5,
+    chance: 0.10,
+    seasons: [5],
+    effects: { reputationBonus: 0.2 },
+  },
+  {
+    id: GameEventId.GRAND_OPENING_BUZZ,
+    name: 'Grand Opening Buzz',
+    description: 'Word of your franchise is spreading! Extra customers across all locations.',
+    icon: '🎉',
+    minDay: 3,
+    chance: 0.10,
+    seasons: [5],
+    effects: { customerSpawnMult: 0.5, reputationBonus: 0.15 },
+  },
 ];
 
 export class EventManager {
@@ -143,8 +256,14 @@ export class EventManager {
   rollForEvent(gameState: GameState): ActiveEvent | null {
     this.activeEvent = null;
 
-    // Filter eligible events
-    const eligible = EVENT_CATALOG.filter(e => gameState.day >= e.minDay);
+    const currentSeason = gameState.season;
+
+    // Filter eligible events by day and season
+    const eligible = EVENT_CATALOG.filter(e => {
+      if (gameState.day < e.minDay) return false;
+      if (e.seasons && !e.seasons.includes(currentSeason)) return false;
+      return true;
+    });
     if (eligible.length === 0) return null;
 
     // Roll for each event (only one can trigger per day)
