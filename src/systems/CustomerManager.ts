@@ -12,6 +12,8 @@ export interface ServeResult {
   revenue: number;
   dietaryViolation: boolean;
   violationType?: string;   // e.g. 'Vegan' or 'Nut-Free'
+  loyaltyDiscount?: boolean;
+  vipSatisfied?: boolean;
 }
 
 export class CustomerManager {
@@ -120,7 +122,16 @@ export class CustomerManager {
 
     const availableToppings = this.gameState.getAvailableToppings();
     const availableStyles = this.gameState.getAvailableStyles();
-    const customer = new Customer(this.scene, x, y, weightedFlavors, this.gameState.menuPrices, availableToppings, availableStyles);
+    // Check for forced customer type (e.g. VIP Reception challenge)
+    const forcedTypeStr = this.scene.registry.get('forcedCustomerType') as string;
+    let forcedType = forcedTypeStr ? (forcedTypeStr as CustomerType) : undefined;
+
+    // Elite Clientele VIP perk: extra 5% chance to spawn VIP (doubles effective rate)
+    if (!forcedType && this.gameState.getVipPerks().eliteClientele && Math.random() < 0.05) {
+      forcedType = CustomerType.VIP;
+    }
+
+    const customer = new Customer(this.scene, x, y, weightedFlavors, this.gameState.menuPrices, availableToppings, availableStyles, forcedType);
 
     // Apply weather patience modifier
     const weatherPatienceMult = this.gameState.getWeatherDef().patienceMult;
@@ -200,7 +211,7 @@ export class CustomerManager {
     const staffEffects = this.gameState.getStaffEffects();
     const researchFx = this.gameState.getResearchEffects();
     const supplierQuality = (this.scene.registry.get('supplierQualityBonus') as number) ?? 0;
-    const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus + (researchFx.qualityBonus ?? 0) + supplierQuality;
+    const totalQualityBonus = (effects.qualityBonus ?? 0) + staffEffects.tipBonus + (staffEffects.accuracyBonus ?? 0) + (researchFx.qualityBonus ?? 0) + supplierQuality;
     const patienceRatio = customer.patience / customer.maxPatience;
     let revenue = customer.serve(totalQualityBonus);
     // Apply event revenue multiplier
@@ -217,13 +228,17 @@ export class CustomerManager {
     if (decorPriceTolerance > 0) {
       revenue *= (1 + decorPriceTolerance);
     }
+    // VIP Premium Pricing perk: customers tolerate 10% higher prices
+    if (this.gameState.getVipPerks().premiumPricing) {
+      revenue *= 1.10;
+    }
     // Apply loyalty tip bonus
     const loyaltyFx = this.gameState.getLoyaltyEffects();
     if (loyaltyFx.tipBonus > 0) {
       revenue *= (1 + loyaltyFx.tipBonus);
     }
     // Check if order matches a recipe — record sale and apply recipe premium
-    const matchedRecipe = this.gameState.recipes.find(r => {
+    const matchedRecipe = this.gameState.loc.recipes.find(r => {
       const firstItem = customer.order.items[0];
       if (!firstItem) return false;
       return r.flavorId === firstItem.flavorId && r.style === firstItem.style;
@@ -246,9 +261,17 @@ export class CustomerManager {
     this.repositionQueue();
 
     // Register loyalty (regular customers only, with good patience)
+    let loyaltyDiscount = false;
     if (customer.type === CustomerType.REGULAR && patienceRatio > 0.3) {
       const favFlavor = customer.order.items[0]?.flavorId ?? 'vanilla';
       this.gameState.registerLoyalCustomer(favFlavor);
+
+      // Check if a loyal customer redeems points for a discount
+      const redemption = this.gameState.tryLoyaltyRedemption();
+      if (redemption.redeemed) {
+        revenue *= redemption.discount;
+        loyaltyDiscount = true;
+      }
     }
 
     // Handle critic review
@@ -263,6 +286,11 @@ export class CustomerManager {
       this.onCriticReview?.(review);
     }
 
+    // Record VIP satisfaction (served with decent patience = satisfied)
+    if (customer.type === CustomerType.VIP && patienceRatio > 0.3 && !dietaryViolation) {
+      this.gameState.recordVipSatisfaction();
+    }
+
     // Map restriction enum to display label
     const violationLabels: Record<string, string> = {
       vegan: 'Vegan',
@@ -273,6 +301,8 @@ export class CustomerManager {
       revenue,
       dietaryViolation,
       violationType: dietaryViolation ? violationLabels[customer.dietaryRestriction] : undefined,
+      loyaltyDiscount,
+      vipSatisfied: customer.type === CustomerType.VIP && patienceRatio > 0.3 && !dietaryViolation,
     };
   }
 

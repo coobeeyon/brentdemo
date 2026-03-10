@@ -1,4 +1,4 @@
-import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign, LoyalCustomer, Recipe, LocationState } from './GameState';
+import { GameState, Ingredient, Flavor, StaffMember, DayReport, OwnedEquipment, CriticReview, ActiveCampaign, LoyalCustomer, Recipe, LocationState, CateringContract } from './GameState';
 import { WeatherType, HealthInspectionResult, DecorThemeId, SeatingId, SignageId } from '../config/constants';
 
 const SAVE_KEY_PREFIX = 'icecream_save_';
@@ -50,6 +50,8 @@ interface SerializedGameState {
   totalRevenue: number;
   loyalCustomers: LoyalCustomer[];
   recipes: Recipe[];
+  cateringContracts?: CateringContract[];
+  vipSatisfied?: number;
 
   // Multi-location franchise (v9+)
   franchiseMode?: boolean;
@@ -88,9 +90,11 @@ interface SerializedLocationState {
   recipes: Recipe[];
   loyalCustomers: LoyalCustomer[];
   weather: WeatherType;
+  cateringContracts?: CateringContract[];
+  vipSatisfied?: number;
 }
 
-const SAVE_VERSION = 9;
+const SAVE_VERSION = 10;
 
 export class SaveManager {
   static save(gameState: GameState, slot: string = 'auto', gameMode: string = 'story'): boolean {
@@ -137,6 +141,8 @@ export class SaveManager {
           totalRevenue: gameState.totalRevenue,
           loyalCustomers: gameState.loyalCustomers,
           recipes: gameState.recipes,
+          cateringContracts: gameState.cateringContracts,
+          vipSatisfied: gameState.vipSatisfied,
           franchiseMode: gameState.franchiseMode,
           currentLocationId: gameState.currentLocationId,
           locations: gameState.franchiseMode
@@ -171,6 +177,8 @@ export class SaveManager {
                 recipes: loc.recipes,
                 loyalCustomers: loc.loyalCustomers,
                 weather: loc.weather,
+                cateringContracts: loc.cateringContracts,
+                vipSatisfied: loc.vipSatisfied,
               }))
             : undefined,
         },
@@ -210,6 +218,7 @@ export class SaveManager {
         ...member,
         shift: member.shift ?? (member.assigned ? 'full_day' : 'off'),
         consecutiveDaysWorked: member.consecutiveDaysWorked ?? 0,
+        specialty: member.specialty ?? 'none',
       }));
       gameState.menuPrices = new Map(s.menuPrices);
       gameState.dayReports = s.dayReports;
@@ -237,6 +246,8 @@ export class SaveManager {
       gameState.totalRevenue = s.totalRevenue ?? 0;
       gameState.loyalCustomers = s.loyalCustomers ?? [];
       gameState.recipes = s.recipes ?? [];
+      gameState.cateringContracts = s.cateringContracts ?? [];
+      gameState.vipSatisfied = s.vipSatisfied ?? 0;
 
       // Multi-location franchise (v9+)
       gameState.franchiseMode = s.franchiseMode ?? false;
@@ -257,6 +268,7 @@ export class SaveManager {
             ...member,
             shift: member.shift ?? (member.assigned ? 'full_day' : 'off'),
             consecutiveDaysWorked: member.consecutiveDaysWorked ?? 0,
+            specialty: member.specialty ?? 'none',
           })),
           menuPrices: new Map(loc.menuPrices),
           dayReports: loc.dayReports,
@@ -277,6 +289,8 @@ export class SaveManager {
           recipes: loc.recipes ?? [],
           loyalCustomers: loc.loyalCustomers ?? [],
           weather: loc.weather ?? 'sunny' as WeatherType,
+          cateringContracts: loc.cateringContracts ?? [],
+          vipSatisfied: loc.vipSatisfied ?? 0,
         }));
       } else {
         gameState.locations = [];

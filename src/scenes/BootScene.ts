@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { loadSettings } from './SettingsScene';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -38,6 +39,8 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Load accessibility settings into registry for all scenes
+    this.registry.set('gameSettings', loadSettings());
     this.scene.start('MainMenuScene');
   }
 

@@ -24,6 +24,10 @@ import {
   LOAN_CATALOG,
   ShiftType,
   SHIFT_HOURS,
+  StaffSpecialty,
+  SPECIALTY_BONUS,
+  LOYALTY_REDEMPTION_COST,
+  LOYALTY_DISCOUNT_PERCENT,
   DecorThemeId,
   DECOR_CATALOG,
   DecorThemeDef,
@@ -43,6 +47,13 @@ import {
   ResearchEffects,
   MILESTONE_CATALOG,
   MilestoneStats,
+  CATERING_CHANCE,
+  CATERING_MIN_SCOOPS,
+  CATERING_MAX_SCOOPS,
+  CATERING_PRICE_PER_SCOOP,
+  CATERING_CLIENTS,
+  CATERING_REP_BONUS,
+  VIP_PERK_THRESHOLDS,
 } from '../config/constants';
 
 export interface Ingredient {
@@ -72,6 +83,7 @@ export interface StaffMember {
   assigned: boolean;
   shift: ShiftType;           // scheduled shift
   consecutiveDaysWorked: number; // for fairness tracking
+  specialty: StaffSpecialty;  // task-specific bonus
 }
 
 export interface CriticReview {
@@ -110,6 +122,16 @@ export interface DayReport {
   satisfactionScore: number;
   criticReview?: CriticReview;
   reputationChange: number;
+}
+
+/** Catering contract — accepted during prep, fulfilled at end of day */
+export interface CateringContract {
+  id: string;
+  clientName: string;
+  flavorId: string;
+  scoops: number;       // number of scoops needed
+  payment: number;      // total payment on fulfillment
+  accepted: boolean;
 }
 
 /** Per-location state for multi-location franchise (Season 5+) */
@@ -172,6 +194,12 @@ export interface LocationState {
 
   // Weather (per-location, different cities)
   weather: WeatherType;
+
+  // Catering
+  cateringContracts: CateringContract[];
+
+  // VIP perks
+  vipSatisfied: number;
 }
 
 export interface ActiveCampaign {
@@ -263,6 +291,12 @@ export class GameState {
 
   // Loyalty
   loyalCustomers: LoyalCustomer[] = [];
+
+  // Catering
+  cateringContracts: CateringContract[] = [];
+
+  // VIP perks
+  vipSatisfied: number = 0;
 
   // Story mode
   seasonDay: number = 1;              // day within current season
@@ -382,18 +416,45 @@ export class GameState {
     });
   }
 
+  /** Get effective stat with specialty bonus applied */
+  getSpecialtyBonus(member: StaffMember, statKey: 'speed' | 'accuracy' | 'friendliness'): number {
+    const spec = member.specialty ?? StaffSpecialty.NONE;
+    if (
+      (statKey === 'speed' && spec === StaffSpecialty.SCOOPING) ||
+      (statKey === 'accuracy' && spec === StaffSpecialty.BLENDING) ||
+      (statKey === 'friendliness' && spec === StaffSpecialty.CASHIERING)
+    ) {
+      return SPECIALTY_BONUS;
+    }
+    return 0;
+  }
+
   /** Get staff bonuses from staff currently on shift */
-  getStaffEffects(): { speedBonus: number; tipBonus: number } {
+  getStaffEffects(): { speedBonus: number; tipBonus: number; accuracyBonus: number } {
     const active = this.getActiveStaff();
-    if (active.length === 0) return { speedBonus: 0, tipBonus: 0 };
+    if (active.length === 0) return { speedBonus: 0, tipBonus: 0, accuracyBonus: 0 };
 
     // Average effective speed of active staff: each point above 5 gives 3% speed bonus
-    const avgSpeed = active.reduce((sum, s) => sum + this.getEffectiveStat(s, s.speed), 0) / active.length;
+    // Specialty bonus adds a flat multiplier on top
+    const avgSpeed = active.reduce((sum, s) => {
+      const base = this.getEffectiveStat(s, s.speed);
+      return sum + base * (1 + this.getSpecialtyBonus(s, 'speed'));
+    }, 0) / active.length;
     const speedBonus = (avgSpeed - 5) * 0.03; // can be negative if staff is slow
 
     // Average effective friendliness: each point above 5 gives 2% tip bonus
-    const avgFriendliness = active.reduce((sum, s) => sum + this.getEffectiveStat(s, s.friendliness), 0) / active.length;
+    const avgFriendliness = active.reduce((sum, s) => {
+      const base = this.getEffectiveStat(s, s.friendliness);
+      return sum + base * (1 + this.getSpecialtyBonus(s, 'friendliness'));
+    }, 0) / active.length;
     const tipBonus = (avgFriendliness - 5) * 0.02;
+
+    // Average effective accuracy: each point above 5 gives 2% quality bonus
+    const avgAccuracy = active.reduce((sum, s) => {
+      const base = this.getEffectiveStat(s, s.accuracy);
+      return sum + base * (1 + this.getSpecialtyBonus(s, 'accuracy'));
+    }, 0) / active.length;
+    const accuracyBonus = (avgAccuracy - 5) * 0.02;
 
     // More staff = faster service (diminishing returns)
     const staffCountBonus = Math.min(active.length * 0.05, 0.2); // up to 20%
@@ -401,6 +462,7 @@ export class GameState {
     return {
       speedBonus: speedBonus + staffCountBonus,
       tipBonus: Math.max(0, tipBonus),
+      accuracyBonus: Math.max(0, accuracyBonus),
     };
   }
 
@@ -444,7 +506,7 @@ export class GameState {
       }
 
       // High reputation = pride in workplace
-      if (this.reputation >= 4) {
+      if (this.loc.reputation >= 4) {
         moraleChange += 1;
       }
 
@@ -548,23 +610,23 @@ export class GameState {
     if (criticReview) {
       const criticImpact = (criticReview.rating - 3) * 0.2; // -0.4 to +0.4
       change += criticImpact;
-      this.criticReviews.push(criticReview);
+      this.loc.criticReviews.push(criticReview);
     }
 
     // Momentum: consecutive good/bad days amplify change (up to ±50% boost)
-    if ((change > 0 && this.reputationMomentum > 0) || (change < 0 && this.reputationMomentum < 0)) {
-      const momentumBoost = Math.min(Math.abs(this.reputationMomentum) * 0.1, 0.5);
+    if ((change > 0 && this.loc.reputationMomentum > 0) || (change < 0 && this.loc.reputationMomentum < 0)) {
+      const momentumBoost = Math.min(Math.abs(this.loc.reputationMomentum) * 0.1, 0.5);
       change *= (1 + momentumBoost);
     }
 
     // Update momentum (decays toward 0, pushed by current change)
-    this.reputationMomentum = this.reputationMomentum * 0.7 + (change > 0 ? 1 : change < 0 ? -1 : 0);
+    this.loc.reputationMomentum = this.loc.reputationMomentum * 0.7 + (change > 0 ? 1 : change < 0 ? -1 : 0);
 
     // Clamp total change to reasonable bounds
     change = Math.max(-0.5, Math.min(0.5, change));
 
     // Apply and clamp reputation
-    this.reputation = Math.max(0.5, Math.min(5, this.reputation + change));
+    this.loc.reputation = Math.max(0.5, Math.min(5, this.loc.reputation + change));
 
     return change;
   }
@@ -572,15 +634,15 @@ export class GameState {
   /** Word-of-mouth multiplier: higher rep = more customers, with accelerating returns */
   getWordOfMouthMultiplier(): number {
     // Below 2.5 stars: fewer customers. Above 2.5: more. Exponential above 4.
-    if (this.reputation <= 2.5) {
-      return 0.6 + (this.reputation / 2.5) * 0.4; // 0.6 to 1.0
+    if (this.loc.reputation <= 2.5) {
+      return 0.6 + (this.loc.reputation / 2.5) * 0.4; // 0.6 to 1.0
     }
     // 2.5 to 4: linear growth
-    if (this.reputation <= 4) {
-      return 1.0 + (this.reputation - 2.5) * 0.4; // 1.0 to 1.6
+    if (this.loc.reputation <= 4) {
+      return 1.0 + (this.loc.reputation - 2.5) * 0.4; // 1.0 to 1.6
     }
     // 4 to 5: accelerating growth (word of mouth kicks in)
-    return 1.6 + (this.reputation - 4) * 0.8; // 1.6 to 2.4
+    return 1.6 + (this.loc.reputation - 4) * 0.8; // 1.6 to 2.4
   }
 
   /** Launch a marketing campaign */
@@ -700,6 +762,8 @@ export class GameState {
       recipes: [...this.recipes],
       loyalCustomers: [...this.loyalCustomers],
       weather: this.weather,
+      cateringContracts: [...this.cateringContracts],
+      vipSatisfied: this.vipSatisfied,
     };
 
     this.locations = [firstLocation];
@@ -749,6 +813,8 @@ export class GameState {
       recipes: [],
       loyalCustomers: [],
       weather: WeatherType.SUNNY,
+      cateringContracts: [],
+      vipSatisfied: 0,
     };
 
     this.locations.push(loc);
@@ -773,9 +839,9 @@ export class GameState {
     if (!this.franchiseMode) {
       return {
         dailyRevenue: this.dailyRevenue,
-        totalReputation: this.reputation,
+        totalReputation: this.loc.reputation,
         locationCount: 1,
-        totalStaff: this.staff.length,
+        totalStaff: this.loc.staff.length,
       };
     }
 
@@ -871,7 +937,14 @@ export class GameState {
     const seasonDef = this.getSeasonDef();
     if (!seasonDef) return 'soft_fail';
 
-    const metRevenue = this.seasonRevenue >= seasonDef.revenueTarget;
+    // Include current day's revenue that hasn't been accumulated yet
+    const allLocs: LocationState[] = this.franchiseMode && this.locations.length > 0
+      ? this.locations
+      : [this as any];
+    const pendingRevenue = allLocs.reduce((sum, loc) => sum + loc.dailyRevenue, 0);
+    const effectiveRevenue = this.seasonRevenue + pendingRevenue;
+
+    const metRevenue = effectiveRevenue >= seasonDef.revenueTarget;
 
     // In franchise mode, use aggregate reputation and check location target
     if (seasonDef.isFranchise && this.franchiseMode) {
@@ -882,7 +955,7 @@ export class GameState {
       return 'soft_fail';
     }
 
-    const metReputation = this.reputation >= seasonDef.reputationTarget;
+    const metReputation = this.loc.reputation >= seasonDef.reputationTarget;
     if (metRevenue && metReputation) return 'win';
     return 'soft_fail';
   }
@@ -940,8 +1013,8 @@ export class GameState {
 
   /** Create a new recipe */
   createRecipe(name: string, flavorId: string, toppings: string[], style: string, price: number): Recipe | null {
-    if (!name.trim() || this.recipes.length >= 10) return null;
-    if (this.recipes.some(r => r.name.toLowerCase() === name.toLowerCase())) return null;
+    if (!name.trim() || this.loc.recipes.length >= 10) return null;
+    if (this.loc.recipes.some(r => r.name.toLowerCase() === name.toLowerCase())) return null;
 
     const recipe: Recipe = {
       id: `recipe_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
@@ -953,21 +1026,21 @@ export class GameState {
       timesSold: 0,
       totalRating: 0,
     };
-    this.recipes.push(recipe);
+    this.loc.recipes.push(recipe);
     return recipe;
   }
 
   /** Delete a recipe by id */
   deleteRecipe(recipeId: string): boolean {
-    const idx = this.recipes.findIndex(r => r.id === recipeId);
+    const idx = this.loc.recipes.findIndex(r => r.id === recipeId);
     if (idx === -1) return false;
-    this.recipes.splice(idx, 1);
+    this.loc.recipes.splice(idx, 1);
     return true;
   }
 
   /** Record a sale of a recipe with satisfaction score */
   recordRecipeSale(recipeId: string, satisfaction: number): void {
-    const recipe = this.recipes.find(r => r.id === recipeId);
+    const recipe = this.loc.recipes.find(r => r.id === recipeId);
     if (!recipe) return;
     recipe.timesSold++;
     recipe.totalRating += satisfaction;
@@ -980,19 +1053,19 @@ export class GameState {
 
   /** Get popular recipes (sold 3+ times with good ratings), used for customer ordering */
   getPopularRecipes(): Recipe[] {
-    return this.recipes.filter(r => r.timesSold >= 3 && this.getRecipeRating(r) > 0.5);
+    return this.loc.recipes.filter(r => r.timesSold >= 3 && this.getRecipeRating(r) > 0.5);
   }
 
   /** Register or update a loyal customer after being served */
   registerLoyalCustomer(favoriteFlavor: string): LoyalCustomer | null {
     // Chance to register: 15% base, doubled if loyalty card campaign active
-    const loyaltyCampaignActive = this.activeCampaigns.some(c => c.id === CampaignId.LOYALTY_CARDS);
+    const loyaltyCampaignActive = this.loc.activeCampaigns.some(c => c.id === CampaignId.LOYALTY_CARDS);
     const chance = loyaltyCampaignActive ? 0.30 : 0.15;
     if (Math.random() > chance) return null;
 
     // Check if an existing loyal customer is "returning"
     // Pick a random existing loyal customer who hasn't visited today
-    const returningPool = this.loyalCustomers.filter(lc => lc.lastVisitDay < this.day);
+    const returningPool = this.loc.loyalCustomers.filter(lc => lc.lastVisitDay < this.day);
     if (returningPool.length > 0 && Math.random() < 0.5) {
       const returning = returningPool[Math.floor(Math.random() * returningPool.length)];
       returning.visits++;
@@ -1003,17 +1076,17 @@ export class GameState {
     }
 
     // Create new loyal customer (max 20 tracked)
-    if (this.loyalCustomers.length >= 20) {
+    if (this.loc.loyalCustomers.length >= 20) {
       // Remove least active
-      this.loyalCustomers.sort((a, b) => b.visits - a.visits);
-      this.loyalCustomers.pop();
+      this.loc.loyalCustomers.sort((a, b) => b.visits - a.visits);
+      this.loc.loyalCustomers.pop();
     }
 
     const names = ['Alex', 'Sam', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Quinn', 'Avery', 'Dakota',
       'Jamie', 'Drew', 'Reese', 'Skyler', 'Peyton', 'Hayden', 'Finley', 'Emery', 'Sage', 'Rowan'];
-    const usedNames = new Set(this.loyalCustomers.map(lc => lc.name));
+    const usedNames = new Set(this.loc.loyalCustomers.map(lc => lc.name));
     const available = names.filter(n => !usedNames.has(n));
-    const name = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : `Customer #${this.loyalCustomers.length + 1}`;
+    const name = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : `Customer #${this.loc.loyalCustomers.length + 1}`;
 
     const newCustomer: LoyalCustomer = {
       id: `loyal_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
@@ -1023,22 +1096,124 @@ export class GameState {
       favoriteFlavor,
       lastVisitDay: this.day,
     };
-    this.loyalCustomers.push(newCustomer);
+    this.loc.loyalCustomers.push(newCustomer);
     return newCustomer;
   }
 
   /** Get top loyal customers sorted by visits */
   getTopCustomers(count: number = 10): LoyalCustomer[] {
-    return [...this.loyalCustomers].sort((a, b) => b.visits - a.visits).slice(0, count);
+    return [...this.loc.loyalCustomers].sort((a, b) => b.visits - a.visits).slice(0, count);
+  }
+
+  /** Try to redeem loyalty points for a returning customer. Returns discount multiplier (0.75 if redeemed, 1.0 if not). */
+  tryLoyaltyRedemption(): { redeemed: boolean; discount: number; customerName: string | null } {
+    // Find a loyal customer with enough points who visited today
+    const eligible = this.loc.loyalCustomers.find(
+      lc => lc.lastVisitDay === this.day && lc.points >= LOYALTY_REDEMPTION_COST
+    );
+    if (!eligible) return { redeemed: false, discount: 1.0, customerName: null };
+
+    eligible.points -= LOYALTY_REDEMPTION_COST;
+    return { redeemed: true, discount: 1.0 - LOYALTY_DISCOUNT_PERCENT, customerName: eligible.name };
   }
 
   /** Get loyalty bonus: more loyal customers = slight patience/tip boost */
   getLoyaltyEffects(): { patienceBonus: number; tipBonus: number; spawnBonus: number } {
-    const activeLoyal = this.loyalCustomers.filter(lc => lc.visits >= 3).length;
+    const activeLoyal = this.loc.loyalCustomers.filter(lc => lc.visits >= 3).length;
     return {
       patienceBonus: Math.min(activeLoyal * 500, 3000),  // up to +3s
       tipBonus: Math.min(activeLoyal * 0.01, 0.10),       // up to +10%
       spawnBonus: Math.min(activeLoyal * 0.02, 0.15),     // up to 15% more customers
+    };
+  }
+
+  /** Generate a random catering contract offer for today */
+  generateCateringOffer(): CateringContract | null {
+    if (this.day < 3) return null; // don't offer catering on first 2 days
+    if (Math.random() > CATERING_CHANCE) return null;
+
+    const availableFlavors = this.loc.flavors.filter(f => f.unlocked);
+    if (availableFlavors.length === 0) return null;
+
+    const flavor = availableFlavors[Math.floor(Math.random() * availableFlavors.length)];
+    const scoops = CATERING_MIN_SCOOPS + Math.floor(Math.random() * (CATERING_MAX_SCOOPS - CATERING_MIN_SCOOPS + 1));
+    const client = CATERING_CLIENTS[Math.floor(Math.random() * CATERING_CLIENTS.length)];
+
+    const contract: CateringContract = {
+      id: `catering_${this.day}_${Date.now()}`,
+      clientName: client,
+      flavorId: flavor.id,
+      scoops,
+      payment: Math.round(scoops * CATERING_PRICE_PER_SCOOP * 100) / 100,
+      accepted: false,
+    };
+
+    return contract;
+  }
+
+  /** Accept a catering contract */
+  acceptCatering(contractId: string): boolean {
+    const contract = this.loc.cateringContracts.find(c => c.id === contractId);
+    if (!contract || contract.accepted) return false;
+    contract.accepted = true;
+    return true;
+  }
+
+  /** Fulfill accepted catering contracts at end of day. Returns total revenue earned. */
+  fulfillCatering(): { revenue: number; fulfilled: number; failed: number } {
+    let revenue = 0;
+    let fulfilled = 0;
+    let failed = 0;
+
+    for (const contract of this.loc.cateringContracts.filter(c => c.accepted)) {
+      // Check if we have enough ingredients for the scoops
+      const flavor = this.loc.flavors.find(f => f.id === contract.flavorId);
+      if (!flavor) { failed++; continue; }
+
+      // Each scoop needs 1 unit of each ingredient in the flavor
+      let canFulfill = true;
+      for (const ingId of flavor.ingredients) {
+        const ing = this.loc.ingredients.find(i => i.id === ingId);
+        if (!ing || ing.quantity < contract.scoops) {
+          canFulfill = false;
+          break;
+        }
+      }
+
+      if (canFulfill) {
+        // Deduct ingredients
+        for (const ingId of flavor.ingredients) {
+          const ing = this.loc.ingredients.find(i => i.id === ingId)!;
+          ing.quantity -= contract.scoops;
+        }
+        revenue += contract.payment;
+        fulfilled++;
+      } else {
+        failed++;
+        // Reputation penalty for failing to deliver
+        this.loc.reputation = Math.max(0, this.loc.reputation - 0.05);
+      }
+    }
+
+    if (fulfilled > 0) {
+      this.loc.reputation = Math.min(5, this.loc.reputation + CATERING_REP_BONUS * fulfilled);
+    }
+
+    return { revenue, fulfilled, failed };
+  }
+
+  /** Record a satisfied VIP customer */
+  recordVipSatisfaction(): void {
+    this.loc.vipSatisfied++;
+  }
+
+  /** Get active VIP perks based on satisfaction count */
+  getVipPerks(): { premiumPricing: boolean; wordOfMouth: boolean; eliteClientele: boolean } {
+    const count = this.loc.vipSatisfied;
+    return {
+      premiumPricing: count >= VIP_PERK_THRESHOLDS.PREMIUM_PRICING,
+      wordOfMouth: count >= VIP_PERK_THRESHOLDS.WORD_OF_MOUTH,
+      eliteClientele: count >= VIP_PERK_THRESHOLDS.ELITE_CLIENTELE,
     };
   }
 
@@ -1092,7 +1267,7 @@ export class GameState {
       totalDays: this.day,
       totalCustomersServed: this.totalCustomersServed,
       totalRevenue: this.totalRevenue,
-      reputation: this.reputation,
+      reputation: this.loc.reputation,
       equipmentOwned: this.loc.equipment.filter(e => e.tier > 0).length,
       staffCount: this.loc.staff.length,
       flavorsUnlocked: this.unlockedFlavors.size,
@@ -1303,7 +1478,7 @@ export class GameState {
     }
 
     // Low reputation is a signal of past issues: -5 if below 2
-    if (this.reputation < 2) {
+    if (this.loc.reputation < 2) {
       score -= 5;
       violations.push('Prior complaints on record');
     }
@@ -1333,7 +1508,7 @@ export class GameState {
       reputationChange = -0.2 - (INSPECTION_PASS_THRESHOLD - score) / 200; // -0.2 to -0.5
     }
 
-    this.reputation = Math.max(0.5, Math.min(5, this.reputation + reputationChange));
+    this.loc.reputation = Math.max(0.5, Math.min(5, this.loc.reputation + reputationChange));
 
     const result: HealthInspectionResult = {
       day: this.day,
@@ -1344,9 +1519,9 @@ export class GameState {
       reputationChange,
     };
 
-    this.lastInspectionDay = this.day;
-    this.closureDaysRemaining = closureDays;
-    this.inspectionHistory.push(result);
+    this.loc.lastInspectionDay = this.day;
+    this.loc.closureDaysRemaining = closureDays;
+    this.loc.inspectionHistory.push(result);
 
     return result;
   }
@@ -1354,7 +1529,7 @@ export class GameState {
   /** Check if a health inspection should trigger today */
   shouldTriggerInspection(): boolean {
     // Respect cooldown
-    if (this.day - this.lastInspectionDay < INSPECTION_COOLDOWN_DAYS) return false;
+    if (this.day - this.loc.lastInspectionDay < INSPECTION_COOLDOWN_DAYS) return false;
     // Don't inspect on day 1
     if (this.day <= 1) return false;
     return Math.random() < INSPECTION_CHANCE;
@@ -1455,6 +1630,11 @@ export class GameState {
       if (loc.closureDaysRemaining > 0) {
         loc.closureDaysRemaining--;
       }
+
+      // VIP Word of Mouth perk: +0.1 daily reputation bonus
+      if (this.getVipPerks().wordOfMouth) {
+        loc.reputation = Math.min(5, loc.reputation + 0.1);
+      }
     }
 
     // Restore active location
@@ -1471,6 +1651,13 @@ export class GameState {
 
     // Roll weather for the day
     this.rollWeather();
+
+    // Generate catering offers for today
+    this.loc.cateringContracts = [];
+    const offer = this.generateCateringOffer();
+    if (offer) {
+      this.loc.cateringContracts.push(offer);
+    }
   }
 }
 

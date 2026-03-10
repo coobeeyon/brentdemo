@@ -59,18 +59,22 @@ export class Customer {
   private orderBubble!: Phaser.GameObjects.Container;
   private nameTag!: Phaser.GameObjects.Text;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings?: ToppingDef[], availableStyles?: ServingStyleDef[]) {
+  constructor(scene: Phaser.Scene, x: number, y: number, availableFlavors: string[], menuPrices?: Map<string, number>, availableToppings?: ToppingDef[], availableStyles?: ServingStyleDef[], forcedType?: CustomerType) {
     this.scene = scene;
 
-    // Pick random type
-    const roll = Math.random() * 100;
-    let cumulative = 0;
+    // Pick type: use forced type if specified, otherwise random
     let typeInfo = CUSTOMER_TYPE_WEIGHTS[0];
-    for (const t of CUSTOMER_TYPE_WEIGHTS) {
-      cumulative += t.weight;
-      if (roll < cumulative) {
-        typeInfo = t;
-        break;
+    if (forcedType) {
+      typeInfo = CUSTOMER_TYPE_WEIGHTS.find(t => t.type === forcedType) ?? typeInfo;
+    } else {
+      const roll = Math.random() * 100;
+      let cumulative = 0;
+      for (const t of CUSTOMER_TYPE_WEIGHTS) {
+        cumulative += t.weight;
+        if (roll < cumulative) {
+          typeInfo = t;
+          break;
+        }
       }
     }
 

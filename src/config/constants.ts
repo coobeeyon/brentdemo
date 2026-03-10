@@ -24,6 +24,29 @@ export const SPEED_PAUSED = 0;
 // Inventory thresholds
 export const LOW_STOCK_THRESHOLD = 10;
 
+// Loyalty redemption
+export const LOYALTY_REDEMPTION_COST = 10;     // points required to redeem
+export const LOYALTY_DISCOUNT_PERCENT = 0.25;  // 25% discount when redeemed
+
+// Catering contracts
+export const CATERING_CHANCE = 0.35;          // chance per day of getting a catering offer
+export const CATERING_MIN_SCOOPS = 10;
+export const CATERING_MAX_SCOOPS = 30;
+export const CATERING_PRICE_PER_SCOOP = 3.50; // slightly above base price
+export const CATERING_REP_BONUS = 0.1;        // reputation bonus for fulfilling
+
+export const CATERING_CLIENTS = [
+  'Birthday Party', 'Office Party', 'School Event', 'Wedding Reception',
+  'Community Fair', 'Sports Team', 'Corporate Lunch', 'Neighborhood BBQ',
+];
+
+// VIP perks — unlock at satisfaction thresholds
+export const VIP_PERK_THRESHOLDS = {
+  PREMIUM_PRICING: 3,    // customers tolerate 10% higher prices
+  WORD_OF_MOUTH: 7,      // +0.1 daily reputation bonus
+  ELITE_CLIENTELE: 15,   // VIP spawn rate doubles (5% → 10%)
+} as const;
+
 // Starting resources
 export const STARTING_MONEY = 500;
 export const STARTING_REPUTATION = 2.5; // out of 5 stars
@@ -352,6 +375,30 @@ export const CAMPAIGN_CATALOG: CampaignDef[] = [
     effects: { tipBonus: 0.1, reputationBonus: 0.03 },
   },
 ];
+
+// Staff Specialties
+export enum StaffSpecialty {
+  NONE = 'none',
+  SCOOPING = 'scooping',     // bonus to speed
+  BLENDING = 'blending',     // bonus to accuracy (milkshakes/smoothies)
+  CASHIERING = 'cashiering', // bonus to friendliness (tips)
+}
+
+export const SPECIALTY_BONUS = 0.15; // 15% bonus to the matching stat
+
+export const SPECIALTY_LABELS: Record<StaffSpecialty, string> = {
+  [StaffSpecialty.NONE]: '—',
+  [StaffSpecialty.SCOOPING]: 'Scooper',
+  [StaffSpecialty.BLENDING]: 'Blender',
+  [StaffSpecialty.CASHIERING]: 'Cashier',
+};
+
+export const SPECIALTY_ICONS: Record<StaffSpecialty, string> = {
+  [StaffSpecialty.NONE]: '',
+  [StaffSpecialty.SCOOPING]: '🍨',
+  [StaffSpecialty.BLENDING]: '🥤',
+  [StaffSpecialty.CASHIERING]: '💰',
+};
 
 // Staff Scheduling
 export enum ShiftType {

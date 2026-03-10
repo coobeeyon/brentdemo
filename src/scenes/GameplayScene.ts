@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, DayPhase, STORE_CLOSE_HOUR, EQUIPMENT_CATALOG, CAMPAIGN_CATALOG, SEASON_CATALOG, HealthInspectionResult, WeatherType, LOW_STOCK_THRESHOLD, VIP_PERK_THRESHOLDS } from '../config/constants';
 import { ChallengeDef } from './ChallengeScene';
 import { GameState, getGameState, CriticReview } from '../systems/GameState';
 import { CustomerManager } from '../systems/CustomerManager';
 import { EventManager, ActiveEvent, GameEventId } from '../systems/EventManager';
 import { SaveManager } from '../systems/SaveManager';
 import { TipManager } from '../systems/TipManager';
+import { uiColor, uiColorNum, scaledFontSize } from '../systems/UIUtils';
 
 export class GameplayScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -59,7 +60,7 @@ export class GameplayScene extends Phaser.Scene {
         rainy: WeatherType.RAINY, hot: WeatherType.HOT, stormy: WeatherType.STORMY,
       };
       const wt = weatherMap[this.challengeDef.constraints.forcedWeather];
-      if (wt !== undefined) this.gameState.weather = wt;
+      if (wt !== undefined) this.gameState.loc.weather = wt;
     }
 
     // Apply challenge patience constraint via customer manager
@@ -67,6 +68,13 @@ export class GameplayScene extends Phaser.Scene {
       this.registry.set('challengePatienceMult', this.challengeDef.constraints.patienceMultiplier);
     } else {
       this.registry.set('challengePatienceMult', 1.0);
+    }
+
+    // Apply forced customer type constraint (e.g. VIP Reception challenge)
+    if (this.challengeDef?.constraints.forcedCustomerType) {
+      this.registry.set('forcedCustomerType', this.challengeDef.constraints.forcedCustomerType);
+    } else {
+      this.registry.set('forcedCustomerType', '');
     }
 
     this.createStoreView();
@@ -93,7 +101,7 @@ export class GameplayScene extends Phaser.Scene {
     }
 
     // If store is closed due to failed inspection, show closure notice
-    if (gameMode !== 'sandbox' && this.gameState.closureDaysRemaining > 0) {
+    if (gameMode !== 'sandbox' && this.gameState.loc.closureDaysRemaining > 0) {
       this.showClosureNotice();
     }
 
@@ -157,10 +165,10 @@ export class GameplayScene extends Phaser.Scene {
       this.gameState.loc.money += result.revenue;
 
       // Show floating revenue text
-      const revenueColor = result.dietaryViolation ? '#E67E22' : '#2ECC40';
+      const revenueColor = result.dietaryViolation ? '#E67E22' : uiColor(this, 'green');
       const floatText = this.add.text(GAME_WIDTH / 2, 340, `+$${result.revenue.toFixed(2)}`, {
         fontFamily: 'Arial',
-        fontSize: '22px',
+        fontSize: scaledFontSize(this, 22),
         color: revenueColor,
         fontStyle: 'bold',
       }).setOrigin(0.5);
@@ -181,8 +189,8 @@ export class GameplayScene extends Phaser.Scene {
           `⚠ ${result.violationType} violation — no tip!`,
           {
             fontFamily: 'Arial',
-            fontSize: '16px',
-            color: '#E74C3C',
+            fontSize: scaledFontSize(this, 16),
+            color: uiColor(this, 'red'),
             fontStyle: 'bold',
           }
         ).setOrigin(0.5);
@@ -195,6 +203,63 @@ export class GameplayScene extends Phaser.Scene {
           ease: 'Power2',
           onComplete: () => warningText.destroy(),
         });
+      }
+
+      // Show loyalty discount indicator
+      if (result.loyaltyDiscount) {
+        const loyalText = this.add.text(
+          GAME_WIDTH / 2, 365,
+          '🎁 Loyalty discount applied!',
+          {
+            fontFamily: 'Arial',
+            fontSize: scaledFontSize(this, 14),
+            color: uiColor(this, 'yellow'),
+            fontStyle: 'bold',
+          }
+        ).setOrigin(0.5);
+
+        this.tweens.add({
+          targets: loyalText,
+          y: 315,
+          alpha: 0,
+          duration: 1500,
+          ease: 'Power2',
+          onComplete: () => loyalText.destroy(),
+        });
+      }
+
+      // Show VIP perk unlock notification
+      if (result.vipSatisfied) {
+        const vipCount = this.gameState.loc.vipSatisfied;
+        let perkMsg = '';
+        if (vipCount === VIP_PERK_THRESHOLDS.PREMIUM_PRICING) {
+          perkMsg = 'VIP Perk unlocked: Premium Pricing (+10% revenue)';
+        } else if (vipCount === VIP_PERK_THRESHOLDS.WORD_OF_MOUTH) {
+          perkMsg = 'VIP Perk unlocked: Word of Mouth (+0.1 rep/day)';
+        } else if (vipCount === VIP_PERK_THRESHOLDS.ELITE_CLIENTELE) {
+          perkMsg = 'VIP Perk unlocked: Elite Clientele (2x VIP visits)';
+        }
+        if (perkMsg) {
+          const perkText = this.add.text(
+            GAME_WIDTH / 2, 340,
+            perkMsg,
+            {
+              fontFamily: 'Arial',
+              fontSize: scaledFontSize(this, 15),
+              color: '#FFD700',
+              fontStyle: 'bold',
+            }
+          ).setOrigin(0.5);
+
+          this.tweens.add({
+            targets: perkText,
+            y: 290,
+            alpha: 0,
+            duration: 2500,
+            ease: 'Power2',
+            onComplete: () => perkText.destroy(),
+          });
+        }
       }
     }
   }
@@ -260,45 +325,45 @@ export class GameplayScene extends Phaser.Scene {
     topBar.fillRect(0, 0, GAME_WIDTH, 56);
 
     this.dayText = this.add.text(12, 8, '', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFF',
     });
 
     this.timeText = this.add.text(12, 30, '', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#FFD700',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#FFD700',
     });
 
     this.weatherText = this.add.text(160, 8, '', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#FFF',
     });
 
     this.phaseText = this.add.text(160, 30, '', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#7FDBFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#7FDBFF',
     });
 
     this.speedText = this.add.text(280, 30, '', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#95A5A6',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: '#95A5A6',
     });
 
     this.queueText = this.add.text(GAME_WIDTH / 2, 14, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFF',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: '#FFF',
     }).setOrigin(0.5, 0);
 
     this.moneyText = this.add.text(GAME_WIDTH - 20, 8, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#2ECC40',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: uiColor(this, 'green'),
     }).setOrigin(1, 0);
 
     this.reputationText = this.add.text(GAME_WIDTH - 20, 30, '', {
-      fontFamily: 'Arial', fontSize: '16px', color: '#FFDC00',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 16), color: uiColor(this, 'yellow'),
     }).setOrigin(1, 0);
 
     // Active event indicator (below top bar, center)
     this.eventText = this.add.text(GAME_WIDTH / 2, 38, '', {
-      fontFamily: 'Arial', fontSize: '12px', color: '#F1C40F',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: uiColor(this, 'yellow'),
     }).setOrigin(0.5, 0).setVisible(false);
 
     // Equipment warnings (bottom-right)
     this.equipWarningText = this.add.text(GAME_WIDTH - 10, GAME_HEIGHT - 10, '', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#F39C12',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: uiColor(this, 'yellow'),
       backgroundColor: '#00000088',
       padding: { x: 6, y: 4 },
       lineSpacing: 2,
@@ -306,7 +371,7 @@ export class GameplayScene extends Phaser.Scene {
 
     // Low stock warnings (bottom-left during serve phase)
     this.stockWarningText = this.add.text(10, GAME_HEIGHT - 10, '', {
-      fontFamily: 'Arial', fontSize: '13px', color: '#E74C3C',
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: uiColor(this, 'red'),
       backgroundColor: '#00000088',
       padding: { x: 6, y: 4 },
       lineSpacing: 2,
@@ -374,7 +439,7 @@ export class GameplayScene extends Phaser.Scene {
       });
       prepContainer.add(shopBtn);
 
-      const isClosed = this.gameState.closureDaysRemaining > 0;
+      const isClosed = this.gameState.loc.closureDaysRemaining > 0;
 
       if (isClosed) {
         // Store is closed — show skip day button instead
@@ -445,6 +510,58 @@ export class GameplayScene extends Phaser.Scene {
       }).setOrigin(1, 0);
       prepContainer.add(invText);
 
+      // Catering contract offers
+      const contracts = this.gameState.loc.cateringContracts;
+      if (contracts.length > 0) {
+        let cateringY = 70;
+        for (const contract of contracts) {
+          const flavorName = this.gameState.loc.flavors.find(f => f.id === contract.flavorId)?.name ?? contract.flavorId;
+          const offerBg = this.add.graphics();
+          offerBg.fillStyle(0x1A5276, 0.9);
+          offerBg.fillRoundedRect(15, cateringY, 280, 60, 8);
+          prepContainer.add(offerBg);
+
+          const offerText = this.add.text(25, cateringY + 5, `🍨 Catering: ${contract.clientName}`, {
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 13), color: uiColor(this, 'yellow'), fontStyle: 'bold',
+          });
+          prepContainer.add(offerText);
+
+          const detailText = this.add.text(25, cateringY + 22, `${contract.scoops} scoops of ${flavorName} — $${contract.payment.toFixed(2)}`, {
+            fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: '#BDC3C7',
+          });
+          prepContainer.add(detailText);
+
+          if (!contract.accepted) {
+            const acceptBtn = this.add.text(25, cateringY + 40, '✓ Accept', {
+              fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#FFF',
+              backgroundColor: '#27AE60', padding: { x: 8, y: 2 },
+            }).setInteractive({ useHandCursor: true });
+            acceptBtn.on('pointerdown', () => {
+              this.gameState.acceptCatering(contract.id);
+              this.updatePhaseUI();
+            });
+            prepContainer.add(acceptBtn);
+
+            const declineBtn = this.add.text(120, cateringY + 40, '✗ Decline', {
+              fontFamily: 'Arial', fontSize: scaledFontSize(this, 12), color: '#FFF',
+              backgroundColor: '#7F8C8D', padding: { x: 8, y: 2 },
+            }).setInteractive({ useHandCursor: true });
+            declineBtn.on('pointerdown', () => {
+              this.gameState.loc.cateringContracts = contracts.filter(c => c.id !== contract.id);
+              this.updatePhaseUI();
+            });
+            prepContainer.add(declineBtn);
+          } else {
+            const acceptedLabel = this.add.text(25, cateringY + 40, '✓ Accepted — will fulfill at close', {
+              fontFamily: 'Arial', fontSize: scaledFontSize(this, 11), color: uiColor(this, 'green'),
+            });
+            prepContainer.add(acceptedLabel);
+          }
+
+          cateringY += 70;
+        }
+      }
+
       // Season progress (story mode)
       const gameMode = this.registry.get('gameMode') as string ?? 'story';
       const curSeasonDef = this.gameState.getSeasonDef();
@@ -452,7 +569,7 @@ export class GameplayScene extends Phaser.Scene {
         const progressLines = [
           `Season ${curSeasonDef.season}: ${curSeasonDef.name}`,
           `Revenue: $${this.gameState.seasonRevenue.toFixed(0)} / $${curSeasonDef.revenueTarget}`,
-          `Reputation: ${this.gameState.reputation.toFixed(1)} / ${curSeasonDef.reputationTarget.toFixed(1)}`,
+          `Reputation: ${this.gameState.loc.reputation.toFixed(1)} / ${curSeasonDef.reputationTarget.toFixed(1)}`,
           `Days: ${this.gameState.seasonDay} / ${curSeasonDef.daysPerSeason}`,
         ];
         const progressText = this.add.text(GAME_WIDTH / 2, 70, progressLines.join('\n'), {
@@ -464,46 +581,46 @@ export class GameplayScene extends Phaser.Scene {
       }
 
       // Daily costs summary
-      const totalWages = this.gameState.staff.reduce((sum, st) => sum + st.wage, 0);
+      const totalWages = this.gameState.loc.staff.reduce((sum, st) => sum + st.wage, 0);
       const maintenance = this.gameState.getMaintenanceCost();
-      const assignedCount = this.gameState.staff.filter(st => st.assigned).length;
+      const assignedCount = this.gameState.loc.staff.filter(st => st.assigned).length;
       const costLines = [
         'Daily Costs:',
-        `  Staff (${assignedCount}/${this.gameState.staff.length}): $${totalWages}`,
+        `  Staff (${assignedCount}/${this.gameState.loc.staff.length}): $${totalWages}`,
         `  Maintenance: $${maintenance}`,
         `  Total: $${totalWages + maintenance}/day`,
       ];
 
       // Add active campaigns
-      if (this.gameState.activeCampaigns.length > 0) {
+      if (this.gameState.loc.activeCampaigns.length > 0) {
         costLines.push('');
         costLines.push('Active Campaigns:');
-        for (const campaign of this.gameState.activeCampaigns) {
+        for (const campaign of this.gameState.loc.activeCampaigns) {
           const def = CAMPAIGN_CATALOG.find(c => c.id === campaign.id);
           costLines.push(`  ${def?.icon ?? ''} ${def?.name ?? campaign.id} (${campaign.daysRemaining}d)`);
         }
       }
 
       // Loan status
-      if (this.gameState.loanAmount > 0) {
-        const isOverdue = this.gameState.loanDaysRemaining <= 0;
+      if (this.gameState.loc.loanAmount > 0) {
+        const isOverdue = this.gameState.loc.loanDaysRemaining <= 0;
         costLines.push('');
-        costLines.push(`🏦 Loan: $${this.gameState.loanAmount.toFixed(0)} owed`);
-        costLines.push(`  ${isOverdue ? '⚠ OVERDUE!' : `${this.gameState.loanDaysRemaining}d remaining`}`);
+        costLines.push(`🏦 Loan: $${this.gameState.loc.loanAmount.toFixed(0)} owed`);
+        costLines.push(`  ${isOverdue ? '⚠ OVERDUE!' : `${this.gameState.loc.loanDaysRemaining}d remaining`}`);
       }
 
       // Health inspection status
-      if (this.gameState.closureDaysRemaining > 0) {
+      if (this.gameState.loc.closureDaysRemaining > 0) {
         costLines.push('');
-        costLines.push(`⛔ CLOSED: ${this.gameState.closureDaysRemaining} day(s) left`);
-      } else if (this.gameState.inspectionHistory.length > 0) {
-        const last = this.gameState.inspectionHistory[this.gameState.inspectionHistory.length - 1];
+        costLines.push(`⛔ CLOSED: ${this.gameState.loc.closureDaysRemaining} day(s) left`);
+      } else if (this.gameState.loc.inspectionHistory.length > 0) {
+        const last = this.gameState.loc.inspectionHistory[this.gameState.loc.inspectionHistory.length - 1];
         costLines.push('');
         costLines.push(`Last Inspection: ${last.passed ? '✅' : '❌'} ${last.score}/100`);
       }
 
       // Add broken equipment warnings
-      const brokenEquip = this.gameState.equipment.filter(e => e.broken);
+      const brokenEquip = this.gameState.loc.equipment.filter(e => e.broken);
       if (brokenEquip.length > 0) {
         costLines.push('');
         costLines.push('Broken Equipment:');
@@ -876,7 +993,7 @@ export class GameplayScene extends Phaser.Scene {
 
   private showClosureNotice(): void {
     // During prepare phase, show a notice that the store is closed
-    const days = this.gameState.closureDaysRemaining;
+    const days = this.gameState.loc.closureDaysRemaining;
     const notif = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, `⛔ STORE CLOSED\nHealth inspection failure\n${days} day(s) remaining`, {
       fontFamily: 'Arial', fontSize: '24px', color: '#E74C3C',
       backgroundColor: '#00000088', padding: { x: 20, y: 16 },
@@ -910,21 +1027,21 @@ export class GameplayScene extends Phaser.Scene {
     if (repChange > 0 && researchEffects.reputationGainMult) {
       const bonus = repChange * (researchEffects.reputationGainMult - 1);
       repChange += bonus;
-      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + bonus));
+      this.gameState.loc.reputation = Math.max(0.5, Math.min(5, this.gameState.loc.reputation + bonus));
     }
 
     // Apply campaign reputation bonus
     const campaignEffects = this.gameState.getCampaignEffects();
     if (campaignEffects.reputationBonus) {
       repChange += campaignEffects.reputationBonus;
-      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + campaignEffects.reputationBonus));
+      this.gameState.loc.reputation = Math.max(0.5, Math.min(5, this.gameState.loc.reputation + campaignEffects.reputationBonus));
     }
 
     // Apply signage daily reputation bonus
     const signageRepBonus = this.gameState.getSignageDef().dailyRepBonus;
     if (signageRepBonus > 0) {
       repChange += signageRepBonus;
-      this.gameState.reputation = Math.max(0.5, Math.min(5, this.gameState.reputation + signageRepBonus));
+      this.gameState.loc.reputation = Math.max(0.5, Math.min(5, this.gameState.loc.reputation + signageRepBonus));
     }
 
     // Track cumulative stats for milestones
@@ -934,6 +1051,13 @@ export class GameplayScene extends Phaser.Scene {
     const newMilestones = this.gameState.checkMilestones();
     if (newMilestones.length > 0) {
       this.showMilestoneNotification(newMilestones);
+    }
+
+    // Fulfill accepted catering contracts
+    const cateringResult = this.gameState.fulfillCatering();
+    if (cateringResult.revenue > 0) {
+      this.gameState.loc.dailyRevenue += cateringResult.revenue;
+      this.gameState.loc.money += cateringResult.revenue;
     }
 
     // Record day report with full stats
@@ -1024,6 +1148,18 @@ export class GameplayScene extends Phaser.Scene {
       y += 25;
     }
 
+    // Show catering results in report
+    if (cateringResult.fulfilled > 0 || cateringResult.failed > 0) {
+      const cateringColor = cateringResult.failed > 0 ? uiColor(this, 'yellow') : uiColor(this, 'green');
+      let cateringLabel = `🍨 CATERING: ${cateringResult.fulfilled} fulfilled (+$${cateringResult.revenue.toFixed(2)})`;
+      if (cateringResult.failed > 0) cateringLabel += ` | ${cateringResult.failed} failed`;
+      const cateringText = this.add.text(leftX, y, cateringLabel, {
+        fontFamily: 'Arial', fontSize: '14px', color: cateringColor, fontStyle: 'bold',
+      });
+      report.add(cateringText);
+      y += 25;
+    }
+
     // Separator
     const sep = this.add.graphics();
     sep.lineStyle(1, 0x7F8C8D, 0.5);
@@ -1031,7 +1167,7 @@ export class GameplayScene extends Phaser.Scene {
     report.add(sep);
     y += 10;
 
-    addStat(leftX, y, 'REVENUE', `$${s.loc.dailyRevenue.toFixed(2)}`, '#2ECC40');
+    addStat(leftX, y, 'REVENUE', `$${s.loc.dailyRevenue.toFixed(2)}`, uiColor(this, 'green'));
     addStat(rightX, y, 'EXPENSES', `$${s.loc.dailyExpenses.toFixed(2)}`, '#E74C3C');
     y += 45;
     addStat(leftX, y, 'PROFIT', `$${s.profit.toFixed(2)}`, profitColor);
@@ -1068,7 +1204,7 @@ export class GameplayScene extends Phaser.Scene {
 
         // Bar
         const profit = r.revenue - r.expenses;
-        chartGfx.fillStyle(profit >= 0 ? 0x2ECC71 : 0xE74C3C, 0.8);
+        chartGfx.fillStyle(profit >= 0 ? uiColorNum(this, 'green') : uiColorNum(this, 'red'), 0.8);
         chartGfx.fillRoundedRect(bx + 2, by, barWidth - 4, barH, 2);
 
         // Day label
@@ -1128,8 +1264,11 @@ export class GameplayScene extends Phaser.Scene {
     const seasonDef = s.getSeasonDef();
     if (!seasonDef) return;
 
-    // Include today's revenue in the total
-    const totalRevenue = s.seasonRevenue + s.loc.dailyRevenue;
+    // Include today's revenue in the total (sum all locations in franchise mode)
+    const pendingRevenue = s.franchiseMode && s.locations.length > 0
+      ? s.locations.reduce((sum, loc) => sum + loc.dailyRevenue, 0)
+      : s.loc.dailyRevenue;
+    const totalRevenue = s.seasonRevenue + pendingRevenue;
     const result = s.getSeasonResult();
 
     const container = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2);
@@ -1149,7 +1288,10 @@ export class GameplayScene extends Phaser.Scene {
     panel.fillStyle(panelColor, 1);
     panel.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
 
-    const borderColor = result === 'win' ? 0x2ECC71 : result === 'soft_fail' ? 0xF39C12 : 0xE74C3C;
+    const gc = uiColorNum(this, 'green');
+    const rc = uiColorNum(this, 'red');
+    const yc = uiColorNum(this, 'yellow');
+    const borderColor = result === 'win' ? gc : result === 'soft_fail' ? yc : rc;
     panel.lineStyle(3, borderColor);
     panel.strokeRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 15);
     container.add(panel);
@@ -1160,7 +1302,7 @@ export class GameplayScene extends Phaser.Scene {
       soft_fail: 'Season Over — Targets Missed',
       hard_fail: 'Bankrupt — Game Over',
     };
-    const resultColors = { win: '#2ECC71', soft_fail: '#F39C12', hard_fail: '#E74C3C' };
+    const resultColors = { win: uiColor(this, 'green'), soft_fail: uiColor(this, 'yellow'), hard_fail: uiColor(this, 'red') };
     const resultIcons = { win: '🎉', soft_fail: '😔', hard_fail: '💀' };
 
     const title = this.add.text(0, -panelH / 2 + 25, `${resultIcons[result]} ${resultLabels[result]}`, {
@@ -1184,7 +1326,7 @@ export class GameplayScene extends Phaser.Scene {
       container.add(l);
       const check = met ? '✅' : '❌';
       const v = this.add.text(leftX, yPos + 20, `${check} ${actual}  (target: ${target})`, {
-        fontFamily: 'Arial', fontSize: '16px', color: met ? '#2ECC71' : '#E74C3C',
+        fontFamily: 'Arial', fontSize: '16px', color: met ? uiColor(this, 'green') : uiColor(this, 'red'),
       });
       container.add(v);
     };
