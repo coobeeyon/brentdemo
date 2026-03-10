@@ -434,11 +434,10 @@
       "title": "End-of-day revenue chart blank/stale in franchise mode",
       "description": "In GameplayScene showDayReport(), the revenue trend chart reads from s.dayReports.slice(-7) (top-level GameState field). Since commit 63f3af7, day reports are pushed to s.loc.dayReports. In non-franchise mode (Seasons 1-4), s.loc returns s as any so they are the same array and there is no issue. In franchise mode (Season 5), s.loc returns s.locations[currentLocationId], so new day reports go to the location-scoped array while the chart still reads the stale top-level s.dayReports which only contains pre-franchise days. Fix: change the chart data source to s.loc.dayReports.slice(-7).",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "Mike Daum",
       "created_at": "2026-03-10T15:48:44.428694310Z",
-      "updated_at": "2026-03-10T15:49:04.701092157Z"
+      "updated_at": "2026-03-10T15:50:59.369609503Z"
     },
     "lb-ct8e": {
       "id": "lb-ct8e",
