@@ -354,11 +354,10 @@
       "title": "supplierQualityBonus never resets between days",
       "description": "In ShopScene.ts:272-273, supplierQualityBonus in the Phaser registry is set with Math.max(existing, bonus) but never cleared at end-of-day. Once a player buys from Premium Farms (0.10 bonus), the quality bonus applies permanently for the rest of the run regardless of which supplier is used on subsequent days. Fix: reset supplierQualityBonus to 0 at start of each prepare phase (when ShopScene opens normally, or in end-of-day reset logic).",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T10:35:49.447847880Z",
-      "updated_at": "2026-03-10T10:37:13.769923290Z"
+      "updated_at": "2026-03-10T10:38:11.834762171Z"
     },
     "lb-ks7m": {
       "id": "lb-ks7m",
