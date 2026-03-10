@@ -8,6 +8,7 @@ import { SaveManager } from '../systems/SaveManager';
 import { TipManager } from '../systems/TipManager';
 import { uiColor, uiColorNum, scaledFontSize } from '../systems/UIUtils';
 import { DAY_LENGTH_MS, DayLengthSetting } from './SettingsScene';
+import { getAudioManager } from '../systems/AudioManager';
 
 export class GameplayScene extends Phaser.Scene {
   private gameState!: GameState;
@@ -44,6 +45,9 @@ export class GameplayScene extends Phaser.Scene {
     this.customerManager = new CustomerManager(this, this.gameState);
     this.eventManager = new EventManager();
     this.tipManager = new TipManager();
+
+    // Stop ambient audio when this scene shuts down
+    this.events.on('shutdown', () => getAudioManager(this).stopAmbience());
 
     // Apply day length setting
     const settings = this.registry.get('gameSettings') as { dayLength?: string } | undefined;
@@ -180,6 +184,14 @@ export class GameplayScene extends Phaser.Scene {
       this.gameState.loc.dailyRevenue += result.revenue;
       this.gameState.loc.money += result.revenue;
 
+      // SFX
+      const audio = getAudioManager(this);
+      if (result.orderError || result.dietaryViolation) {
+        audio.error();
+      } else {
+        audio.serve();
+      }
+
       // Show floating revenue text
       const revenueColor = (result.dietaryViolation || result.orderError) ? '#E67E22' : uiColor(this, 'green');
       const floatText = this.add.text(GAME_WIDTH / 2, 340, `+$${result.revenue.toFixed(2)}`, {
@@ -280,6 +292,7 @@ export class GameplayScene extends Phaser.Scene {
           perkMsg = 'VIP Perk unlocked: Elite Clientele (2x VIP visits)';
         }
         if (perkMsg) {
+          getAudioManager(this).success();
           const perkText = this.add.text(
             GAME_WIDTH / 2, 340,
             perkMsg,
@@ -610,6 +623,7 @@ export class GameplayScene extends Phaser.Scene {
       this.serveButton.setVisible(false);
       this.customerManager.resetDayStats();
       this.customerManager.clearQueue();
+      getAudioManager(this).startAmbience('prep');
 
       const prepContainer = this.add.container(0, 0).setName('phaseUI');
 
@@ -671,6 +685,9 @@ export class GameplayScene extends Phaser.Scene {
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
         openBtn.on('pointerdown', () => {
+          const audio = getAudioManager(this);
+          audio.dayStart();
+          audio.startAmbience('serve');
           this.gameState.phase = DayPhase.SERVE;
           this.serveButton.setVisible(true);
           prepContainer.destroy();
@@ -949,6 +966,7 @@ export class GameplayScene extends Phaser.Scene {
   }
 
   private showEventNotification(event: ActiveEvent): void {
+    getAudioManager(this).notification();
     const notif = this.add.container(GAME_WIDTH / 2, 140);
     let text = event.def.description;
     if (event.trendingFlavorId) {
@@ -1083,6 +1101,7 @@ export class GameplayScene extends Phaser.Scene {
   }
 
   private showMilestoneNotification(milestones: string[]): void {
+    getAudioManager(this).success();
     const notif = this.add.container(GAME_WIDTH / 2, 130);
     const bg = this.add.graphics();
     bg.fillStyle(0x2C3E50, 0.95);
@@ -1242,6 +1261,9 @@ export class GameplayScene extends Phaser.Scene {
   }
 
   private onDayEnd(): void {
+    const audio = getAudioManager(this);
+    audio.stopAmbience();
+    audio.dayEnd();
     this.serveButton.setVisible(false);
     this.customerManager.clearQueue();
 

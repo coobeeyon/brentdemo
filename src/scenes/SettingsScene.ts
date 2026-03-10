@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
 import { scaledFontSize } from '../systems/UIUtils';
+import { getAudioManager } from '../systems/AudioManager';
 
 const SETTINGS_KEY = 'icecream_settings';
 
@@ -71,7 +72,7 @@ export class SettingsScene extends Phaser.Scene {
     const panelX = GAME_WIDTH / 2 - 250;
     const panelY = GAME_HEIGHT / 2 - 200;
     const panelW = 500;
-    const panelH = 470;
+    const panelH = 560;
 
     const panel = this.add.graphics();
     panel.fillStyle(0x2C3E50, 1);
@@ -165,6 +166,64 @@ export class SettingsScene extends Phaser.Scene {
     }
 
     y += 70;
+
+    // --- Sound Effects ---
+    const audioMgr = getAudioManager(this);
+
+    this.add.text(panelX + 30, y, 'Sound Effects', labelStyle);
+    this.add.text(panelX + 30, y + 24, 'Adjust SFX volume or mute all sounds', descStyle);
+
+    // Mute toggle
+    const muteBtn = this.add.text(panelX + panelW - 60, y + 5, audioMgr.muted ? 'OFF' : 'ON', {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 18), fontStyle: 'bold',
+      color: audioMgr.muted ? '#95A5A6' : '#2ECC71',
+      backgroundColor: '#34495E',
+      padding: { x: 12, y: 8 },
+    }).setInteractive({ useHandCursor: true });
+
+    // Volume bar
+    const barX = panelX + 30;
+    const barY = y + 50;
+    const barW = 200;
+    const barH = 16;
+    const volBar = this.add.graphics();
+    const drawVolBar = (vol: number) => {
+      volBar.clear();
+      volBar.fillStyle(0x34495E, 1);
+      volBar.fillRoundedRect(barX, barY, barW, barH, 4);
+      volBar.fillStyle(0x3498DB, 1);
+      volBar.fillRoundedRect(barX, barY, barW * vol, barH, 4);
+    };
+    drawVolBar(audioMgr.sfxVolume);
+
+    const volLabel = this.add.text(barX + barW + 10, barY - 2, `${Math.round(audioMgr.sfxVolume * 100)}%`, {
+      fontFamily: 'Arial', fontSize: scaledFontSize(this, 14), color: '#ECF0F1',
+    });
+
+    // Make the volume bar interactive
+    const volHit = this.add.zone(barX + barW / 2, barY + barH / 2, barW, barH + 16)
+      .setInteractive({ useHandCursor: true });
+
+    const updateVolFromPointer = (px: number) => {
+      const v = Phaser.Math.Clamp((px - barX) / barW, 0, 1);
+      audioMgr.setVolume(v);
+      drawVolBar(v);
+      volLabel.setText(`${Math.round(v * 100)}%`);
+    };
+
+    volHit.on('pointerdown', (pointer: Phaser.Input.Pointer) => updateVolFromPointer(pointer.x));
+    volHit.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.isDown) updateVolFromPointer(pointer.x);
+    });
+
+    muteBtn.on('pointerdown', () => {
+      audioMgr.setMuted(!audioMgr.muted);
+      muteBtn.setText(audioMgr.muted ? 'OFF' : 'ON');
+      muteBtn.setColor(audioMgr.muted ? '#95A5A6' : '#2ECC71');
+      if (!audioMgr.muted) audioMgr.click(); // preview sound
+    });
+
+    y += 90;
 
     // --- Preview ---
     this.add.text(panelX + 30, y, 'Preview', labelStyle);

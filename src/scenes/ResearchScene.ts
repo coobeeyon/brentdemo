@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, RESEARCH_CATALOG, ResearchCategory, MILESTONE_CATALOG } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
 import { scaledFontSize } from '../systems/UIUtils';
+import { getAudioManager } from '../systems/AudioManager';
 
 const CATEGORY_LABELS: Record<ResearchCategory, string> = {
   [ResearchCategory.FLAVORS]: 'Flavors',
@@ -197,6 +198,7 @@ export class ResearchScene extends Phaser.Scene {
         }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
         btn.on('pointerdown', () => {
+          getAudioManager(this).unlock();
           this.gameState.purchaseResearch(node.id);
           this.scene.restart();
         });

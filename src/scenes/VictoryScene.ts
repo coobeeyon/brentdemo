@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, SEASON_CATALOG } from '../config/constants';
 import { GameState, getGameState } from '../systems/GameState';
 import { scaledFontSize, uiColor } from '../systems/UIUtils';
+import { getAudioManager } from '../systems/AudioManager';
 
 export class VictoryScene extends Phaser.Scene {
   constructor() {
@@ -9,6 +10,7 @@ export class VictoryScene extends Phaser.Scene {
   }
 
   create(): void {
+    getAudioManager(this).victory();
     const gameState = getGameState(this);
     const partial = this.registry.get('partialVictory') === true;
     // Clear the flag so it doesn't persist
