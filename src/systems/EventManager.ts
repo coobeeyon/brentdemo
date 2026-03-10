@@ -187,8 +187,8 @@ export class EventManager {
 
     // Reputation bonus/penalty
     if (effects.reputationBonus) {
-      gameState.reputation = Math.max(0.5, Math.min(5,
-        gameState.reputation + effects.reputationBonus));
+      gameState.loc.reputation = Math.max(0.5, Math.min(5,
+        gameState.loc.reputation + effects.reputationBonus));
     }
 
     // Extra spoilage from heat wave
@@ -197,6 +197,18 @@ export class EventManager {
         // Reduce expiry by extra amount (spoilageMult - 1 extra days)
         const extraSpoilage = Math.floor(effects.spoilageMult - 1);
         ing.expiresInDays = Math.max(0, ing.expiresInDays - extraSpoilage);
+      }
+    }
+
+    // Increased equipment breakdown chance during event
+    if (effects.breakdownMult && effects.breakdownMult > 1) {
+      for (const owned of gameState.loc.equipment) {
+        if (owned.tier === 0 || owned.broken) continue;
+        // Extra breakdown chance proportional to the multiplier
+        const extraChance = (effects.breakdownMult - 1) * 0.15;
+        if (Math.random() < extraChance) {
+          owned.broken = true;
+        }
       }
     }
   }
