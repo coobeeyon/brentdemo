@@ -31,6 +31,7 @@ export class CustomerManager {
   private lastCriticReview: CriticReview | null = null;
   onCriticReview?: (review: CriticReview) => void; // callback for UI notification
   eventEffects: GameEventEffects = {}; // active event modifiers
+  trendingFlavorId: string | undefined; // set by Trend Alert event
 
   constructor(scene: Phaser.Scene, gameState: GameState) {
     this.scene = scene;
@@ -133,6 +134,13 @@ export class CustomerManager {
     for (const recipe of popularRecipes) {
       if (availableFlavors.includes(recipe.flavorId)) {
         weightedFlavors.push(recipe.flavorId); // double chance
+      }
+    }
+
+    // Trending flavor event: heavily boost the trending flavor (5x weight)
+    if (this.trendingFlavorId && availableFlavors.includes(this.trendingFlavorId)) {
+      for (let i = 0; i < 4; i++) {
+        weightedFlavors.push(this.trendingFlavorId);
       }
     }
 

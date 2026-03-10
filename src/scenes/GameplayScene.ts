@@ -940,6 +940,9 @@ export class GameplayScene extends Phaser.Scene {
     this.eventManager.rollForEvent(this.gameState);
     // Pass event effects to customer manager
     this.customerManager.eventEffects = this.eventManager.getEffects();
+    // Pass trending flavor to customer manager
+    const activeEvent = this.eventManager.getActiveEvent();
+    this.customerManager.trendingFlavorId = activeEvent?.trendingFlavorId;
     // Store ingredient price multiplier in registry for ShopScene access
     const effects = this.eventManager.getEffects();
     this.registry.set('eventIngredientPriceMult', effects.ingredientPriceMult ?? 1.0);
