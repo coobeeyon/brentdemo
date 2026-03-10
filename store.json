@@ -1013,11 +1013,10 @@
       "title": "Apply colorblind palette and text size multiplier across UI scenes",
       "description": "The SettingsScene stores colorblind mode and text size in the registry, but no scenes actually read and apply these settings yet. Update GameplayScene HUD, floating text, and key UI scenes to use TEXT_SIZE_MULTIPLIERS and COLORBLIND_PALETTE from the registry gameSettings.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:48:50.435416774Z",
-      "updated_at": "2026-03-10T12:55:17.403065910Z"
+      "updated_at": "2026-03-10T13:00:12.742952033Z"
     },
     "lb-x7xl": {
       "id": "lb-x7xl",
