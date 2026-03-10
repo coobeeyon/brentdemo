@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
+import { getGameState } from '../systems/GameState';
 
 export class PauseScene extends Phaser.Scene {
   constructor() {
@@ -31,8 +32,10 @@ export class PauseScene extends Phaser.Scene {
       padding: { x: 20, y: 6 },
     };
 
+    const gameState = getGameState(this);
     const buttons: { label: string; scene?: string; action?: () => void }[] = [
       { label: '  Resume  ', action: () => this.resumeGame() },
+      ...(gameState.franchiseMode ? [{ label: '  Franchise  ', scene: 'FranchiseScene' }] : []),
       { label: '  Menu Editor  ', scene: 'MenuEditorScene' },
       { label: '  Equipment  ', scene: 'EquipmentScene' },
       { label: '  Staff  ', scene: 'StaffScene' },
