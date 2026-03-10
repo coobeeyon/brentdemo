@@ -519,6 +519,16 @@
       "created_at": "2026-03-10T09:50:28.403119370Z",
       "updated_at": "2026-03-10T09:56:21.405123518Z"
     },
+    "lb-mj41": {
+      "id": "lb-mj41",
+      "title": "ShopScene: supplier tab selection lost on scene.restart()",
+      "description": "ShopScene.currentSupplier is an instance field initialized to SUPPLIER_CATALOG[1] (Main Street). When a supplier tab is clicked, currentSupplier is updated then scene.restart() is called. On restart, the field reinitializes to Main Street, so the selected supplier is never applied. All tabs appear interactive but always revert to Main Street. Fix: persist the selected supplier ID to the Phaser registry (e.g. this.registry.set('selectedSupplier', supplier.id)) and restore it in create() before building the tab UI.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T11:03:55.335321691Z",
+      "updated_at": "2026-03-10T11:03:55.335321691Z"
+    },
     "lb-mle0": {
       "id": "lb-mle0",
       "title": "Store customization and decor",
@@ -957,6 +967,11 @@
     },
     {
       "from_id": "lb-jql7",
+      "to_id": "lb-3l93",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-mj41",
       "to_id": "lb-3l93",
       "dep_type": "parent"
     }
