@@ -997,7 +997,7 @@ export class GameState {
     // Include current day's revenue that hasn't been accumulated yet
     const allLocs: LocationState[] = this.franchiseMode && this.locations.length > 0
       ? this.locations
-      : [this as any];
+      : [this.loc];
     const pendingRevenue = allLocs.reduce((sum, loc) => sum + loc.dailyRevenue, 0);
     const effectiveRevenue = this.seasonRevenue + pendingRevenue;
 
@@ -1635,7 +1635,7 @@ export class GameState {
     // Process ALL locations (in franchise mode) or just the single location
     const allLocs: LocationState[] = this.franchiseMode && this.locations.length > 0
       ? this.locations
-      : [this as any];
+      : [this.loc];
 
     const savedLocationId = this.currentLocationId;
 
