@@ -474,11 +474,10 @@
       "title": "Franchise season results: totalRevenue display misses non-active locations' dailyRevenue",
       "description": "In showSeasonResults() (GameplayScene.ts ~line 1227), totalRevenue is computed as s.seasonRevenue + s.loc.dailyRevenue. In franchise mode with multiple locations, s.loc.dailyRevenue is only the active location's last-day earnings. getSeasonResult() correctly sums all locations via allLocs.reduce(...dailyRevenue), so the displayed revenue figure and ✅/❌ indicator can diverge from the actual win/lose decision.\n\nFix: mirror the same allLocs pattern used in getSeasonResult() to compute totalRevenue in showSeasonResults(), e.g.:\n  const pendingRevenue = s.franchiseMode && s.locations.length > 0\n    ? s.locations.reduce((sum, loc) => sum + loc.dailyRevenue, 0)\n    : s.loc.dailyRevenue;\n  const totalRevenue = s.seasonRevenue + pendingRevenue;\n\nContrast with metRep which already correctly uses getFranchiseStats().totalReputation for franchise mode.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 2,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T13:07:24.792135913Z",
-      "updated_at": "2026-03-10T13:09:08.869886029Z"
+      "updated_at": "2026-03-10T13:10:07.870197097Z"
     },
     "lb-hu03": {
       "id": "lb-hu03",
