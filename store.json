@@ -269,6 +269,16 @@
       "created_at": "2026-03-09T18:04:26.568831046Z",
       "updated_at": "2026-03-09T18:11:22.541833312Z"
     },
+    "lb-e0m1": {
+      "id": "lb-e0m1",
+      "title": "Fix remaining GameState methods to use loc for franchise-mode consistency",
+      "description": "startCampaign, buyDecor, buySeating, buySignage, takeLoan, makeLoanPayment all use this.money/this.dailyExpenses instead of this.loc.*. Same class of bug as lb-jql7.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T11:09:55.923360344Z",
+      "updated_at": "2026-03-10T11:09:55.923360344Z"
+    },
     "lb-e4hg": {
       "id": "lb-e4hg",
       "title": "Staff hiring and management UI",
@@ -988,6 +998,11 @@
     {
       "from_id": "lb-ypij",
       "to_id": "lb-hu03",
+      "dep_type": "parent"
+    },
+    {
+      "from_id": "lb-e0m1",
+      "to_id": "lb-3l93",
       "dep_type": "parent"
     }
   ]
