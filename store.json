@@ -326,8 +326,9 @@
       "item_type": "task",
       "status": "open",
       "priority": 2,
+      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T12:12:38.993883371Z",
-      "updated_at": "2026-03-10T12:12:38.993883371Z"
+      "updated_at": "2026-03-10T12:14:26.985717901Z"
     },
     "lb-els5": {
       "id": "lb-els5",
