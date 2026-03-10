@@ -1625,7 +1625,7 @@ export class GameplayScene extends Phaser.Scene {
     addLine(`Final Reputation: ${'★'.repeat(Math.round(s.loc.reputation))}${'☆'.repeat(5 - Math.round(s.loc.reputation))}`, '#FFDC00');
 
     // Buttons
-    const retryBtn = this.add.text(-80, panelH / 2 - 45, 'Retry', {
+    const retryBtn = this.add.text(-120, panelH / 2 - 45, 'Retry', {
       fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
       backgroundColor: '#F39C12', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -1636,7 +1636,17 @@ export class GameplayScene extends Phaser.Scene {
       this.scene.start('ChallengeScene');
     });
 
-    const menuBtn = this.add.text(80, panelH / 2 - 45, 'Menu', {
+    const lbBtn = this.add.text(0, panelH / 2 - 45, '🏆', {
+      fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
+      backgroundColor: '#1A5276', padding: { x: 16, y: 8 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    container.add(lbBtn);
+
+    lbBtn.on('pointerdown', () => {
+      this.scene.start('LeaderboardScene');
+    });
+
+    const menuBtn = this.add.text(120, panelH / 2 - 45, 'Menu', {
       fontFamily: 'Arial', fontSize: '20px', color: '#FFF',
       backgroundColor: '#34495E', padding: { x: 20, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
