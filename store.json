@@ -230,6 +230,16 @@
       "created_at": "2026-03-10T15:03:04.913910701Z",
       "updated_at": "2026-03-10T15:09:44.265753957Z"
     },
+    "lb-7k97": {
+      "id": "lb-7k97",
+      "title": "unlockFlavor bypasses loc.flavors in franchise mode",
+      "description": "purchaseResearch() calls unlockFlavor() which pushes to this.flavors (top-level GameState field, line 1050 of GameState.ts) rather than this.loc.flavors. After initFranchiseMode() runs, these are separate arrays. Researching a new flavor in Season 5 franchise mode does not make it available for ordering at any franchise location. Fix: unlockFlavor() should also update this.loc.flavors (and optionally all locations) when franchiseMode is true.",
+      "item_type": "task",
+      "status": "open",
+      "priority": 2,
+      "created_at": "2026-03-10T17:10:17.945231132Z",
+      "updated_at": "2026-03-10T17:10:17.945231132Z"
+    },
     "lb-80wv": {
       "id": "lb-80wv",
       "title": "Show daily revenue tracker in HUD top bar",
