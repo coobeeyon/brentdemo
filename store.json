@@ -793,11 +793,10 @@
       "title": "Suggested price tool in menu editor",
       "description": "SPEC mentions a suggested price tool. Add a 'Suggested Price' button per menu item in MenuEditorScene that calculates recommended price based on ingredient cost, reputation, and demand. Simple formula: baseCost * (1 + reputation/5) with a floor.",
       "item_type": "task",
-      "status": "open",
+      "status": "closed",
       "priority": 3,
-      "claimed_by": "agent-runner",
       "created_at": "2026-03-10T11:33:03.769544371Z",
-      "updated_at": "2026-03-10T11:34:49.628203690Z"
+      "updated_at": "2026-03-10T11:35:36.543904564Z"
     },
     "lb-xrw5": {
       "id": "lb-xrw5",
